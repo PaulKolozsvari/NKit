@@ -1,0 +1,21 @@
+﻿*	Copy Nuget packages to bin folder when building .NET Standard project:
+		-	Add this line to the project file inside the <PropertyGroup> tag;
+				<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+		-	e.g.
+			  <PropertyGroup>
+				<TargetFramework>netstandard2.0</TargetFramework>
+				<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+			  </PropertyGroup>
+
+*	Porting .NET Framework code to .NET Core:
+	-	https://devblogs.microsoft.com/dotnet/announcing-the-windows-compatibility-pack-for-net-core/?WT.mc_id=-blog-scottha
+
+*	Port your code from .NET Framework to .NET Core:
+	-	https://docs.microsoft.com/en-us/dotnet/core/porting/
+
+*	Choosing between .NET Core and .NET Framework for server apps:
+	-	https://docs.microsoft.com/en-us/dotnet/standard/choosing-core-framework-server
+
+*	Quickstart: Create and publish a NuGet package using Visual Studio (.NET Standard, Windows only):
+	-	https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-visual-studio
