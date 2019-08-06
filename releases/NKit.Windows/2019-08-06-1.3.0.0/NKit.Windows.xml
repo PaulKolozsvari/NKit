@@ -1,0 +1,1440 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>NKit.Windows</name>
+    </assembly>
+    <members>
+        <member name="M:NKit.Data.DB.DatabaseTableColumnWindows.#ctor(System.Data.DataRow)">
+            <summary>
+            
+            </summary>
+            <param name="schemaRow">The DataRow retrieved from a database schema containing information about this column.</param>
+        </member>
+        <member name="T:NKit.Data.DB.LINQ.Logging.LinqServerActionWindows">
+            <summary>
+            ORM entity for logging to a corresponding SQL server table.
+            The same table should exist in the SQL Server database as well as a corresponding LINQ to SQL entity type with the same fields.
+            </summary>
+        </member>
+        <member name="T:NKit.Data.DB.LINQ.Logging.LinqServerErrorWindows">
+            <summary>
+            ORM entity for logging to a corresponding SQL server table.
+            The same table should exist in the SQL Server database as well as a corresponding LINQ to SQL entity type with the same fields.
+            </summary>
+        </member>
+        <member name="T:NKit.Data.DB.LINQ.Logging.LinqUserWindows">
+            <summary>
+            ORM entity for managing users and logging against their name to a corresponding SQL server table.
+            The same table should exist in the SQL Server database as well as a corresponding LINQ to SQL entity type with the same fields.
+            </summary>
+        </member>
+        <member name="P:NKit.Data.DB.LINQ.LinqFunnelChangeResultWindows.Function">
+            <summary>
+            The function which was being performed.
+            </summary>
+        </member>
+        <member name="P:NKit.Data.DB.LINQ.LinqFunnelChangeResultWindows.DateChanged">
+            <summary>
+            The date on which the change was made.
+            </summary>
+        </member>
+        <member name="P:NKit.Data.DB.LINQ.LinqFunnelChangeResultWindows.EntityChanged">
+            <summary>
+            The entity on which the change was made.
+            </summary>
+        </member>
+        <member name="P:NKit.Data.DB.LINQ.LinqFunnelChangeResultWindows.FieldChanged">
+            <summary>
+            The field on the entity which was changed.
+            </summary>
+        </member>
+        <member name="P:NKit.Data.DB.LINQ.LinqFunnelChangeResultWindows.OriginalValue">
+            <summary>
+            The original value of the field which was changed on the entity.
+            </summary>
+        </member>
+        <member name="P:NKit.Data.DB.LINQ.LinqFunnelChangeResultWindows.NewValue">
+            <summary>
+            The new value that was set on the field which was changed on the entity.
+            </summary>
+        </member>
+        <member name="T:NKit.Data.DB.LINQ.LinqFunnelContextWindows">
+            <summary>
+            A LINQ to SQL helper that uses generics to allow for easy Saving (Inserting/Updating), Retrieving and Deleting
+            of entities.
+            </summary>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.#ctor(System.Data.Linq.DataContext,NKit.Data.DB.LINQ.LinqFunnelSettingsWindows)">
+            <summary>
+            Creates a new LINQ to SQL context. 
+            </summary>
+            <param name="db">The LINQ to SQL DataContext that must contain all the entity types etc.</param>
+            <param name="applyContextSettings">Determines whether the settings in the settings file should be applied to the DataContext</param>
+        </member>
+        <member name="P:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DB">
+            <summary>
+            Get or set the DataContext.
+            Throws an exception if attempting to set it to null or if attempting to retrieve
+            it when it is null.
+            </summary>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.Save``1(``0,System.Boolean)">
+            <summary>
+            Saves (updates/inserts) an entity to the table corrseponding to the entity type.
+            If the entity's surrogate key is an identity entity will be inserted and not updated.
+            </summary>
+            <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
+            <param name="entity">The the entity to save.</param>
+            <returns>Returns a list of change results i.e. what entities where updated</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.Save(System.Type,System.Object,System.Boolean)">
+            <summary>
+            Saves (updates/inserts) an entity to the table corrseponding to the entity type.
+            If the entity's surrogate key is an identity entity will be inserted and not updated.
+            </summary>
+            <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
+            <param name="entity">The the entity to save.</param>
+            <returns>Returns a list of change results i.e. what entities where updated</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntitySurrogateKey``1">
+            <summary>
+            Determines the primary key of an entity type. The first primary key found on the entity type i.e.
+            the assumption is made that the entity type only has one primary key, which is the surrogate key.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table whose surrogate key needs to be determined.</typeparam>
+            <returns>Retruns the PropertyInfo corresponding to the column which is the surrogate key for the specified entity type.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntitySurrogateKey(System.Type)">
+            <summary>
+            Determines the primary key of an entity type. The first primary key found on the entity type i.e.
+            the assumption is made that the entity type only has one primary key, which is the surrogate key.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table whose surrogate key needs to be determined.</typeparam>
+            <returns>Retruns the PropertyInfo corresponding to the column which is the surrogate key for the specified entity type.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.IsIdentityColumn(System.Reflection.PropertyInfo)">
+            <summary>
+            Determines whether a property is an identity column.
+            </summary>
+            <param name="p"></param>
+            <returns>Returns true if the property is an identity column.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.UpdateOriginalEntity``1(``0,``0,System.Boolean)">
+            <summary>
+            Updates the original entity with values of the latest entities. In other words, it copies the
+            column values of the latest entity to the original entity.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table whose original record will be updated.</typeparam>
+            <param name="original">The original entity retrieved from the database.</param>
+            <param name="latest">The latest entity received from the client.</param>
+            <returns>Returns a list of change results containing all the fields that were changed and their original and new values.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.UpdateOriginalEntity(System.Type,System.Object,System.Object,System.Boolean)">
+            <summary>
+            Updates the original entity with values of the latest entities. In other words, it copies the
+            column values of the latest entity to the original entity.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table whose original record will be updated.</typeparam>
+            <param name="original">The original entity retrieved from the database.</param>
+            <param name="latest">The latest entity received from the client.</param>
+            <returns>Returns a list of change results containing all the fields that were changed and their original and new values.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.Delete``1(``0)">
+            <summary>
+            Deletes an entity from the table corresponding to the entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
+            <param name="entity">The entity to be deleted.</param>
+            <returns>Returns a list of change results.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.Delete(System.Object)">
+            <summary>
+            Deletes an entity from the table corresponding to the entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
+            <param name="entity">The entity to be deleted.</param>
+            <returns>Returns a list of change results.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.Delete``2(``0,System.Boolean)">
+            <summary>
+            Deletes an entity from the table correspoding to the entity type (E) and creates
+            a tombstone in the table correspoging to the tombstone entity type (T) if the 
+            createTombstone flag is set to true.
+            </summary>
+            <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+            <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
+            <param name="entity">The entity to be deleted</param>
+            <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+            <returns>Returns a list of change results.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.Delete(System.Object,System.Boolean,System.Type)">
+            <summary>
+            Deletes an entity from the table correspoding to the entity type (E) and creates
+            a tombstone in the table correspoging to the tombstone entity type (T) if the 
+            createTombstone flag is set to true.
+            </summary>
+            <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+            <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
+            <param name="entity">The entity to be deleted</param>
+            <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+            <returns>Returns a list of change results.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DeleteBySurrogateKey``1(System.Object)">
+            <summary>
+            Deletes an entity from the table corresponding to the entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
+            <param name="surrogatekeyValue">The entity to be deleted.</param>
+            <returns>Returns a list of change results.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DeleteBySurrogateKey(System.Object,System.Type)">
+            <summary>
+            Deletes an entity from the table corresponding to the entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
+            <param name="surrogatekeyValue">The entity to be deleted.</param>
+            <returns>Returns a list of change results.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DeleteBySurrogateKey``2(System.Object,System.Boolean)">
+            <summary>
+            Deletes an entity from the table with the specified surrogate key correspoding to the entity type (E) and creates
+            a tombstone in the table correspoging to the tombstone entity type (T) if the 
+            createTombstone flag is set to true.
+            </summary>
+            <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+            <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
+            <param name="surrogateKeyValue">The surrogate key of the entity to be deleted</param>
+            <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+            <returns>Returns a list of change results.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DeleteBySurrogateKey(System.Object,System.Boolean,System.Type,System.Type)">
+            <summary>
+            Deletes an entity from the table with the specified surrogate key correspoding to the entity type (E) and creates
+            a tombstone in the table correspoging to the tombstone entity type (T) if the 
+            createTombstone flag is set to true.
+            </summary>
+            <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+            <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
+            <param name="surrogateKeyValue">The surrogate key of the entity to be deleted</param>
+            <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+            <returns>Returns a list of change results.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DeleteOlderThan``1(System.String,System.TimeSpan)">
+            <summary>
+            Deletes all the entities in a given table older than the time specified.
+            </summary>
+            <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+            <param name="dateFieldName">The field name on the entity which must a date time field .</param>
+            <param name="time">The time relative to the current time i.e. current time subracted by the this time sets the threshhold for entities deleted.</param>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DeleteOlderThan(System.Type,System.String,System.TimeSpan)">
+            <summary>
+            Deletes all the entities in a given table older than the time specified.
+            </summary>
+            <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+            <param name="dateFieldName">The field name on the entity which must a date time field .</param>
+            <param name="time">The time relative to the current time i.e. current time subracted by the this time sets the threshhold for entities deleted.</param>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DeleteAll``1">
+            <summary>
+            Deletes all entities from the table corresponding to the entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. of the table whose records (entities) will be deleted.</typeparam>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.DeleteAll(System.Type)">
+            <summary>
+            Deletes all entities from the table corresponding to the entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. of the table whose records (entities) will be deleted.</typeparam>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.CopyToTombstoneEntity``2(``0,``1)">
+            <summary>
+            Copies all the values from the original entity to a tombstone entity. If the fields/columns on the two entities
+            do not match an exception will be thrown.
+            </summary>
+            <param name="original">The original entity retrieved from the database.</param>
+            <param name="tombstone">The tombstone entity containing the same fields/columns as the original entity.</param>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.CopyToTombstoneEntity(System.Type,System.Type,System.Object,System.Object)">
+            <summary>
+            Copies all the values from the original entity to a tombstone entity. If the fields/columns on the two entities
+            do not match an exception will be thrown.
+            </summary>
+            <param name="original">The original entity retrieved from the database.</param>
+            <param name="tombstone">The tombstone entity containing the same fields/columns as the original entity.</param>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetFirstEntity``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Queries for and returns the first entity filtered by the specified expression.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table the entity will be queried from.</typeparam>
+            <param name="expression">The expression to use to filter by.</param>
+            <returns>Returns the first entity filtered by the specified expression.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetFirstEntity``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}},System.Boolean)">
+            <summary>
+            Queries for and returns the first entity filtered by the specified expression.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table the entity will be queried from.</typeparam>
+            <param name="expression">The expression to use to filter by.</param>
+            <param name="throwExceptionOnNotFound">Whether or not to to throw an exception if the result is null.</param>
+            <returns>Returns the first entity filtered by the specified expression.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntities``1(System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            Queries for and returns a list of entities filtered by the specified expression.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table the entity will be queried from.</typeparam>
+            <param name="expression">The expression to use to filter by.</param>
+            <returns>Returns a list of entities filtered by the specified expression.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntityBySurrogateKey(System.Type,System.Object,System.Boolean)">
+            <summary>
+            Queries for and returns an entity from the table corresponding to the entity type. The query is performed
+            on the surrogate key of the entity.
+            </summary>
+            <param name="entityType">The entity type i.e. which table the entity will be queried from.</param>
+            <param name="keyValue">The value of the surrogate to search by.</param>
+            <param name="loadChildren">Whether or not to load the children entities onto this entity.</param>
+            <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntityBySurrogateKey(System.Type,System.Object,System.Boolean,System.Boolean)">
+            <summary>
+            Queries for and returns an entity from the table corresponding to the entity type. The query is performed
+            on the surrogate key of the entity.
+            </summary>
+            <param name="entityType">The entity type i.e. which table the entity will be queried from.</param>
+            <param name="keyValue">The value of the surrogate to search by.</param>
+            <param name="loadChildren">Whether or not to load the children entities onto this entity.</param>
+            <param name="throwExceptionOnNotFound">Whether or not to throw an exception if the result is null.</param>
+            <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntityBySurrogateKey``1(System.Object,System.Boolean)">
+            <summary>
+            Queries for and returns an entity from the table corresponding to the entity type. The query is performed
+            on the surrogate key of the entity.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table the entity will be queried from.</typeparam>
+            <param name="keyValue">The value of the surrogate to search by.</param>
+            <param name="loadChildren">Whether or not to load the children entities onto this entity.</param>
+            <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntityBySurrogateKey``1(System.Object,System.Boolean,System.Boolean)">
+            <summary>
+            Queries for and returns an entity from the table corresponding to the entity type. The query is performed
+            on the surrogate key of the entity.
+            </summary>
+            <typeparam name="E">The entity type i.e. which table the entity will be queried from.</typeparam>
+            <param name="keyValue">The value of the surrogate to search by.</param>
+            <param name="loadChildren">Whether or not to load the children entities onto this entity.</param>
+            <param name="throwExceptionOnNotFound">Whether or not to throw an exception if the result is null.</param>
+            <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntitiesByField(System.Type,System.String,System.Object,System.Boolean)">
+            <summary>
+            Queries for entities in a table corresponding to entity type. The query is performed on the column/field
+            specified with the specified field value.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
+            <param name="fieldName">The name of the field/column on which the query will be performed.</param>
+            <param name="fieldValue">The value of the field which will be used for the query.</param>
+            <param name="loadChildren">Whether or not to load the children of the entities as well.</param>
+            <returns>Returns a list of entities of the specified type with the specified field/column and field value.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetEntitiesByField``1(System.String,System.Object,System.Boolean)">
+            <summary>
+            Queries for entities in a table corresponding to entity type. The query is performed on the column/field
+            specified with the specified field value.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
+            <param name="fieldName">The name of the field/column on which the query will be performed.</param>
+            <param name="fieldValue">The value of the field which will be used for the query.</param>
+            <param name="loadChildren">Whether or not to load the children of the entities as well.</param>
+            <returns>Returns a list of entities of the specified type with the specified field/column and field value.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetAllEntities``1(System.Boolean)">
+            <summary>
+            Queries for all the entities in a table corresponging to the specfied entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
+            <returns>Returns all the entities of the specified type.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetAllEntities(System.Type,System.Boolean)">
+            <summary>
+            Queries for all the entities in a table corresponging to the specfied entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
+            <returns>Returns all the entities of the specified type.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetTotalCount``1">
+            <summary>
+            Returns the total count of an entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table from which the entities will be counted.</typeparam>
+            <returns>Returns the total count of an entity type.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetTotalCountLong``1">
+            <summary>
+            Returns the total count of an entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table from which the entities will be counted.</typeparam>
+            <returns>Returns the total count of an entity type.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetTotalCount(System.Type)">
+            <summary>
+            Returns the total count of an entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table from which the entities will be counted.</typeparam>
+            <returns>Returns the total count of an entity type.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetTotalCountLong(System.Type)">
+            <summary>
+            Returns the total count of an entity type.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table from which the entities will be counted.</typeparam>
+            <returns>Returns the total count of an entity type.</returns>
+        </member>
+        <member name="M:NKit.Data.DB.LINQ.LinqFunnelContextWindows.GetLinqToSqlChangeConflictErrorMessage(System.Data.Linq.DataContext)">
+            <summary>
+            Searches through all changes that caused a concurrency conflict in the DataContext and 
+            compiles an error message listing all the conflicts on all tables and each member (field) that caused the conflicts.
+            This method should be called after having called SubmitChanges on a DataContext and where a ChangeConflictException
+            has occured.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:NKit.Data.DB.SQLServer.SqlDatabaseTableColumnWindows">
+            <summary>
+            http://msdn.microsoft.com/library/ms254969.aspx
+            </summary>
+        </member>
+        <member name="T:NKit.Data.DB.SQLServer.SqlTypeConverterWindows">
+            <summary>
+            http://msdn.microsoft.com/en-us/library/system.data.sqltypes.aspx
+            </summary>
+        </member>
+        <member name="M:NKit.Data.DB.SQLServer.SqlDatabaseWindows.PopulateTablesFromSchema(System.Boolean,System.Data.Common.DbConnection,System.Boolean)">
+            <summary>
+            http://msdn.microsoft.com/library/ms254969.aspx
+            http://www.devart.com/dotconnect/salesforce/docs/Metadata-GetSchema.html
+            </summary>
+            <param name="includeColumns"></param>
+        </member>
+        <member name="M:NKit.Data.DB.SqlConnectionExtensionsWindows.GetTableForeignKeys(System.Data.SqlClient.SqlConnection,System.String)">
+            <summary>
+            This method sometimes throws an exception in SQL 2008 or SQl 2008 R2:
+            "There is insufficient system memory in resource pool 'internal' to run this query" error message when you run a full-text query that uses compound words in Microsoft SQL Server 2008 or in Microsoft SQL Server 2008 R2"
+            Fix: http://support.microsoft.com/kb/982854
+            </summary>
+            <param name="connection"></param>
+            <param name="tableName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Data.DB.DatabaseTableWindows.#ctor(System.Data.DataRow,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="schemaRow">The DataRow retrieved from a database schema containing information about this column.</param>
+        </member>
+        <member name="P:NKit.Data.DB.DatabaseTableWindows.ChildrenTables">
+            <summary>
+            Contains the children table names (keys) and a collection of foreign keys (values) that are mapped to this table's primary key.
+            </summary>
+        </member>
+        <member name="M:NKit.Data.EntityReaderWindows.GetLinqToSqlEntitySurrogateKey(System.Type)">
+            <summary>
+            Determines the primary key of an entity type. The first primary key found on the entity type i.e.
+            the assumption is made that the entity type only has one primary key, which is the surrogate key.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table whose surrogate key needs to be determined.</typeparam>
+            <returns>Retruns the PropertyInfo corresponding to the column which is the surrogate key for the specified entity type.</returns>
+        </member>
+        <member name="M:NKit.Data.EntityReaderWindows.IsLinqToSqlEntityPropertyIdentityColumn(System.Reflection.PropertyInfo)">
+            <summary>
+            Determines whether a property is an identity column.
+            </summary>
+            <param name="p"></param>
+            <returns>Returns true if the property is an identity column.</returns>
+        </member>
+        <member name="M:NKit.Data.EntityReaderWindows.GetLinqToSqlEntitySurrogateKey``1">
+            <summary>
+            Determines the primary key of an entity type. The first primary key found on the entity type i.e.
+            the assumption is made that the entity type only has one primary key, which is the surrogate key.
+            </summary>
+            <typeparam name="E">The entity type i.e. the table whose surrogate key needs to be determined.</typeparam>
+            <returns>Retruns the PropertyInfo corresponding to the column which is the surrogate key for the specified entity type.</returns>
+        </member>
+        <member name="T:NKit.Data.ORM.OrmAssembly">
+            <summary>
+            http://olondono.blogspot.com/2008/02/creating-code-at-runtime.html
+            Collectible Assemblies for Dynamic Type Generation : http://msdn.microsoft.com/en-us/library/dd554932.aspx#restrictions
+            </summary>
+        </member>
+        <member name="M:NKit.Data.ORM.OrmAssembly.GetAssemblyFilePathToExecutingDirectory">
+            <summary>
+            Gets the default assembly file path which is the assembly file name in the current executing directory.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Data.ORM.OrmAssembly.SaveOrmAssemblyToExecutingDirectory">
+            <summary>
+            We can only save the assembly in the current directory when we call save i.e. we're not allowed to set a path.
+            However, the current directory may not always be equal to current directory. 
+            If that's the case we need to save it to the current directory, then copy it to the executing directory and thereafter delete it from the current directory.
+            </summary>
+        </member>
+        <member name="M:NKit.Data.ORM.OrmAssembly.Save(System.String)">
+            <summary>
+            Saves the assembly in the executing directory and then copies it to the specified output directory if the output directory is different from the executing directory.
+            Throws an exception of the specified output directory does not exist.
+            </summary>
+        </member>
+        <member name="M:NKit.Data.ORM.OrmAssembly.ToString">
+            <summary>
+            Gets the assembly file name.
+            </summary>
+        </member>
+        <member name="T:NKit.Data.ORM.OrmTypeWindows">
+            <summary>
+            http://olondono.blogspot.com/2008/02/creating-code-at-runtime.html
+            </summary>
+        </member>
+        <member name="P:NKit.Utilities.SettingsFile.Default.WcfRestWebServiceAppSettingsWindows.RestServicePerformanceCounterScope">
+            <summary>
+            The scope of the performance counters to enable on the service in order to view the counters with Windows perfmon.exe.
+            </summary>
+        </member>
+        <member name="T:NKit.Utilities.RAS.RasConnectionManagerWindows">
+            <summary>
+            A wrapper class for managing RAS connections e.g. VPN or dial up connections.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.#ctor">
+            <summary>
+            Utility class for managing windows connections e.g. VPN or dial up connections.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.#ctor(System.Object)">
+            <summary>
+            Utility class for managing windows connections e.g. VPN or dial up connections.
+            </summary>
+            <param name="tag">Any object to be used as a state bag.</param>
+        </member>
+        <member name="E:NKit.Utilities.RAS.RasConnectionManagerWindows.OnConnectionStateChanged">
+            <summary>
+            Event fired when the state of the a windows connection changes.
+            </summary>
+        </member>
+        <member name="E:NKit.Utilities.RAS.RasConnectionManagerWindows.OnDialCompleted">
+            <summary>
+            Event fired after a dial up connection has been completed.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.GetRasConnectionsAddressBookPath(DotRas.RasPhoneBookType)">
+            <summary>
+            Gets the path to the address book containing information about all the windows connections.
+            </summary>
+            <param name="phoneBookType">The type of phone book e.g. current user or all users.</param>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.GetRasConnectionNames">
+            <summary>
+            Gets the names of all the available RAS (VPN or dial up) connections.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.CreateVPNConnectionEntry(System.String,System.Nullable{DotRas.RasVpnStrategy},System.Nullable{DotRas.RasDeviceType},System.String)">
+            <summary>
+            Creates a VPN connection in the Windows list of connections.
+            </summary>
+            <param name="vpnConnectionName">The name of the VPN connection to create.</param>
+            <param name="strategy">The VPN strategy to use. If null the default strategy is used.</param>
+            <param name="deviceType">The RAS (Remote Access Serice) device type. If null the default is used i.e.RasDeviceType.Vpn</param>
+            <param name="deviceName">The name of the RAS device. If null the default is used i.e. "(PPTP)".</param>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.CreateDialupConnectionEntry(System.String,System.String,System.Nullable{DotRas.RasDeviceType},System.String)">
+            <summary>
+            Creates a dial-up connection in the windows list of connections.
+            </summary>
+            <param name="dialupConnectionName">The name of the dial-up connection to create.</param>
+            <param name="phoneNumber">The phone number to be dialed when dialing the dial-up connection.</param>
+            <param name="deviceType">The RAS (Remote Access Serice) device type. If null the default is used i.e.RasDeviceType.Modem</param>
+            <param name="deviceName">The name of the RAS device. May not be null.</param>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.GetDevices">
+            <summary>
+            Gets a list of RAS devices available e.g. modems, VPN connections etc.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.ConnectRasConnection(System.String,System.String,System.String,System.Int32,DotRas.RasPhoneBookType)">
+            <summary>
+            Finds the RAS connection (VPN or dial up) and asynchronously dials that connection.
+            </summary>
+            <param name="rasConnectionName">The name of the RAS connection e.g. MyCompanyVPN</param>
+            <param name="userName">The username to specify when dialing.</param>
+            <param name="password">The password to specify when dialing.</param>
+            <param name="timeout">Length of time until asynchronous dialing times out..</param>
+            <param name="phoneBookType">The type of phone book e.g. current user or all users.</param>
+        </member>
+        <member name="M:NKit.Utilities.RAS.RasConnectionManagerWindows.DisconnectRasConnection(System.String)">
+            <summary>
+            Disconnects a RAS connection.
+            </summary>
+            <param name="rasConnectionName">The name of the RAS connection e.g. MyCompanyVPN</param>
+        </member>
+        <member name="E:NKit.Utilities.SMS.SmsGatewayWindows.OnSmsReceived">
+            <summary>
+            Event fired when an SMS is received by the SMS Gateway.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.SMS.SmsGatewayWindows.ParseSmsReceivedNotificationMessageLine(System.String)">
+            <summary>
+            This method handles what happens when the modem notifies the PC when an SMS has arrived and is sitting in a 
+            specific memory bank on the SIM card. After parsing the line containing memory bank details it then requests
+            the modem to retrieve and write out the SMS details and message to the serial port, which will then be handled
+            by the HandleSmsDetailsMessageLines method.
+            </summary>
+            <param name="notificationMessageLine">The line containing the infor on which memory bank the SMS is on.</param>
+        </member>
+        <member name="M:NKit.Utilities.SMS.SmsGatewayWindows.ParseSmsDetailsMessageLines(System.String,System.String[],System.Int32)">
+            <summary>
+            This method handles the parsing of the actual SMS that was retrieved from a specific memory bank on the SIM card.
+            </summary>
+            <param name="smsDetailsMessageLine"></param>
+            <param name="allDataLinesReceived"></param>
+            <param name="allDataLinesIndex"></param>
+        </member>
+        <member name="M:NKit.Utilities.SMS.SmsGatewayWindows.ClearSimMemoryBank(System.Int32)">
+            <summary>
+            Clears a memory bank of the SIM card. This should be done after an SMS has been read off a memory bank and has been handled.
+            </summary>
+            <param name="simMemoryBankToClear"></param>
+        </member>
+        <member name="M:NKit.Utilities.SMS.SmsGatewayWindows.GetDateTimeFromSmsDateTime(System.String,System.Boolean)">
+            <summary>
+            Parses a date sent by the modem to a .NET DateTime.
+            </summary>
+            <param name="receivedDateTimeRaw">The received date of the SMS given by the modem expected in this format: "13/11/01,20:18:59+08"</param>
+            <param name="ignoreTimeZone">Whether to strip the timezone from the given date time i.e. not compare the provided time zone in the date time with the time zone of this machine where the code is running on.</param>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.SMS.SmsGatewayWindows.ConfigureModemForNotificationResponseToPC">
+            <summary>
+            Configures the modem to send notifications to the PC when an SMS is received.
+            Notifications containing info on the memory bank of the SIM card where the SMS is stored.
+            These notifications will be read by this SmsGateway from a specific memory bank of the SIM card.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.SMS.SmsGatewayWindows.SendSms(NKit.Utilities.SMS.SmsInfoWindows)">
+            <summary>
+            Sends a command to the modem informing it to send an SMS to a specific cell phone number.
+            </summary>
+            <param name="smsInfo">The details of the SMS to send.</param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabBuilderWindows.BuildCab(NKit.Utilities.Cab.CabInfoWindows,System.String,System.String,System.Boolean,System.String@,System.String@)">
+            <summary>
+            Cab Wizard: http://msdn.microsoft.com/en-us/library/aa924359.aspx
+            </summary>
+            <param name="cabInfo"></param>
+            <param name="outputFilePath"></param>
+            <param name="cabWizFilePath"></param>
+            <param name="deleteINFAfterBuild"></param>
+            <returns>Returns the contents of CabWiz's log file.</returns>
+        </member>
+        <member name="T:NKit.Utilities.Cab.CabInfoWindows">
+            <summary>
+            Contains information about a CAB file in order to create a INF file to be passed to cabwiz to build a cab.
+            INF format: http://msdn.microsoft.com/en-us/library/aa924478.aspx
+            Creating an INF File: http://msdn.microsoft.com/en-us/library/3h8ff753(v=vs.80).aspx
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.#ctor(System.String,System.String,System.String,System.Nullable{System.Double},System.Nullable{System.Double})">
+            <summary>
+            Contains information about a CAB file in order to create a INF file to be passed to cabwiz to build a cab.
+            </summary>
+            <param name="providerName">May not be passed as null or empty.</param>
+            <param name="appName">May not be passed as null or empty.</param>
+            <param name="manufacturer">May not be passed as null or empty.</param>
+            <param name="versionMin">A null defaults the value to 4.0</param>
+            <param name="versionMax">A null defaults the value to 6.99</param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.#ctor">
+            <summary>
+            Contains information about a CAB file in order to create a INF file to be passed to cabwiz to build a cab.
+            </summary>
+        </member>
+        <member name="P:NKit.Utilities.Cab.CabInfoWindows.Item(System.String)">
+            <summary>
+            Get a CAB resource file with the specified file name (not the full path).
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.SetCESetupDll(System.String)">
+            <summary>
+            Set the file name (not the path) of the CESetupDLL for the CAB file. The resource file must have already been added to this CAB
+            and must have a dll file extension.
+            </summary>
+            <param name="ceSetupDll"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.ContainsCabResource(System.String)">
+            <summary>
+            Pass in just the file name (not the path) to determine if the resource 
+            file has already been added to be embedded into this CAB file.
+            </summary>
+            <param name="fileName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.ContainsCabResource(NKit.Utilities.Cab.CabResourceInfoWindows)">
+            <summary>
+            Pass in CabResource to determine if the resource file has already been added to be embedded into this CAB file.
+            The match is done against the file name (not th path).
+            </summary>
+            <param name="resource"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AddCabResource(System.String)">
+            <summary>
+            Adds a file as a resource to be embedded in the CAB file. The file name (not the path) has to be unique to this CAB file.
+            </summary>
+            <param name="resource"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.RemoveCabResource(NKit.Utilities.Cab.CabResourceInfoWindows)">
+            <summary>
+            Removes a resource file from this CAB file.
+            </summary>
+            <param name="resource"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.ValidateCabResourcesExist">
+            <summary>
+            Validates that all the files resources added to the CAB actually exist.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFVersionBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 1
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFCEStringBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 2
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFStringsBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 3
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFCEDeviceBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 4
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFDefaultInstallBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 5
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFSourceDisksNamesBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 7
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFSourceDisksFilesBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 8
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFDestinationDirsBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 9
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFOperationsBlock(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 10
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFShortcuts(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 11
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabInfoWindows.AppendINFRegKeys(System.Text.StringBuilder)">
+            <summary>
+            INF Order: 12
+            </summary>
+            <param name="INF"></param>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabResourceInfoWindows.GetINFCopyFileOperationName">
+            <summary>
+            Gets just the name of the operation in the INF file responsible 
+            for copying the file to the correct location on the device.
+            e.g. (where 1 is the index of the file)
+            
+            Files.Common1
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabResourceInfoWindows.AppendINFSourceDiskNameBlock(System.Text.StringBuilder)">
+            <summary>
+            Gets the directory path formatted as needed to be listed the INF file.
+            e.g. (where 1 is the index and C:\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\ is the directory of the file)
+            
+            1=,"Common1",,"C:\Program Files\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\"
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabResourceInfoWindows.AppendINFSourceDiskFileBlock(System.Text.StringBuilder)">
+            <summary>
+            Gets the file name formatted as needed to be listed in the INF file.
+            e.g. (where 1 is the index and NETCFv35.wm.armv4i.cab is the file name.
+            
+            "NETCFv35.wm.armv4i.cab"=1
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabResourceInfoWindows.AppendINFDestinationDirBlock(System.Text.StringBuilder)">
+            <summary>
+            Get the INF formatted line indicating the destination directory on the device where
+            the file will be copied to.
+            e.g. (where 1 is the index)
+            
+            Files.Common1=0,"%InstallDir%"
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.Cab.CabResourceInfoWindows.AppendINFCopyFileOperationBlock(System.Text.StringBuilder)">
+            <summary>
+            Get the actual operation in the INF file responsible
+            for copying the file to the correct location on the device.
+            e.g. (where 1 is the index and NETCFv35.wm.armv4i.cab is the file name)
+            
+            [Files.Common1]
+            "NETCFv35.wm.armv4i.cab","NETCFv35.wm.armv4i.cab",,0
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.EnumHelperWindows.GetEnumValues(System.Type)">
+            <summary>
+            Gets an array of enums from a given enum.
+            </summary>
+            <param name="enumType">The enum type to check.</param>
+            <returns>Returns an array of enums from a given enum.</returns>
+        </member>
+        <member name="T:NKit.Utilities.ExceptionHandlerWindows">
+            <summary>
+            A helper class for handling exceptions i.e. logging and displaying them.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.ExceptionHandlerWindows.GetCompleteExceptionMessage(System.Exception,System.Boolean)">
+            <summary>
+            Gets the complete error message including the exception message, inner exception message (if it exists) and stack trace.
+            </summary>
+            <param name="ex">Exception whose message to be retrieved.</param>
+            <param name="includeStackTrace">Whether to include the exeption's stack trace in the message.</param>
+            <returns></returns>
+        </member>
+        <member name="T:NKit.Utilities.InformationWindows">
+            <summary>
+            A helper class helps in retrieving system information.
+            </summary>
+        </member>
+        <member name="T:NKit.Utilities.Logging.LoggerWindows">
+            <summary>
+            A helper class that can be used to messages to a
+            log file and Windows EventLog that will be written in the assembly's executing directory.
+            </summary>
+        </member>
+        <member name="T:NKit.Utilities.UIHelperWindows">
+            <summary>
+            A helper class for displaying message boxes.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.DisplayException(System.Exception)">
+            <summary>
+            Displays a message box containing the message of the provided Exception
+            as well as the message of the inner exception if it exists.
+            </summary>
+            <param name="ex">The exception whose message will be displayed.</param>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.DisplayException(System.Exception,System.Windows.Forms.Form,System.Windows.Forms.KeyEventHandler,System.String)">
+            <summary>
+            Displays a message box containing the message of the provided Exception
+            as well as the message of the inner exception if it exists.
+            Also temporarily disables the specified form's key up event handler.
+            </summary>
+            <param name="ex">The exception whose message will be displayed.</param>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.DisplayError(System.String)">
+            <summary>
+            Displays an error message box with the given error message.
+            </summary>
+            <param name="errorMessage">The error message to be displayed.</param>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.DisplayError(System.String,System.Windows.Forms.Form,System.Windows.Forms.KeyEventHandler)">
+            <summary>
+            Displays an error message box with the given error message.
+            Also temporarily disables the specified form's key up event handler.
+            </summary>
+            <param name="errorMessage">The error message to be displayed.</param>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.DisplayInformation(System.String)">
+            <summary>
+            Displays an information message box with the given info message.
+            </summary>
+            <param name="infoMessage">The information message to be displayed.</param>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.DisplayInformation(System.String,System.Windows.Forms.Form,System.Windows.Forms.KeyEventHandler)">
+            <summary>
+            Displays an information message box with the given info message. 
+            Also temporarily disables the specified form's key up event handler.
+            </summary>
+            <param name="infoMessage">The information message to be displayed.</param>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.DisplayWarning(System.String)">
+            <summary>
+            Displays a warning message box with the given warning message.
+            </summary>
+            <param name="warningMessage">The warning message to be displayed.</param>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.DisplayWarning(System.String,System.Windows.Forms.Form,System.Windows.Forms.KeyEventHandler)">
+            <summary>
+            Displays a warning message box with the given warning message.
+            Also temporarily disables the specified form's key up event handler.
+            </summary>
+            <param name="warningMessage">The warning message to be displayed.</param>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.AskQuestion(System.String)">
+            <summary>
+            Displays question message box containing the question message and then
+            returns a Dialog result of either Yes or No based on the user's selection/response.
+            </summary>
+            <param name="question">The question message to be displayed to the user.</param>
+            <returns>Returns either a Yes or No response based on the user's selection/response.</returns>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.AskQuestion(System.String,System.Windows.Forms.Form,System.Windows.Forms.KeyEventHandler)">
+            <summary>
+            Displays question message box containing the question message and then
+            returns a Dialog result of either Yes or No based on the user's selection/response.
+            Also temporarily disables the specified form's key up event handler.
+            </summary>
+            <param name="question">The question message to be displayed to the user.</param>
+            <returns>Returns either a Yes or No response based on the user's selection/response.</returns>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.AskErrorQuestion(System.String)">
+            <summary>
+            Displays question message box containing the question message and error icon and then
+            returns a Dialog result of either Yes or No based on the user's selection/response.
+            </summary>
+            <param name="question">The question message to be displayed to the user.</param>
+            <returns>Returns either a Yes or No response based on the user's selection/response.</returns>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.AskErrorQuestion(System.String,System.Windows.Forms.Form,System.Windows.Forms.KeyEventHandler)">
+            <summary>
+            Displays question message box containing the question message and error icon and then
+            returns a Dialog result of either Yes or No based on the user's selection/response.
+            Also temporarily disables the specified form's key up event handler.
+            </summary>
+            <param name="question">The question message to be displayed to the user.</param>
+            <returns>Returns either a Yes or No response based on the user's selection/response.</returns>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.GetSelectedGridRowCellValue``1(System.Windows.Forms.DataGrid,System.Int32)">
+            <summary>
+            Gets the cell value of a specific column in the currently selected row of a DataGrid.
+            </summary>
+            <param name="grid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Utilities.UIHelperWindows.GetSelectedDataGridViewRowCellValue``1(System.Windows.Forms.DataGridView,System.Int32)">
+            <summary>
+            Gets the cell value of a specific column in the currently selected row of a DataGrid.
+            </summary>
+            <param name="grid"></param>
+            <returns></returns>
+        </member>
+        <member name="T:NKit.Utilities.WaitProcessWindows">
+            <summary>
+            A helper class for displaying a wait cursor.
+            On this creation of an object of this WaiCursor class the current cursor will be set to a wait cursor.
+            On calling Dispose on this object, the current cursor will set back to its default.
+            This class should be used in a using clause e.g.
+            
+            using(WaitCursor w = new WaitCursor())
+            {
+                //Some code that will take some time to execute.
+            }
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.WaitProcessWindows.#ctor">
+            <summary>
+            A helper class for displaying a wait cursor.
+            On this calling this constructor the current cursor will be set to a wait cursor.
+            On calling Dispose on this object, the current cursor will set back to its default.
+            </summary>
+        </member>
+        <member name="M:NKit.Utilities.WaitProcessWindows.Dispose">
+            <summary>
+            The current cursor will set back to a default cursor.
+            </summary>
+        </member>
+        <member name="T:NKit.Mmc.Forms.SettingsControlWindows">
+            <summary>
+            Form container for a ListView control 
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsControlWindows.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsControlWindows.Microsoft#ManagementConsole#IFormViewControl#Initialize(Microsoft.ManagementConsole.FormView)">
+            <summary>
+            Cache the associated Form View and add the actions
+            </summary>
+            <param name="parentSelectionFormView">Containing form</param>
+                    
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsControlWindows.RefreshData">
+            <summary>
+            Populate the list with sample data
+            </summary>
+            <param name="users">array of user data to add to the list</param>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsControlWindows.GetSelectedSetting">
+            <summary>
+            Build string of selected users
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsControlWindows.lstvSettings_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Updates the FormView's selected data context when the user clicks on a setting.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsControlWindows.lstvSettings_MouseClick(System.Object,System.Windows.Forms.MouseEventArgs)">
+            <summary>
+            Handle mouseclick and use MMC to show context menu if necessary 
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:NKit.Mmc.Forms.SettingsControlWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsControlWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsControlWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:NKit.Mmc.Forms.SettingsFormViewWindows">
+            <summary>
+            FormView to display Winforms controls
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsFormViewWindows.#ctor">
+            <summary>
+            Constructor
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsFormViewWindows.OnInitialize(Microsoft.ManagementConsole.AsyncStatus)">
+            <summary>
+            Handle any setup necessary
+            </summary>
+            <param name="status">asynchronous status for updating the console</param>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsFormViewWindows.OnSelectionAction(Microsoft.ManagementConsole.Action,Microsoft.ManagementConsole.AsyncStatus)">
+            <summary>
+            Handle triggered action
+            </summary>
+            <param name="action">triggered action</param>
+            <param name="status">asynchronous status to update console</param>
+        </member>
+        <member name="M:NKit.Mmc.Forms.SettingsFormViewWindows.OnAddPropertyPages(Microsoft.ManagementConsole.PropertyPageCollection)">
+            <summary>
+            OnAddPropertyPages is used to get the property pages to show. 
+            (triggered by SelectionData.ShowPropertySheet)
+            </summary>
+            <param name="propertyPageCollection">property pages</param>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditBoolSettingControlWindows.RefreshData(System.Object)">
+            <summary>
+            Populate control values from the SelectionObject (set in UserListView.SelectionOnChanged) The node is the node being updated.
+            This method sets the default values on the controls.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditBoolSettingControlWindows.CanApplyChanges">
+            <summary>
+            Check during UserProptertyPage.OnApply to ensure that changes can be Applied i.e. verify values entered from the user.
+            </summary>
+            <returns>returns true if changes are valid</returns>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditBoolSettingControlWindows.UpdateData(System.Object)">
+            <summary>
+            Update the node with the controls values.
+            </summary>
+            <param name="userNode">Node being updated by property page</param>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditBoolSettingControlWindows.chkValue_CheckedChanged(System.Object,System.EventArgs)">
+            <summary>
+            Notifies/Flags the PropertyPage that info has changed and that the PropertySheet can change the 
+            buttons.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:NKit.Mmc.SettingEditors.EditBoolSettingControlWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditBoolSettingControlWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditBoolSettingControlWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Mmc.SettingEditors.EditEnumSettingControlWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditEnumSettingControlWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditEnumSettingControlWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditLongSettingControlWindows.RefreshData(System.Object)">
+            <summary>
+            Populate control values from the SelectionObject (set in UserListView.SelectionOnChanged) The node is the node being updated.
+            This method sets the default values on the controls.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditLongSettingControlWindows.CanApplyChanges">
+            <summary>
+            Check during UserProptertyPage.OnApply to ensure that changes can be Applied i.e. verify values entered from the user.
+            </summary>
+            <returns>returns true if changes are valid</returns>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditLongSettingControlWindows.UpdateData(System.Object)">
+            <summary>
+            Update the node with the controls values.
+            </summary>
+            <param name="userNode">Node being updated by property page</param>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditLongSettingControlWindows.txtValue_TextChanged(System.Object,System.EventArgs)">
+            <summary>
+            Notifies/Flags the PropertyPage that info has changed and that the PropertySheet can change the 
+            buttons.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:NKit.Mmc.SettingEditors.EditLongSettingControlWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditLongSettingControlWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditLongSettingControlWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditSettingPage.OnApply">
+            <summary>
+            Sent to every page in the property sheet to indicate that the user has clicked 
+            the Apply button and wants all changes to take effect.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditSettingPage.OnOK">
+            <summary>
+            Sent to every page in the property sheet to indicate that the user has clicked the OK 
+            or Close button and wants all changes to take effect.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditSettingPage.OnCancel">
+            <summary>
+            Indicates that the user wants to cancel the property sheet.
+            Default implementation allows cancel operation.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditSettingPage.OnDestroy">
+            <summary>
+            Notifies a page that the property sheet is getting destoyed. 
+            Use this notification message as an opportunity to perform cleanup operations.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditTextSettingControlWindows.RefreshData(System.Object)">
+            <summary>
+            Populate control values from the SelectionObject (set in UserListView.SelectionOnChanged). The node is the node being updated.
+            This method sets the default values on the controls.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditTextSettingControlWindows.CanApplyChanges">
+            <summary>
+            Check during UserProptertyPage.OnApply to ensure that changes can be Applied i.e. verify values entered from the user.
+            </summary>
+            <returns>returns true if changes are valid</returns>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditTextSettingControlWindows.UpdateData(System.Object)">
+            <summary>
+            Update the node with the controls values.
+            </summary>
+            <param name="userNode">Node being updated by property page</param>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditTextSettingControlWindows.txtValue_TextChanged(System.Object,System.EventArgs)">
+            <summary>
+            Notifies/Flags the PropertyPage that info has changed and that the PropertySheet can change the 
+            buttons.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="F:NKit.Mmc.SettingEditors.EditTextSettingControlWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditTextSettingControlWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Mmc.SettingEditors.EditTextSettingControlWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.BorderlessFormWindows.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="F:NKit.Winforms.BorderlessFormWindows.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.BorderlessFormWindows.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.CustomDataGridViewWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.CustomDataGridViewWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.CustomDataGridViewWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.CustomListBoxWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.CustomListBoxWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.CustomListBoxWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.CustomMainMenuWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.CustomMainMenuWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.CustomMainMenuWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.CustomProgressBarWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.CustomProgressBarWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.CustomProgressBarWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.CustomTabWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.CustomTabWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.CustomTabWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.CustomToolStripWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.CustomToolStripWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.CustomToolStripWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.CustomTreeViewWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.CustomTreeViewWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.CustomTreeViewWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.GradientButtonWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.GradientButtonWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.GradientButtonWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.GradientLabelWindows.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.GradientLabelWindows.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.GradientLabelWindows.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:NKit.Winforms.GradientPanelWindows.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:NKit.Winforms.GradientPanelWindows.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:NKit.Winforms.GradientPanelWindows.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+    </members>
+</doc>
