@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <!--<license></license>-->
+    <projectUrl>https://github.com/PaulKolozsvari/NKit</projectUrl>
+    <!--<iconUrl></iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>First version of the NKit, which is took the Figlut Toolkit (https://github.com/PaulKolozsvari/Figlut-Suite) and converted it to .NET Standard and .NET Framework versions and renaming it to NKit.</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>.NET Toolkit</tags>
+  </metadata>
+</package>

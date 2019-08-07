@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("NKit.Windows")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription(".NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications. NKit.Windows is the .NET Framework compatible version of NKit, but is dependent on the NKit.Standard.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Binary Chef")]
+[assembly: AssemblyCompany("Nacelle")]
 [assembly: AssemblyProduct("NKit.Windows")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]

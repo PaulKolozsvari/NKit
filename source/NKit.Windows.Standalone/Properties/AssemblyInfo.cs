@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NKit.Windows")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("NKit.Windows.Standalone")]
+[assembly: AssemblyDescription(".NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications. NKit.Standard is the .NET Framework compatible version of NKit. This library is a standalone assembly not dependent on NKit.Standard.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Binary Chef")]
-[assembly: AssemblyProduct("NKit.Windows")]
+[assembly: AssemblyCompany("Nacelle")]
+[assembly: AssemblyProduct("NKit.Windows.Standalone")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

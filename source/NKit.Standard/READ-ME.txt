@@ -19,3 +19,16 @@
 
 *	Quickstart: Create and publish a NuGet package using Visual Studio (.NET Standard, Windows only):
 	-	https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-visual-studio
+		1.	Set the package properties in the project settings.
+		2.	Switch to Release build configuration.
+		3.	Right click project and click Pack, which will create the nupkg for the project.
+		4.	Login to NuGet and create an Key (if you don't have one already): https://www.nuget.org/account/apikeys
+			-	NuGet API Key: oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja
+		5.	Publish Package with .NET CLI (Command Line Interface):
+			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
+			-	Run the following command and just replacing the key with your own key:
+					dotnet nuget push NKit.Standard.1.3.0.nupkg -k oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja -s https://api.nuget.org/v3/index.json
+		6.	Publish the package with Nuget Push:
+			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
+			-	Run the following command and just replacing the key with your own key:
+					nuget push NKit.Standard.1.3.0.nupkg oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja -Source https://api.nuget.org/v3/index.json
