@@ -1,0 +1,2 @@
+*   Fixed the Wcf singleton app class which wasn't taking the Authentication settings into account on the custom binding which was being created from 
+    the web http binding. Authentication settings now work on a WCF service.
