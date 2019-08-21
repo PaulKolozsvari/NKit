@@ -698,7 +698,12 @@
             ConstantExpression constantExpression = Expression.Constant(keyValueConverted, surrogateKey.PropertyType); //Value of the surrogate key : right hand side of the expression.
             BinaryExpression binaryExpression = Expression.Equal(memberExpression, constantExpression);
             Expression<Func<E, bool>> lambdaExpression = Expression.Lambda<Func<E, bool>>(binaryExpression, e);
-            return DB.GetTable<E>().SingleOrDefault(lambdaExpression);
+            E result = DB.GetTable<E>().SingleOrDefault(lambdaExpression);
+            if (result == null && throwExceptionOnNotFound)
+            {
+                throw new NullReferenceException($"{nameof(GetEntityBySurrogateKey)} could not find entity {typeof(E).Name} with key value of '{keyValue}'.");
+            }
+            return result;
         }
 
         /// <summary>
