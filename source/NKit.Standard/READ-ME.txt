@@ -58,5 +58,9 @@
 		-	Consume NuGet packages in Visual Studio
 			-	https://docs.microsoft.com/en-us/azure/devops/artifacts/nuget/consume?view=azure-devops
 			-	Steps: 
-				-	In Visual Studio: Tools -> Nuget Package Manager -> Sources -> Add a Source using the URL Provided in DevOps
+				-	In Visual Studio: Tools -> Nuget Package Manager -> Sources -> Add a Source using the URL Provided in DevOps.
 				-	When opening the NuGet Package Manager: switch from the NuGet.org Package Source to your source to view and download your packages.
+
+*	Include multiple Nuget Sources in your solution without having to manually add them on Nuget Manager:
+	-	Open from a run dialog: %APPDATA%
+	-	Copy the NuGet.Config file and add it to your solution.

@@ -87,7 +87,12 @@
 
         public static bool PropertyExists(string propertyName, object entity)
         {
-            foreach (PropertyInfo p in entity.GetType().GetProperties())
+            return PropertyExists(propertyName, entity.GetType());
+        }
+
+        public static bool PropertyExists(string propertyName, Type entityType)
+        {
+            foreach (PropertyInfo p in entityType.GetProperties())
             {
                 if (p.Name == propertyName)
                 {
