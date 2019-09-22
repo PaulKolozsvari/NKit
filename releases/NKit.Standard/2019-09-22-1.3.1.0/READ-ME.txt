@@ -1,0 +1,1 @@
+*   Added wrappers for Redis and Sqlite databases that allow managing databases when not knowing the record types at run time.
