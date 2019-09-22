@@ -101,7 +101,7 @@
             }
             if (isNullable)
             {
-                return DataHelperWindows.GetNullableType(result);
+                return DataHelper.GetNullableType(result);
             }
             return result;
         }
@@ -124,7 +124,7 @@
                     }
                     return typeInfo.DotNetType;
                 }
-                else if (DataHelperWindows.GetNullableType(typeInfo.SqlType).IsAssignableFrom(sqlType))
+                else if (DataHelper.GetNullableType(typeInfo.SqlType).IsAssignableFrom(sqlType))
                 {
                     if (typeInfo.DotNetType == null)
                     {
@@ -159,7 +159,7 @@
             }
             if (isNullable)
             {
-                return DataHelperWindows.GetNullableType(result);
+                return DataHelper.GetNullableType(result);
             }
             return result;
         }
@@ -182,7 +182,7 @@
                     }
                     return typeInfo.SqlType;
                 }
-                else if (DataHelperWindows.GetNullableType(typeInfo.DotNetType).IsAssignableFrom(dotNetType))
+                else if (DataHelper.GetNullableType(typeInfo.DotNetType).IsAssignableFrom(dotNetType))
                 {
                     if (typeInfo.SqlType == null)
                     {
@@ -211,7 +211,7 @@
                 {
                     return typeInfo.SqlTypeName;
                 }
-                else if (DataHelperWindows.GetNullableType(typeInfo.DotNetType).IsAssignableFrom(dotNetType))
+                else if (DataHelper.GetNullableType(typeInfo.DotNetType).IsAssignableFrom(dotNetType))
                 {
                     return typeInfo.SqlTypeName;
                 }
@@ -234,7 +234,7 @@
                 {
                     return typeInfo.SqlTypeName;
                 }
-                else if (DataHelperWindows.GetNullableType(typeInfo.SqlType).IsAssignableFrom(sqlType))
+                else if (DataHelper.GetNullableType(typeInfo.SqlType).IsAssignableFrom(sqlType))
                 {
                     return typeInfo.SqlTypeName;
                 }
@@ -275,7 +275,7 @@
                     }
                     return typeInfo.SqlDbType;
                 }
-                else if (DataHelperWindows.GetNullableType(typeInfo.DotNetType).IsAssignableFrom(dotNetType))
+                else if (DataHelper.GetNullableType(typeInfo.DotNetType).IsAssignableFrom(dotNetType))
                 {
                     if (typeInfo.SqlType == null)
                     {
@@ -304,7 +304,7 @@
                 {
                     return typeInfo.SqlDbType;
                 }
-                else if (DataHelperWindows.GetNullableType(typeInfo.SqlType).IsAssignableFrom(sqlType))
+                else if (DataHelper.GetNullableType(typeInfo.SqlType).IsAssignableFrom(sqlType))
                 {
                     return typeInfo.SqlDbType;
                 }

@@ -13,7 +13,7 @@
 
     public class AfterRefreshFromServerArgsWindows : AfterDataBoxArgsWindows
     {
-        public AfterRefreshFromServerArgsWindows(bool presentLoadDataBoxForm, SqlDatabaseTableBaseWindows currentTable)
+        public AfterRefreshFromServerArgsWindows(bool presentLoadDataBoxForm, SqlDatabaseTableWindows currentTable)
         {
             _presentLoadDataBoxForm = presentLoadDataBoxForm;
             _currentTable = currentTable;
@@ -22,7 +22,7 @@
         #region Fields
 
         protected bool _presentLoadDataBoxForm;
-        protected SqlDatabaseTableBaseWindows _currentTable;
+        protected SqlDatabaseTableWindows _currentTable;
 
         #endregion //Fields
 
@@ -33,7 +33,7 @@
             get { return _presentLoadDataBoxForm; }
         }
 
-        public SqlDatabaseTableBaseWindows CurrentTable
+        public SqlDatabaseTableWindows CurrentTable
         {
             get { return _currentTable; }
         }

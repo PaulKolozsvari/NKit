@@ -10,10 +10,9 @@
     using System.Data;
     using System.Reflection;
     using NKit.Data.DB.SQLQuery;
-    using NKit.Utilities.Logging;
     using System.Data.SqlClient;
     using System.Reflection.Emit;
-    using NKit.Data.ORM;
+    using NKit.Toolkit.Data.ORM;
     using System.Data.Common;
 
     #endregion //Using Directives
@@ -75,51 +74,84 @@
 
         #region Methods
 
-        public SqlDatabaseTableWindows<E> GetSqlDatabaseTable<E>() where E : class
+        public override void Initialize(
+            string connectionString,
+            bool populateTablesFromSchema,
+            bool createOrmAssembly,
+            bool saveOrmAssembly,
+            string ormAssemblyOutputDirectory,
+            bool overrideNameWithDatabaseNameFromSchema)
+        {
+            _tables = new EntityCacheGeneric<string, DatabaseTableWindowsWindows>();
+            _connectionString = connectionString;
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                PublishFeedback(string.Format("Opening connection to {0} ...", _connectionString));
+                connection.Open();
+                if (overrideNameWithDatabaseNameFromSchema)
+                {
+                    PublishFeedback("Getting DB name from schema ...");
+                    _name = GetDatabaseNameFromSchema(connection, false);
+                }
+                if (populateTablesFromSchema)
+                {
+                    PublishFeedback("Populating DB tables from schema ...");
+                    PopulateTablesFromSchema(true, connection, false);
+                }
+                if (createOrmAssembly)
+                {
+                    PublishFeedback("Generating ORM assembly ...");
+                    CreateOrmAssembly(saveOrmAssembly, ormAssemblyOutputDirectory);
+                }
+            }
+        }
+
+        public SqlDatabaseTableGenericWindows<E> GetSqlDatabaseTable<E>() where E : class
         {
             return GetSqlDatabaseTable<E>(typeof(E).Name);
         }
 
-        public SqlDatabaseTableWindows<E> GetSqlDatabaseTable<E>(string tableName) where E : class
+        public SqlDatabaseTableGenericWindows<E> GetSqlDatabaseTable<E>(string tableName) where E : class
         {
             if (!_tables.Exists(tableName))
             {
                 return null;
             }
-            SqlDatabaseTableWindows<E> result = _tables[tableName] as SqlDatabaseTableWindows<E>;
+            SqlDatabaseTableGenericWindows<E> result = _tables[tableName] as SqlDatabaseTableGenericWindows<E>;
             if (result == null)
             {
                 throw new InvalidCastException(string.Format(
                     "Unexpected table type in {0}. Could not type cast {1} to a {2}.",
                     this.GetType().FullName,
                     typeof(DatabaseWindows).FullName,
-                    typeof(SqlDatabaseTableWindows<E>).FullName));
+                    typeof(SqlDatabaseTableGenericWindows<E>).FullName));
             }
             return result;
         }
 
-        public void AddTable(DatabaseTableWindows table)
+        public void AddTable(DatabaseTableWindowsWindows table)
         {
             _tables.Add(table);
         }
 
-        public void AddTable<E>() where E : class
+        public SqlDatabaseTableGenericWindows<E> AddTable<E>() where E : class
         {
-            AddTable<E>(typeof(E).Name);
+            return AddTable<E>(typeof(E).Name);
         }
 
-        public void AddTable<E>(string tableName) where E : class
+        public SqlDatabaseTableGenericWindows<E> AddTable<E>(string tableName) where E : class
         {
             if (_tables.Exists(tableName))
             {
                 throw new Exception(string.Format(
                     "{0} with name {1} already added to {2}.",
-                    typeof(SqlDatabaseTableWindows<E>).FullName,
+                    typeof(SqlDatabaseTableGenericWindows<E>).FullName,
                     tableName,
                     this.GetType().FullName));
             }
-            SqlDatabaseTableWindows<E> table = new SqlDatabaseTableWindows<E>(tableName, _connectionString);
+            SqlDatabaseTableGenericWindows<E> table = new SqlDatabaseTableGenericWindows<E>(tableName, _connectionString);
             _tables.Add(table);
+            return table;
         }
 
         public override void Dispose()
@@ -131,8 +163,9 @@
             }
         }
 
-        public List<object> Query(string sqlQueryString, 
-            OrmAssemblySql ormCollectibleAssembly, 
+        public override List<object> Query(
+            string sqlQueryString,
+            OrmAssemblySqlWindows ormCollectibleAssembly,
             string typeName,
             out OrmTypeWindows ormCollecibleType)
         {
@@ -144,8 +177,8 @@
             {
                 throw new ArgumentException(string.Format(
                     "Querying the database with a raw SQL query string requires an {0} with the {1} property set to {2}.",
-                    typeof(OrmAssembly).FullName,
-                    EntityReaderGeneric<OrmAssembly>.GetPropertyName(p => p.AssemblyBuilderAccess, false),
+                    typeof(OrmAssemblyWindows).FullName,
+                    EntityReaderGeneric<OrmAssemblyWindows>.GetPropertyName(p => p.AssemblyBuilderAccess, false),
                     AssemblyBuilderAccess.RunAndCollect));
             }
             List<object> result = null;
@@ -165,16 +198,16 @@
             return result;
         }
 
-        public List<object> Query(SqlQueryWindows query, Type entityType)
+        public override List<object> Query(QueryWindows query, Type entityType)
         {
-            List<DatabaseTableWindows> tablesMentioned = GetTablesMentionedInQuery(query);
+            List<DatabaseTableWindowsWindows> tablesMentioned = GetTablesMentionedInQuery(query);
             List<object> result = null;
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
-                using (SqlCommand command = new SqlCommand(query.SqlQuerySring, connection))
+                using (SqlCommand command = new SqlCommand(query.SqlQueryString, connection))
                 {
-                    query.SqlCeParameters.ForEach(p => command.Parameters.Add(p));
+                    query.SqlParameters.ForEach(p => command.Parameters.Add(p));
                     command.CommandType = System.Data.CommandType.Text;
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -185,74 +218,108 @@
             return result;
         }
 
-        public List<E> Query<E>(SqlQueryWindows query) where E : class
+        public override List<object> Query(
+            QueryWindows query,
+            Type entityType,
+            bool disposeConnectionAfterExecute,
+            DbConnection connection,
+            DbTransaction transaction)
         {
-            List<object> objects= Query(query, typeof(E));
-            List<E> result = new List<E>();
-            objects.ForEach(o => result.Add((E)o));
-            return result;
-        }
-
-        public virtual List<object> Query(
-            string comlumnName,
-            object columnValue,
-            bool useLikeFilter,
-            bool caseSensitive,
-            Type entityType)
-        {
-            return Query(comlumnName, columnValue, useLikeFilter, caseSensitive, entityType.Name);
-        }
-
-        public virtual List<object> Query(
-            string comlumnName,
-            object columnValue,
-            bool useLikeFilter,
-            bool caseSensitive,
-            string tableName)
-        {
-            DatabaseTableWindows table = GetDatabaseTable(tableName);
-            if (table == null)
+            List<object> result = null;
+            try
             {
-                throw new NullReferenceException(string.Format(
-                    "Could not find {0} with name {1}.",
-                    typeof(DatabaseTableWindows).FullName,
-                    tableName));
-            }
-            return table.Query(comlumnName, columnValue, useLikeFilter, caseSensitive);
-        }
-
-        public List<E> Query<E>(
-            string comlumnName,
-            object columnValue,
-            bool useLikeFilter,
-            bool caseSensitive) where E : class
-        {
-            SqlDatabaseTableWindows<E> table = GetSqlDatabaseTable<E>();
-            if (table == null)
-            {
-                throw new NullReferenceException(string.Format(
-                    "Could not find {0} with name {1}.",
-                    typeof(DatabaseTableWindows).FullName,
-                    typeof(E).Name));
-            }
-            return table.Query(comlumnName, columnValue, useLikeFilter, caseSensitive);
-        }
-
-        public void ExecuteNonQuery(SqlQueryWindows query)
-        {
-            List<DatabaseTableWindows> tablesMentioned = GetTablesMentionedInQuery(query);
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                using (SqlCommand command = new SqlCommand(query.SqlQuerySring, connection))
+                List<DatabaseTableWindowsWindows> tablesMentioned = GetTablesMentionedInQuery(query);
+                if (connection == null)
                 {
-                    query.SqlCeParameters.ForEach(p => command.Parameters.Add(p));
-                    if (command.ExecuteNonQuery() < 1)
+                    connection = new SqlConnection(_connectionString);
+                }
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                }
+                using (SqlCommand command = new SqlCommand(query.SqlQueryString, (SqlConnection)connection))
+                {
+                    if (transaction != null)
                     {
-                        throw new Exception(string.Format("Sql script failed: {0}.", query.SqlQuerySring));
+                        command.Transaction = (SqlTransaction)transaction;
+                    }
+                    query.SqlParameters.ForEach(p => command.Parameters.Add(p));
+                    command.CommandType = System.Data.CommandType.Text;
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        result = DataHelperWindows.ParseReaderToEntities(reader, entityType);
                     }
                 }
             }
+            finally
+            {
+                if (disposeConnectionAfterExecute &&
+                    connection != null &&
+                    connection.State != ConnectionState.Closed)
+                {
+                    connection.Dispose();
+                }
+            }
+            return result;
+        }
+
+        public List<E> Query<E>(
+            string columnName,
+            object columnValue,
+            bool disposeConnectionAfterExecute,
+            DbConnection connection,
+            DbTransaction transaction) where E : class
+        {
+            SqlDatabaseTableGenericWindows<E> table = GetSqlDatabaseTable<E>();
+            if (table == null)
+            {
+                throw new NullReferenceException(string.Format(
+                    "Could not find {0} with name {1}.",
+                    typeof(DatabaseTableWindowsWindows).FullName,
+                    typeof(E).Name));
+            }
+            List<object> queryResults = Query(columnName, columnValue, typeof(E), disposeConnectionAfterExecute, connection, transaction);
+            List<E> results = new List<E>();
+            queryResults.ForEach(p => results.Add((E)p));
+            return results;
+        }
+
+        public List<E> Query<E>(
+            string columnName,
+            object columnValue,
+            string tableName,
+            bool disposeConnectionAfterExecute,
+            DbConnection connection,
+            DbTransaction transaction) where E : class
+        {
+            SqlDatabaseTableGenericWindows<E> table = GetSqlDatabaseTable<E>();
+            if (table == null)
+            {
+                throw new NullReferenceException(string.Format(
+                    "Could not find {0} with name {1}.",
+                    typeof(DatabaseTableWindowsWindows).FullName,
+                    typeof(E).Name));
+            }
+            List<object> queryResults = Query(columnName, columnValue, tableName, typeof(E), disposeConnectionAfterExecute, connection, transaction);
+            List<E> results = new List<E>();
+            queryResults.ForEach(p => results.Add((E)p));
+            return results;
+        }
+
+        public int ExecuteNonQuery(QueryWindows query)
+        {
+            int result = -1;
+            List<DatabaseTableWindowsWindows> tablesMentioned = GetTablesMentionedInQuery(query);
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(query.SqlQueryString, connection))
+                {
+                    query.SqlParameters.ForEach(p => command.Parameters.Add(p));
+                    result = command.ExecuteNonQuery();
+                }
+            }
+            return result;
         }
 
         public DataTable GetSchema()
@@ -355,7 +422,7 @@
                 _tables.Clear();
                 foreach (DataRow row in schema.Rows)
                 {
-                    SqlDatabaseTableWindows<object> table = new SqlDatabaseTableWindows<object>(row, _connectionString);
+                    SqlDatabaseTableGenericWindows<object> table = new SqlDatabaseTableGenericWindows<object>(row, _connectionString);
                     if (table.IsSystemTable)
                     {
                         continue;
@@ -364,7 +431,7 @@
                     {
                         throw new Exception(string.Format(
                             "{0} with name {1} already added to {2}.",
-                            typeof(SqlDatabaseTableWindows<object>).FullName,
+                            typeof(SqlDatabaseTableGenericWindows<object>).FullName,
                             table.TableName,
                             this.GetType().FullName));
                     };
@@ -389,9 +456,9 @@
 
         private void PopulateChildrenTables()
         {
-            foreach (DatabaseTableWindows pkTable in _tables)
+            foreach (DatabaseTableWindowsWindows pkTable in _tables)
             {
-                foreach (DatabaseTableWindows fkTable in _tables) //Find children tables i.e. tables that have foreign keys mapped this table's primary keys'.
+                foreach (DatabaseTableWindowsWindows fkTable in _tables) //Find children tables i.e. tables that have foreign keys mapped this table's primary keys'.
                 {
                     EntityCacheGeneric<string, ForeignKeyInfoWindows> mappedForeignKeys = new EntityCacheGeneric<string, ForeignKeyInfoWindows>();
                     fkTable.GetForeignKeyColumns().Where(c => c.ParentTableName == pkTable.TableName).ToList().ForEach(fk => mappedForeignKeys.Add(fk.ColumnName, new ForeignKeyInfoWindows()
@@ -414,7 +481,7 @@
         public override List<DatabaseTableKeyColumnsWindows> GetTableKeyColumns()
         {
             List<DatabaseTableKeyColumnsWindows> result = new List<DatabaseTableKeyColumnsWindows>();
-            foreach (SqlDatabaseTableBaseWindows t in _tables)
+            foreach (SqlDatabaseTableWindows t in _tables)
             {
                 DatabaseTableKeyColumnsWindows tableKeyColumns = new DatabaseTableKeyColumnsWindows(t.TableName);
                 foreach (SqlDatabaseTableColumnWindows c in t.Columns)
@@ -432,7 +499,7 @@
         public override List<DatabaseTableForeignKeyColumnsWindows> GetTableForeignKeyColumns()
         {
             List<DatabaseTableForeignKeyColumnsWindows> result = new List<DatabaseTableForeignKeyColumnsWindows>();
-            foreach (SqlDatabaseTableBaseWindows t in _tables)
+            foreach (SqlDatabaseTableWindows t in _tables)
             {
                 DatabaseTableForeignKeyColumnsWindows foreignKeyColumns = new DatabaseTableForeignKeyColumnsWindows(t.TableName);
                 t.GetForeignKeyColumns().ToList().ForEach(c => foreignKeyColumns.ForeignKeys.Add(new ForeignKeyInfoWindows()

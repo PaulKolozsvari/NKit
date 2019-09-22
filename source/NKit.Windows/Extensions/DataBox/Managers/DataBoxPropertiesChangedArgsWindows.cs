@@ -18,7 +18,7 @@
         #region Constructors
 
         public DataBoxPropertiesChangedArgsWindows(
-            SqlDatabaseTableBaseWindows currentTable,
+            SqlDatabaseTableWindows currentTable,
             EntityCacheUniqueWindows currentEntityCache,
             List<string> hiddenProperties,
             List<string> extensionManagedProperties,
@@ -51,7 +51,7 @@
 
         #region Fields
 
-        private SqlDatabaseTableBaseWindows _currentTable;
+        private SqlDatabaseTableWindows _currentTable;
         private EntityCacheUniqueWindows _currentEntityCache;
         private List<string> _hiddenProperties;
         private List<string> _extensionManagedProperties;
@@ -69,7 +69,7 @@
 
         #region Properties
 
-        public SqlDatabaseTableBaseWindows CurrentTable { get { return _currentTable; } }
+        public SqlDatabaseTableWindows CurrentTable { get { return _currentTable; } }
 
         public EntityCacheUniqueWindows CurrentEntityCache { get { return _currentEntityCache; } }
 

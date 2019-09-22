@@ -15,6 +15,11 @@
     {
         #region Methods
 
+        public static bool IsTypeIsNullable(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
         public static DataTable GetDataTable(bool shapeColumnNames, Type entityType)
         {
             return GetDataTable(shapeColumnNames, entityType, null);

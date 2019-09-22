@@ -17,7 +17,7 @@
         #region Constructors
 
         public MenuClickArgsWindows(
-            SqlDatabaseTableBaseWindows currentTable,
+            SqlDatabaseTableWindows currentTable,
             object selectedEntity,
             bool dataBoxInUpdateMode)
         {
@@ -30,7 +30,7 @@
 
         #region Fields
 
-        protected SqlDatabaseTableBaseWindows _currentTable;
+        protected SqlDatabaseTableWindows _currentTable;
         protected object _selectedEntity;
         protected bool _dataBoxInUpdateMode;
 
@@ -38,7 +38,7 @@
 
         #region Properties
 
-        public SqlDatabaseTableBaseWindows CurrentTable
+        public SqlDatabaseTableWindows CurrentTable
         {
             get { return _currentTable; }
         }

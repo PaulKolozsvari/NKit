@@ -18,6 +18,8 @@
     </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +49,12 @@
     <Reference Include="DotRas, Version=1.3.5166.33431, Culture=neutral, PublicKeyToken=b378f04384b7892a, processorArchitecture=MSIL">
       <HintPath>..\packages\DotRas.for.Win2K.1.3.0\lib\net40\DotRas.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Ical.Net, Version=4.1.8.0, Culture=neutral, PublicKeyToken=65c0446cd019ea53, processorArchitecture=MSIL">
       <HintPath>..\packages\Ical.Net.4.1.11\lib\net46\Ical.Net.dll</HintPath>
     </Reference>
@@ -64,10 +72,19 @@
     <Reference Include="NodaTime, Version=2.0.2.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
       <HintPath>..\packages\NodaTime.2.0.2\lib\net45\NodaTime.dll</HintPath>
     </Reference>
+    <Reference Include="Pipelines.Sockets.Unofficial, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42ea0a778e13fbe2, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pipelines.Sockets.Unofficial.2.0.22\lib\net472\Pipelines.Sockets.Unofficial.dll</HintPath>
+    </Reference>
     <Reference Include="Renci.SshNet">
       <HintPath>..\Libraries\SSH.NET\Renci.SshNet.dll</HintPath>
     </Reference>
+    <Reference Include="StackExchange.Redis, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.2.0.601\lib\net472\StackExchange.Redis.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
@@ -76,11 +93,37 @@
     <Reference Include="System.Data.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.SQLite, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.111.0\lib\net46\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.EF6, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.111.0\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.111.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.111.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.PerformanceCounter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.PerformanceCounter.4.5.0\lib\net461\System.Diagnostics.PerformanceCounter.dll</HintPath>
+    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.IO.Pipelines, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Pipelines.4.5.1\lib\netstandard2.0\System.IO.Pipelines.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reflection, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reflection.4.1.0\lib\net462\System.Reflection.dll</HintPath>
       <Private>True</Private>
@@ -89,6 +132,9 @@
     <Reference Include="System.Reflection.Emit" />
     <Reference Include="System.Reflection.TypeExtensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reflection.TypeExtensions.4.1.0\lib\net462\System.Reflection.TypeExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -103,6 +149,12 @@
     </Reference>
     <Reference Include="System.ServiceModel.Web">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Threading.Channels, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.4.5.0\lib\netstandard2.0\System.Threading.Channels.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
@@ -132,42 +184,60 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DB\DatabaseWindows.cs" />
+    <Compile Include="Data\DB\DatabaseCacheWindows.cs" />
+    <Compile Include="Data\DB\DatabaseSchemaInfoTypeWindows.cs" />
+    <Compile Include="Data\DB\DatabaseTableWindowsWindows.cs" />
     <Compile Include="Data\DB\DatabaseTableColumnWindows.cs" />
     <Compile Include="Data\DB\DatabaseTableForeignKeyColumnsWindows.cs" />
     <Compile Include="Data\DB\DatabaseTableKeyColumnsWindows.cs" />
+    <Compile Include="Data\DB\DbmsWindows.cs" />
+    <Compile Include="Data\DB\ForeignKeyInfoWindows.cs" />
     <Compile Include="Data\DB\LINQ\LinqEntityContextWindows.cs" />
     <Compile Include="Data\DB\LINQ\Logging\LinqServerActionWindows.cs" />
     <Compile Include="Data\DB\LINQ\Logging\LinqServerErrorWindows.cs" />
     <Compile Include="Data\DB\LINQ\Logging\LinqUserWindows.cs" />
-    <Compile Include="Data\DB\SQLQuery\SqlQueryWindows.cs" />
-    <Compile Include="Data\DB\SQLServer\SqlCeDatabaseSchemaFileWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteConnectionExtensionsWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteDatabaseTableWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteDatabaseWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteDatabaseBaseWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteDatabaseSchemaFileWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteDatabaseTableGenericWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteDatabaseTableColumnWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteQueryWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteTypeConversionInfoWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteTypeConverterWindows.cs" />
+    <Compile Include="Data\DB\SQLQuery\QueryWindows.cs" />
+    <Compile Include="Data\DB\SQLQuery\WhereClauseColumnWindows.cs" />
+    <Compile Include="Data\DB\SQLQuery\WhereClauseComparisonOperatorWindows.cs" />
+    <Compile Include="Data\DB\SQLQuery\WhereClauseLogicalOperatorWindows.cs" />
     <Compile Include="Data\DB\SQLServer\SqlConnectionExtensionsWindows.cs" />
-    <Compile Include="Data\DB\DbmsWindows.cs" />
-    <Compile Include="Data\DB\ForeignKeyInfoWindows.cs" />
-    <Compile Include="Data\DB\SQLServer\SqlDatabaseTableBaseWindows.cs" />
+    <Compile Include="Data\DB\SQLServer\SqlDatabaseWindows.cs" />
+    <Compile Include="Data\DB\SQLServer\SqlDatabaseSchemaFileWindows.cs" />
+    <Compile Include="Data\DB\SQLServer\SqlDatabaseTableGenericWindows.cs" />
+    <Compile Include="Data\DB\SQLServer\SqlDatabaseTableWindows.cs" />
     <Compile Include="Data\DB\SQLServer\SqlDatabaseTableColumnWindows.cs" />
+    <Compile Include="Data\DB\SQLServer\SqlQueryWindows.cs" />
+    <Compile Include="Data\DB\SQLServer\SqlTypeConversionInfoWindows.cs" />
     <Compile Include="Data\DB\SQLServer\SqlTypeConverterWindows.cs" />
     <Compile Include="Data\EntityReaderWindows.cs" />
     <Compile Include="Data\EntityCacheUniqueWindows.cs" />
-    <Compile Include="Data\QueryRunners\ISqlQueryRunner.cs" />
-    <Compile Include="Data\ORM\OrmCodeGenerator.cs" />
-    <Compile Include="Data\ORM\OrmAssembly.cs" />
-    <Compile Include="Data\ORM\OrmAssemblySql.cs" />
+    <Compile Include="Data\ORM\OrmAssemblyWindows.cs" />
+    <Compile Include="Data\ORM\OrmAssemblySqlWindows.cs" />
+    <Compile Include="Data\ORM\OrmCodeGeneratorWindows.cs" />
+    <Compile Include="Data\ORM\OrmPropertyWindows.cs" />
     <Compile Include="Data\ORM\OrmTypeWindows.cs" />
+    <Compile Include="Data\QueryRunners\ISqlQueryRunnerWindows.cs" />
     <Compile Include="Data\DataHelperWindows.cs" />
     <Compile Include="Data\DataShaperWindows.cs" />
-    <Compile Include="Data\DB\DatabaseWindows.cs" />
-    <Compile Include="Data\DB\DatabaseCacheWindows.cs" />
-    <Compile Include="Data\DB\DatabaseTableWindows.cs" />
     <Compile Include="Data\DB\LINQ\LinqFunnelChangeResultWindows.cs" />
     <Compile Include="Data\DB\LINQ\LinqFunnelContextWindows.cs" />
     <Compile Include="Data\DB\LINQ\LinqFunnelSettingsWindows.cs" />
-    <Compile Include="Data\DB\SQLServer\SqlDatabaseWindows.cs" />
-    <Compile Include="Data\DB\SQLServer\SqlDatabaseTableWindows.cs" />
-    <Compile Include="Data\QueryRunners\SqlQueryRunnerConfig.cs" />
-    <Compile Include="Data\QueryRunners\SqlQueryRunnerDispatcher.cs" />
-    <Compile Include="Data\QueryRunners\SqlQueryRunnerInput.cs" />
-    <Compile Include="Data\QueryRunners\SqlQueryRunnerOutput.cs" />
+    <Compile Include="Data\QueryRunners\SqlQueryRunnerConfigWindows.cs" />
+    <Compile Include="Data\QueryRunners\SqlQueryRunnerDispatcherWindows.cs" />
+    <Compile Include="Data\QueryRunners\SqlQueryRunnerInputWindows.cs" />
+    <Compile Include="Data\QueryRunners\SqlQueryRunnerOutputWindows.cs" />
+    <Compile Include="Data\Redis\RedisClientWindows.cs" />
     <Compile Include="Utilities\GOCWindows.cs" />
     <Compile Include="Utilities\Jobs\DailyJobWindows.cs" />
     <Compile Include="Utilities\Jobs\IntervalJobWindows.cs" />
@@ -271,7 +341,6 @@
     <Compile Include="Utilities\Cab\CabInfoWindows.cs" />
     <Compile Include="Utilities\Cab\CabResourceInfoWindows.cs" />
     <Compile Include="Utilities\GdiHelperWindows.cs" />
-    <Compile Include="Data\DB\SQLServer\SqlTypeConversionInfoWindows.cs" />
     <Compile Include="Web\Client\Funnel\FunnelServiceResultHandlerWindows.cs" />
     <Compile Include="Web\Client\NToolkitWebService\NToolkitWebServiceClientWrapperWindows.cs" />
     <Compile Include="Web\Client\NToolkitWebService\NToolkitWebServiceFilterStringWindows.cs" />
@@ -429,6 +498,13 @@
     <Content Include="READ-ME.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

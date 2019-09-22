@@ -35,7 +35,7 @@
 
         private ExtensionManagedEntityCacheWindows _extensionManagedEntityCache;
 
-        private SqlDatabaseTableBaseWindows _currentTable;
+        private SqlDatabaseTableWindows _currentTable;
         private CustomDataGridViewWindows _currentGrid;
         private bool _filtersEnabled;
         private List<string> _hiddenProperties;
@@ -55,7 +55,7 @@
             get { return _extensionManagedEntityCache; }
         }
 
-        public SqlDatabaseTableBaseWindows CurrentTable
+        public SqlDatabaseTableWindows CurrentTable
         {
             get { return _currentTable; }
         }

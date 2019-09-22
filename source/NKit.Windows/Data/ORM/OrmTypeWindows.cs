@@ -1,4 +1,4 @@
-﻿namespace NKit.Data.ORM
+﻿namespace NKit.Toolkit.Data.ORM
 {
     #region Using Directives
 
@@ -8,17 +8,18 @@
     using System.Text;
     using System.Reflection.Emit;
     using System.Reflection;
+    using NKit.Data;
 
     #endregion //Using Directives
 
     /// <summary>
     /// http://olondono.blogspot.com/2008/02/creating-code-at-runtime.html
     /// </summary>
-    public class OrmTypeWindows : OrmType
+    public class OrmTypeWindows
     {
         #region Constructors
 
-        public OrmTypeWindows(string typeName, TypeBuilder typeBuilder) : base(typeName, typeBuilder)
+        public OrmTypeWindows(string typeName, TypeBuilder typeBuilder)
         {
             Initialize(typeName, typeBuilder);
         }
@@ -29,7 +30,7 @@
 
         protected string _typeName;
         protected TypeBuilder _typeBuilder;
-        protected EntityCacheGeneric<string, OrmProperty> _properties;
+        protected EntityCacheGeneric<string, OrmPropertyWindows> _properties;
         protected Type _dotNetType;
 
         #endregion //Fields
@@ -46,7 +47,7 @@
             get { return _typeBuilder; }
         }
 
-        public EntityCacheGeneric<string, OrmProperty> Properties
+        public EntityCacheGeneric<string, OrmPropertyWindows> Properties
         {
             get { return _properties; }
         }
@@ -92,27 +93,27 @@
             }
             _typeName = typeName;
             _typeBuilder = typeBuilder;
-            _properties = new EntityCacheGeneric<string, OrmProperty>();
+            _properties = new EntityCacheGeneric<string, OrmPropertyWindows>();
         }
 
-        public OrmProperty CreateOrmProperty(string propertyName, Type propertyType)
+        public OrmPropertyWindows CreateOrmProperty(string propertyName, Type propertyType)
         {
             return CreateOrmProperty(propertyName, propertyType, PropertyAttributes.HasDefault);
         }
 
-        public OrmProperty CreateOrmProperty(string propertyName, Type propertyType, PropertyAttributes propertyAttributes)
+        public OrmPropertyWindows CreateOrmProperty(string propertyName, Type propertyType, PropertyAttributes propertyAttributes)
         {
             if (_properties.Exists(propertyName))
             {
                 throw new ArgumentException(string.Format(
                     "{0} with {1} {2} already added to {3}.",
-                    typeof(OrmProperty).FullName,
-                    EntityReaderGeneric<OrmProperty>.GetPropertyName(p => p.PropertyName, false),
+                    typeof(OrmPropertyWindows).FullName,
+                    EntityReaderGeneric<OrmPropertyWindows>.GetPropertyName(p => p.PropertyName, false),
                     propertyName,
                     this.GetType().FullName));
             }
 
-            OrmProperty result = new OrmProperty(propertyName, propertyAttributes, propertyType);
+            OrmPropertyWindows result = new OrmPropertyWindows(propertyName, propertyAttributes, propertyType);
             FieldBuilder fieldBuilder = _typeBuilder.DefineField(result.FieldName, result.PropertyType, result.FieldAttributes);
             PropertyBuilder propertyBuilder = _typeBuilder.DefineProperty(result.PropertyName, result.PropertyAttributes, result.PropertyType, null);
             MethodAttributes methodAttributes = MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.SpecialName;

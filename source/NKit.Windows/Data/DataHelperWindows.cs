@@ -13,6 +13,7 @@
     using NKit.Data.CSV;
     using System.Diagnostics;
     using System.Data.SqlClient;
+    using System.Data.Common;
 
     #endregion //Using Directives
 
@@ -20,7 +21,7 @@
     {
         #region Methods
 
-        public static List<object> ParseReaderToEntities(SqlDataReader reader, Type entityType)
+        public static List<object> ParseReaderToEntities(DbDataReader reader, Type entityType)
         {
             List<object> result = new List<object>();
             if (reader.HasRows)
@@ -62,7 +63,7 @@
             return result;
         }
 
-        public static List<E> ParseReaderToEntities<E>(SqlDataReader reader) where E : class
+        public static List<E> ParseReaderToEntities<E>(DbDataReader reader) where E : class
         {
             List<object> objects = ParseReaderToEntities(reader, typeof(E));
             List<E> result = new List<E>();

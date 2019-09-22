@@ -10,7 +10,6 @@
     using NKit.Data;
     using System.Data;
     using NKit.Data.DB;
-    using NKit.Data.ORM;
     using System.Reflection.Emit;
     using NKit.Utilities;
     using NKit.Utilities.Logging;
@@ -93,7 +92,7 @@
         }
 
         public T GetSqlSchema<T>(
-            DatabaseSchemaInfoType schemaInfoType,
+            DatabaseSchemaInfoTypeWindows schemaInfoType,
             string filters,
             out string rawOutput,
             bool wrapWebException)
@@ -110,7 +109,7 @@
         }
 
         public T GetSqlSchema<T>(
-            DatabaseSchemaInfoType schemaInfoType, 
+            DatabaseSchemaInfoTypeWindows schemaInfoType, 
             string filters, 
             out string rawOutput,
             out HttpStatusCode statusCode,
@@ -146,15 +145,15 @@
             HttpStatusCode statusCode;
             string statusDescription = null;
 
-            result.Name = GetSqlSchema<string>(DatabaseSchemaInfoType.DatabaseName, null, out rawOutput, out statusCode, out statusDescription, wrapWebException);
-            DataTable tablesSchema = GetSqlSchema<DataTable>(DatabaseSchemaInfoType.Tables, null, out rawOutput, out statusCode, out statusDescription, wrapWebException);
+            result.Name = GetSqlSchema<string>(DatabaseSchemaInfoTypeWindows.DatabaseName, null, out rawOutput, out statusCode, out statusDescription, wrapWebException);
+            DataTable tablesSchema = GetSqlSchema<DataTable>(DatabaseSchemaInfoTypeWindows.Tables, null, out rawOutput, out statusCode, out statusDescription, wrapWebException);
             Dictionary<string, DatabaseTableKeyColumnsWindows> tablesKeyColumns = new Dictionary<string, DatabaseTableKeyColumnsWindows>(); //Primary keys of all the tables.
-            GetSqlSchema<List<DatabaseTableKeyColumnsWindows>>(DatabaseSchemaInfoType.TableKeyColumns, null, out rawOutput, out statusCode, out statusDescription, wrapWebException).ForEach(p => tablesKeyColumns.Add(p.TableName, p));
+            GetSqlSchema<List<DatabaseTableKeyColumnsWindows>>(DatabaseSchemaInfoTypeWindows.TableKeyColumns, null, out rawOutput, out statusCode, out statusDescription, wrapWebException).ForEach(p => tablesKeyColumns.Add(p.TableName, p));
             Dictionary<string, DatabaseTableForeignKeyColumnsWindows> tablesForeignKeyColumns = new Dictionary<string, DatabaseTableForeignKeyColumnsWindows>(); //Foreign keys of all tables.
-            GetSqlSchema<List<DatabaseTableForeignKeyColumnsWindows>>(DatabaseSchemaInfoType.TableForeignKeyColumns, null, out rawOutput, out statusCode, out statusDescription, wrapWebException).ForEach(p => tablesForeignKeyColumns.Add(p.TableName, p));
+            GetSqlSchema<List<DatabaseTableForeignKeyColumnsWindows>>(DatabaseSchemaInfoTypeWindows.TableForeignKeyColumns, null, out rawOutput, out statusCode, out statusDescription, wrapWebException).ForEach(p => tablesForeignKeyColumns.Add(p.TableName, p));
             foreach (DataRow t in tablesSchema.Rows)
             {
-                SqlDatabaseTableBaseWindows table = new SqlDatabaseTableBaseWindows(t);
+                SqlDatabaseTableWindows table = new SqlDatabaseTableWindows(t);
                 if (table.IsSystemTable)
                 {
                     continue;
@@ -169,11 +168,11 @@
                 {
                     throw new Exception(string.Format(
                         "{0} with name {1} already added.",
-                        typeof(SqlDatabaseTableBaseWindows).FullName,
+                        typeof(SqlDatabaseTableWindows).FullName,
                         table.TableName));
                 }
                 result.AddTable(table);
-                DataTable columnsSchema = GetSqlSchema<DataTable>(DatabaseSchemaInfoType.Columns, table.TableName, out rawOutput, out statusCode, out statusDescription, wrapWebException);
+                DataTable columnsSchema = GetSqlSchema<DataTable>(DatabaseSchemaInfoTypeWindows.Columns, table.TableName, out rawOutput, out statusCode, out statusDescription, wrapWebException);
                 table.PopulateColumnsFromSchema(columnsSchema);
                 foreach (string keyColumn in tableKeys.KeyNames)
                 {
@@ -206,9 +205,9 @@
 
         private void PopulateSqlDatabaseChildrenTables(SqlDatabaseWindows database)
         {
-            foreach (SqlDatabaseTableBaseWindows pkTable in database.Tables)
+            foreach (SqlDatabaseTableWindows pkTable in database.Tables)
             {
-                foreach (SqlDatabaseTableBaseWindows fkTable in database.Tables) //Find children tables i.e. tables that have foreign keys mapped this table's primary keys'.
+                foreach (SqlDatabaseTableWindows fkTable in database.Tables) //Find children tables i.e. tables that have foreign keys mapped this table's primary keys'.
                 {
                     EntityCacheGeneric<string, ForeignKeyInfoWindows> mappedForeignKeys = new EntityCacheGeneric<string, ForeignKeyInfoWindows>();
                     fkTable.GetForeignKeyColumns().Where(c => c.ParentTableName == pkTable.TableName).ToList().ForEach(fk => mappedForeignKeys.Add(fk.ColumnName, new ForeignKeyInfoWindows()

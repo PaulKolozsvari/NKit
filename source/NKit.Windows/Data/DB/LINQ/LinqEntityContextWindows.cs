@@ -877,9 +877,9 @@
              return result;
         }
 
-        public List<SqlDatabaseTableBaseWindows> GetSqlDatabaseTableNames()
+        public List<SqlDatabaseTableWindows> GetSqlDatabaseTableNames()
         {
-            List<SqlDatabaseTableBaseWindows> result = new List<SqlDatabaseTableBaseWindows>();
+            List<SqlDatabaseTableWindows> result = new List<SqlDatabaseTableWindows>();
             using (DB.Connection)
             {
                 if (DB.Connection.State != ConnectionState.Open)
@@ -890,7 +890,7 @@
                 DB.Connection.Close();
                 foreach (DataRow schemaRow in schemaTable.Rows)
                 {
-                    SqlDatabaseTableBaseWindows table = new SqlDatabaseTableBaseWindows(schemaRow);
+                    SqlDatabaseTableWindows table = new SqlDatabaseTableWindows(schemaRow);
                     result.Add(table);
                 }
             }

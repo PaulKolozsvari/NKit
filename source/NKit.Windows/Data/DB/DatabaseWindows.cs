@@ -7,15 +7,13 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Reflection.Emit;
-    using NKit.Data.ORM;
     using System.Data.Common;
     using NKit.Data.DB.SQLQuery;
     using NKit.Data.DB.SQLServer;
     using System.Data.SqlClient;
     using System.Data;
     using System.IO;
-    using NKit.Utilities;
-    using NKit.Utilities.Logging;
+    using NKit.Toolkit.Data.ORM;
 
     #endregion //Using Directives
 
@@ -59,7 +57,7 @@
 
         public DatabaseWindows()
         {
-            _tables = new EntityCacheGeneric<string, DatabaseTableWindows>();
+            _tables = new EntityCacheGeneric<string, DatabaseTableWindowsWindows>();
             _name = this.GetType().Name;
         }
 
@@ -120,8 +118,8 @@
 
         protected string _name;
         protected string _connectionString;
-        protected EntityCacheGeneric<string, DatabaseTableWindows> _tables;
-        protected OrmAssembly _ormAssembly;
+        protected EntityCacheGeneric<string, DatabaseTableWindowsWindows> _tables;
+        protected OrmAssemblyWindows _ormAssembly;
 
         #endregion //Fields
 
@@ -139,7 +137,7 @@
             set { _connectionString = value; }
         }
 
-        public EntityCacheGeneric<string, DatabaseTableWindows> Tables
+        public EntityCacheGeneric<string, DatabaseTableWindowsWindows> Tables
         {
             get { return _tables; }
             set { _tables = value; }
@@ -149,7 +147,7 @@
 
         #region Methods
 
-        public OrmAssembly GetOrmAssembly()
+        public OrmAssemblyWindows GetOrmAssembly()
         {
             return _ormAssembly;
         }
@@ -159,37 +157,13 @@
             return _name;
         }
 
-        public void Initialize(
+        public abstract void Initialize(
             string connectionString,
             bool populateTablesFromSchema,
             bool createOrmAssembly,
             bool saveOrmAssembly,
             string ormAssemblyOutputDirectory,
-            bool overrideNameWithDatabaseNameFromSchema)
-        {
-            _tables = new EntityCacheGeneric<string, DatabaseTableWindows>();
-            _connectionString = connectionString;
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                PublishFeedback(string.Format("Opening connection to {0} ...", _connectionString));
-                connection.Open();
-                if (overrideNameWithDatabaseNameFromSchema)
-                {
-                    PublishFeedback("Getting DB name from schema ...");
-                    _name = GetDatabaseNameFromSchema(connection, false);
-                }
-                if (populateTablesFromSchema)
-                {
-                    PublishFeedback("Populating DB tables from schema ...");
-                    PopulateTablesFromSchema(true, connection, false);
-                }
-                if (createOrmAssembly)
-                {
-                    PublishFeedback("Generating ORM assembly ...");
-                    CreateOrmAssembly(saveOrmAssembly, ormAssemblyOutputDirectory);
-                }
-            }
-        }
+            bool overrideNameWithDatabaseNameFromSchema);
 
         protected void PublishFeedback(string feedback)
         {
@@ -216,12 +190,12 @@
             _tables.Clear();
         } 
 
-        public List<DatabaseTableWindows> GetTablesMentionedInQuery(SqlQueryWindows query)
+        public List<DatabaseTableWindowsWindows> GetTablesMentionedInQuery(QueryWindows query)
         {
-            List<DatabaseTableWindows> result = new List<DatabaseTableWindows>();
+            List<DatabaseTableWindowsWindows> result = new List<DatabaseTableWindowsWindows>();
             foreach (string t in query.TableNamesInQuery)
             {
-                DatabaseTableWindows table = _tables[t];
+                DatabaseTableWindowsWindows table = _tables[t];
                 if (table == null)
                 {
                     throw new NullReferenceException(string.Format(
@@ -235,18 +209,18 @@
             return result;
         }
 
-        public virtual DatabaseTableWindows GetDatabaseTable(Type entityType)
+        public virtual DatabaseTableWindowsWindows GetDatabaseTable(Type entityType)
         {
             return GetDatabaseTable(entityType.Name);
         }
 
-        public virtual DatabaseTableWindows GetDatabaseTable(string tableName)
+        public virtual DatabaseTableWindowsWindows GetDatabaseTable(string tableName)
         {
             if (!_tables.Exists(tableName))
             {
                 return null;
             }
-            return (DatabaseTableWindows)_tables[tableName];
+            return (DatabaseTableWindowsWindows)_tables[tableName];
         }
 
         public void CreateOrmAssembly(
@@ -254,11 +228,11 @@
             string ormAssemblyOutputDirectory)
         {
             string assemblyFileName = string.Format("{0}.dll", this.Name);
-            _ormAssembly = new OrmAssembly(
+            _ormAssembly = new OrmAssemblyWindows(
                 this.Name,
                 assemblyFileName,
                 AssemblyBuilderAccess.RunAndSave);
-            foreach (DatabaseTableWindows table in _tables)
+            foreach (DatabaseTableWindowsWindows table in _tables)
             {
                 OrmTypeWindows ormType = _ormAssembly.CreateOrmType(table.TableName, true);
                 PublishFeedback(string.Format("Created type {0}.", ormType.TypeName));
@@ -275,6 +249,61 @@
                 return;
             }
             _ormAssembly.Save(ormAssemblyOutputDirectory);
+        }
+
+        public virtual List<object> Query(
+            string columnName,
+            object columnValue,
+            Type entityType,
+            bool disposeConnectionAfterExecute,
+            DbConnection connection,
+            DbTransaction transaction)
+        {
+            return Query(columnName, columnValue, entityType.Name, entityType, disposeConnectionAfterExecute, connection, transaction);
+        }
+
+        public abstract List<object> Query(string sqlQueryString,
+            OrmAssemblySqlWindows ormCollectibleAssembly,
+            string typeName,
+            out OrmTypeWindows ormCollecibleType);
+
+        public abstract List<object> Query(
+            QueryWindows query, 
+            Type entityType);
+
+        public abstract List<object> Query(
+            QueryWindows query,
+            Type entityType,
+            bool disposeConnectionAfterExecute,
+            DbConnection connection,
+            DbTransaction transaction);
+
+        public virtual List<object> Query(
+            string columnName,
+            object columnValue,
+            string tableName,
+            Type entityType,
+            bool disposeConnectionAfterExecute,
+            DbConnection connection,
+            DbTransaction transaction)
+        {
+            DatabaseTableWindowsWindows table = GetDatabaseTable(tableName);
+            if (table == null)
+            {
+                throw new NullReferenceException(string.Format(
+                    "Could not find {0} with name {1}.",
+                    typeof(DatabaseTableWindowsWindows).FullName,
+                    tableName));
+            }
+            return table.Query(columnName, columnValue, entityType, disposeConnectionAfterExecute, connection, transaction);
+        }
+
+        public List<E> Query<E>(QueryWindows query) where E : class
+        {
+            List<object> objects = Query(query, typeof(E));
+            List<E> result = new List<E>();
+            objects.ForEach(o => result.Add((E)o));
+            return result;
         }
 
         #endregion //Methods

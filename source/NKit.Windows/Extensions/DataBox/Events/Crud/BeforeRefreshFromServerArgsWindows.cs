@@ -15,7 +15,7 @@
     {
         #region Constructors
 
-        public BeforeRefreshFromServerArgsWindows(bool presentLoadDataBoxForm, SqlDatabaseTableBaseWindows selectedTable)
+        public BeforeRefreshFromServerArgsWindows(bool presentLoadDataBoxForm, SqlDatabaseTableWindows selectedTable)
         {
             _presentLoadDataBoxForm = presentLoadDataBoxForm;
             _selectedTable = selectedTable;
@@ -26,7 +26,7 @@
         #region Fields
 
         protected bool _presentLoadDataBoxForm;
-        protected SqlDatabaseTableBaseWindows _selectedTable;
+        protected SqlDatabaseTableWindows _selectedTable;
 
         #endregion //Fields
 
@@ -37,7 +37,7 @@
             get { return _presentLoadDataBoxForm; }
         }
 
-        public SqlDatabaseTableBaseWindows SelectedTable
+        public SqlDatabaseTableWindows SelectedTable
         {
             get { return _selectedTable; }
         }

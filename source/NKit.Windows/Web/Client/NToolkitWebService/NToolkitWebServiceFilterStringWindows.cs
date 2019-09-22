@@ -14,7 +14,7 @@
     {
         #region Constructors
 
-        public NKitWebServiceFilterStringWindows(string tableName, List<WhereClauseColumn> filters)
+        public NKitWebServiceFilterStringWindows(string tableName, List<WhereClauseColumnWindows> filters)
         {
             StringBuilder filterString = new StringBuilder(string.Format("sqltable/{0}", tableName));
             if (filters != null && filters.Count > 0)
@@ -22,7 +22,7 @@
                 filterString.Append("/");
                 for (int i = 0; i < filters.Count; i++)
                 {
-                    WhereClauseColumn w = filters[i];
+                    WhereClauseColumnWindows w = filters[i];
                     filterString.AppendFormat(
                         "{0}_{1}_{2}",
                         w.ColumnName,
