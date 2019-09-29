@@ -1,1 +1,3 @@
-*   Added PropertyExists method overload on the EntityReader class that allows passing in the entity type not just the entity object.
+*   Added ability for Sqlite and Sql server where clause column wrappers to allow querying by a LIKE operator.
+*   Fixed Sqlite and Sql server tables to allow creating table by classes that have properties withthat are lists.
+*   Added method on Sqlite database wrapper class allowing to query whether a table exists in the database.
