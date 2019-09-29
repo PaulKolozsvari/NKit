@@ -57,7 +57,7 @@
 
         public DatabaseWindows()
         {
-            _tables = new EntityCacheGeneric<string, DatabaseTableWindowsWindows>();
+            _tables = new EntityCacheGeneric<string, DatabaseTableWindows>();
             _name = this.GetType().Name;
         }
 
@@ -118,7 +118,7 @@
 
         protected string _name;
         protected string _connectionString;
-        protected EntityCacheGeneric<string, DatabaseTableWindowsWindows> _tables;
+        protected EntityCacheGeneric<string, DatabaseTableWindows> _tables;
         protected OrmAssemblyWindows _ormAssembly;
 
         #endregion //Fields
@@ -137,7 +137,7 @@
             set { _connectionString = value; }
         }
 
-        public EntityCacheGeneric<string, DatabaseTableWindowsWindows> Tables
+        public EntityCacheGeneric<string, DatabaseTableWindows> Tables
         {
             get { return _tables; }
             set { _tables = value; }
@@ -190,12 +190,12 @@
             _tables.Clear();
         } 
 
-        public List<DatabaseTableWindowsWindows> GetTablesMentionedInQuery(QueryWindows query)
+        public List<DatabaseTableWindows> GetTablesMentionedInQuery(QueryWindows query)
         {
-            List<DatabaseTableWindowsWindows> result = new List<DatabaseTableWindowsWindows>();
+            List<DatabaseTableWindows> result = new List<DatabaseTableWindows>();
             foreach (string t in query.TableNamesInQuery)
             {
-                DatabaseTableWindowsWindows table = _tables[t];
+                DatabaseTableWindows table = _tables[t];
                 if (table == null)
                 {
                     throw new NullReferenceException(string.Format(
@@ -209,18 +209,18 @@
             return result;
         }
 
-        public virtual DatabaseTableWindowsWindows GetDatabaseTable(Type entityType)
+        public virtual DatabaseTableWindows GetDatabaseTable(Type entityType)
         {
             return GetDatabaseTable(entityType.Name);
         }
 
-        public virtual DatabaseTableWindowsWindows GetDatabaseTable(string tableName)
+        public virtual DatabaseTableWindows GetDatabaseTable(string tableName)
         {
             if (!_tables.Exists(tableName))
             {
                 return null;
             }
-            return (DatabaseTableWindowsWindows)_tables[tableName];
+            return (DatabaseTableWindows)_tables[tableName];
         }
 
         public void CreateOrmAssembly(
@@ -232,7 +232,7 @@
                 this.Name,
                 assemblyFileName,
                 AssemblyBuilderAccess.RunAndSave);
-            foreach (DatabaseTableWindowsWindows table in _tables)
+            foreach (DatabaseTableWindows table in _tables)
             {
                 OrmTypeWindows ormType = _ormAssembly.CreateOrmType(table.TableName, true);
                 PublishFeedback(string.Format("Created type {0}.", ormType.TypeName));
@@ -287,12 +287,12 @@
             DbConnection connection,
             DbTransaction transaction)
         {
-            DatabaseTableWindowsWindows table = GetDatabaseTable(tableName);
+            DatabaseTableWindows table = GetDatabaseTable(tableName);
             if (table == null)
             {
                 throw new NullReferenceException(string.Format(
                     "Could not find {0} with name {1}.",
-                    typeof(DatabaseTableWindowsWindows).FullName,
+                    typeof(DatabaseTableWindows).FullName,
                     tableName));
             }
             return table.Query(columnName, columnValue, entityType, disposeConnectionAfterExecute, connection, transaction);

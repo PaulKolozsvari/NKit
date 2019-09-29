@@ -26,7 +26,7 @@
                     typeof(SqlDatabaseTableColumnWindows),
                     typeof(DatabaseCacheWindows), 
                     typeof(DatabaseWindows), 
-                    typeof(DatabaseTableWindowsWindows), 
+                    typeof(DatabaseTableWindows), 
                     typeof(DatabaseTableColumnWindows)
                 },
                 filePath);
@@ -46,7 +46,7 @@
                     typeof(SqlDatabaseTableColumnWindows),
                     typeof(DatabaseCacheWindows), 
                     typeof(DatabaseWindows), 
-                    typeof(DatabaseTableWindowsWindows), 
+                    typeof(DatabaseTableWindows), 
                     typeof(DatabaseTableColumnWindows)
                 },
                 filePath);

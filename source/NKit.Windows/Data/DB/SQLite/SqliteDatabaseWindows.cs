@@ -83,7 +83,7 @@
             string ormAssemblyOutputDirectory,
             bool overrideNameWithDatabaseNameFromSchema)
         {
-            _tables = new EntityCacheGeneric<string, DatabaseTableWindowsWindows>();
+            _tables = new EntityCacheGeneric<string, DatabaseTableWindows>();
             _connectionString = connectionString;
             using (SQLiteConnection connection = new SQLiteConnection(_connectionString))
             {
@@ -130,7 +130,7 @@
             return result;
         }
 
-        public void AddTable(DatabaseTableWindowsWindows table)
+        public void AddTable(DatabaseTableWindows table)
         {
             _tables.Add(table);
         }
@@ -200,7 +200,7 @@
 
         public override List<object> Query(QueryWindows query, Type entityType)
         {
-            List<DatabaseTableWindowsWindows> tablesMentioned = GetTablesMentionedInQuery(query);
+            List<DatabaseTableWindows> tablesMentioned = GetTablesMentionedInQuery(query);
             List<object> result = null;
             using (SQLiteConnection connection = new SQLiteConnection(_connectionString))
             {
@@ -228,7 +228,7 @@
             List<object> result = null;
             try
             {
-                List<DatabaseTableWindowsWindows> tablesMentioned = GetTablesMentionedInQuery(query);
+                List<DatabaseTableWindows> tablesMentioned = GetTablesMentionedInQuery(query);
                 if (connection == null)
                 {
                     connection = new SQLiteConnection(_connectionString);
@@ -275,7 +275,7 @@
             {
                 throw new NullReferenceException(string.Format(
                     "Could not find {0} with name {1}.",
-                    typeof(DatabaseTableWindowsWindows).FullName,
+                    typeof(DatabaseTableWindows).FullName,
                     typeof(E).Name));
             }
             List<object> queryResults = Query(columnName, columnValue, typeof(E), disposeConnectionAfterExecute, connection, transaction);
@@ -297,7 +297,7 @@
             {
                 throw new NullReferenceException(string.Format(
                     "Could not find {0} with name {1}.",
-                    typeof(DatabaseTableWindowsWindows).FullName,
+                    typeof(DatabaseTableWindows).FullName,
                     typeof(E).Name));
             }
             List<object> queryResults = Query(columnName, columnValue, tableName, typeof(E), disposeConnectionAfterExecute, connection, transaction);
@@ -309,7 +309,7 @@
         public int ExecuteNonQuery(QueryWindows query)
         {
             int result = -1;
-            List<DatabaseTableWindowsWindows> tablesMentioned = GetTablesMentionedInQuery(query);
+            List<DatabaseTableWindows> tablesMentioned = GetTablesMentionedInQuery(query);
             using (SQLiteConnection connection = new SQLiteConnection(_connectionString))
             {
                 connection.Open();
@@ -456,9 +456,9 @@
 
         private void PopulateChildrenTables()
         {
-            foreach (DatabaseTableWindowsWindows pkTable in _tables)
+            foreach (DatabaseTableWindows pkTable in _tables)
             {
-                foreach (DatabaseTableWindowsWindows fkTable in _tables) //Find children tables i.e. tables that have foreign keys mapped this table's primary keys'.
+                foreach (DatabaseTableWindows fkTable in _tables) //Find children tables i.e. tables that have foreign keys mapped this table's primary keys'.
                 {
                     EntityCacheGeneric<string, ForeignKeyInfoWindows> mappedForeignKeys = new EntityCacheGeneric<string, ForeignKeyInfoWindows>();
                     fkTable.GetForeignKeyColumns().Where(c => c.ParentTableName == pkTable.TableName).ToList().ForEach(fk => mappedForeignKeys.Add(fk.ColumnName, new ForeignKeyInfoWindows()

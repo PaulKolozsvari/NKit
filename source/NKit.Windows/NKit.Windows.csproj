@@ -187,7 +187,7 @@
     <Compile Include="Data\DB\DatabaseWindows.cs" />
     <Compile Include="Data\DB\DatabaseCacheWindows.cs" />
     <Compile Include="Data\DB\DatabaseSchemaInfoTypeWindows.cs" />
-    <Compile Include="Data\DB\DatabaseTableWindowsWindows.cs" />
+    <Compile Include="Data\DB\DatabaseTableWindows.cs" />
     <Compile Include="Data\DB\DatabaseTableColumnWindows.cs" />
     <Compile Include="Data\DB\DatabaseTableForeignKeyColumnsWindows.cs" />
     <Compile Include="Data\DB\DatabaseTableKeyColumnsWindows.cs" />

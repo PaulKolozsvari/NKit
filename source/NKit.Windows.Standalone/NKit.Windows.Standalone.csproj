@@ -474,8 +474,8 @@
     <Compile Include="..\NKit.Windows\Data\DB\DatabaseTableKeyColumnsWindows.cs">
       <Link>Data\DB\DatabaseTableKeyColumnsWindows.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Windows\Data\DB\DatabaseTableWindowsWindows.cs">
-      <Link>Data\DB\DatabaseTableWindowsWindows.cs</Link>
+    <Compile Include="..\NKit.Windows\Data\DB\DatabaseTableWindows.cs">
+      <Link>Data\DB\DatabaseTableWindows.cs</Link>
     </Compile>
     <Compile Include="..\NKit.Windows\Data\DB\DatabaseWindows.cs">
       <Link>Data\DB\DatabaseWindows.cs</Link>

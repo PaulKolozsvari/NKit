@@ -13,18 +13,18 @@
     #endregion //Using Directives
 
     [Serializable]
-    public abstract class DatabaseTableWindowsWindows
+    public abstract class DatabaseTableWindows
     {
         #region Constructors
 
-        public DatabaseTableWindowsWindows()
+        public DatabaseTableWindows()
         {
             _columns = new EntityCacheGeneric<string, DatabaseTableColumnWindows>();
             _tableName = this.GetType().Name;
             _childrenTables = new EntityCacheGeneric<string, EntityCacheGeneric<string, ForeignKeyInfoWindows>>();
         }
 
-        public DatabaseTableWindowsWindows(string tableName, string connectionString)
+        public DatabaseTableWindows(string tableName, string connectionString)
         {
             _columns = new EntityCacheGeneric<string, DatabaseTableColumnWindows>();
             _tableName = tableName;
@@ -32,7 +32,7 @@
             _childrenTables = new EntityCacheGeneric<string, EntityCacheGeneric<string, ForeignKeyInfoWindows>>();
         }
 
-        public DatabaseTableWindowsWindows(DataRow schemaRow)
+        public DatabaseTableWindows(DataRow schemaRow)
         {
             _columns = new EntityCacheGeneric<string, DatabaseTableColumnWindows>();
             PopulateFromSchema(schemaRow);
@@ -43,7 +43,7 @@
         /// 
         /// </summary>
         /// <param name="schemaRow">The DataRow retrieved from a database schema containing information about this column.</param>
-        public DatabaseTableWindowsWindows(DataRow schemaRow, string connectionString)
+        public DatabaseTableWindows(DataRow schemaRow, string connectionString)
         {
             _columns = new EntityCacheGeneric<string, DatabaseTableColumnWindows>();
             PopulateFromSchema(schemaRow);
@@ -124,6 +124,22 @@
         {
             EntityCacheGeneric<string, DatabaseTableColumnWindows> result = new EntityCacheGeneric<string, DatabaseTableColumnWindows>();
             _columns.Where(c => c.IsForeignKey).ToList().ForEach(c => result.Add(c.ColumnName, c));
+            return result;
+        }
+
+        public virtual List<E> Query<E>(
+            string columnName,
+            object columnValue,
+            bool disposeConnectionAfterExecute,
+            DbConnection connection,
+            DbTransaction transaction) where E : class
+        {
+            List<object> entities = Query(columnName, columnValue, typeof(E), disposeConnectionAfterExecute, connection, transaction);
+            List<E> result = new List<E>();
+            foreach (object o in entities)
+            {
+                result.Add((E)o);
+            }
             return result;
         }
 

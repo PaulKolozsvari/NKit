@@ -26,7 +26,7 @@
                     typeof(SqliteDatabaseTableColumnWindows),
                     typeof(DatabaseCacheWindows),
                     typeof(DatabaseWindows),
-                    typeof(DatabaseTableWindowsWindows),
+                    typeof(DatabaseTableWindows),
                     typeof(DatabaseTableColumnWindows),
 					typeof(DatabaseTableForeignKeyColumnsWindows),
 					typeof(DatabaseTableKeyColumnsWindows),
@@ -52,7 +52,7 @@
                     typeof(SqliteDatabaseTableColumnWindows),
                     typeof(DatabaseCacheWindows),
                     typeof(DatabaseWindows), 
-                    typeof(DatabaseTableWindowsWindows), 
+                    typeof(DatabaseTableWindows), 
                     typeof(DatabaseTableColumnWindows)
                 },
                 filePath);

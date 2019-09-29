@@ -15,7 +15,7 @@
     #endregion //Using Directives
 
     [Serializable]
-    public class SqlDatabaseTableWindows : DatabaseTableWindowsWindows
+    public class SqlDatabaseTableWindows : DatabaseTableWindows
     {
         #region Constructors
 
@@ -876,7 +876,8 @@
             foreach (PropertyInfo p in entityType.GetProperties())
             {
                 if (p.PropertyType == typeof(IntPtr) ||
-                    p.PropertyType == typeof(UIntPtr))
+                    p.PropertyType == typeof(UIntPtr) ||
+                    (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(List<>)))
                 {
                     continue;
                 }
