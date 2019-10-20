@@ -549,6 +549,12 @@
     <Compile Include="..\NKit.Windows\Data\DB\SQLQuery\WhereClauseLogicalOperatorWindows.cs">
       <Link>Data\DB\SQLQuery\WhereClauseLogicalOperatorWindows.cs</Link>
     </Compile>
+    <Compile Include="..\NKit.Windows\Data\DB\SQLQuery\WhereClauseParanthesisWindows.cs">
+      <Link>Data\DB\SQLQuery\WhereClauseParanthesisWindows.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Windows\Data\DB\SQLQuery\WhereClauseWindows.cs">
+      <Link>Data\DB\SQLQuery\WhereClauseWindows.cs</Link>
+    </Compile>
     <Compile Include="..\NKit.Windows\Data\DB\SQLServer\SqlConnectionExtensionsWindows.cs">
       <Link>Data\DB\SQLServer\SqlConnectionExtensionsWindows.cs</Link>
     </Compile>
