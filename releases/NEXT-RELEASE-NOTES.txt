@@ -3,3 +3,4 @@
 *   Added method on Sqlite database wrapper class allowing to query whether a table exists in the database.
 *   Added method on the Sql Server and Sqlite database table wrappers to be able to generate sql drop table script.
 *   Email out parameters on the EmailClient to return the log message that has been logged and propogated those changes on the upper layers in the Exception Handlers.
+*   Added GetWindowsDomainAndMachineName and GetWindowsMachineDomainName in InformationWindows class to get the real domain name not the user's domain name.

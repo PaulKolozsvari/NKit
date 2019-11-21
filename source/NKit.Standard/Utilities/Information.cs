@@ -55,7 +55,7 @@
             return result;
         }
 
-        public static string GetDomainAndMachineName()
+        public static string GetUserDomainAndMachineName()
         {
             return string.Format("{0}.{1}", Environment.UserDomainName, Environment.MachineName);
         }
