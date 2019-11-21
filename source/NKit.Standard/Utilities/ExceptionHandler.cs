@@ -40,23 +40,30 @@
 
         public static bool HandleException(Exception exception)
         {
-            return HandleException(exception, null, true);
+            return HandleException(exception, out string emailErrorMessage, out string emailLogErrorMessage);
         }
 
-        public static bool HandleException(Exception exception, bool emailException)
+        public static bool HandleException(Exception exception, out string emailErrorMessage, out string emailLogMessageText)
         {
-            return HandleException(exception, null, emailException);
+            return HandleException(exception, null, true, out emailErrorMessage, out emailLogMessageText);
         }
 
-        public static bool HandleException(Exception exception, string eventDetailsMessage)
+        public static bool HandleException(Exception exception, bool emailException, out string emailErrorMessage, out string emailLogMessageText)
         {
-            return HandleException(exception, eventDetailsMessage, true);
+            return HandleException(exception, null, emailException, out emailErrorMessage, out emailLogMessageText);
         }
 
-        public static bool HandleException(Exception exception, string eventDetailsMessage, bool emailException)
+        public static bool HandleException(Exception exception, string eventDetailsMessage, out string emailErrorMessage, out string emailLogMessageText)
+        {
+            return HandleException(exception, eventDetailsMessage, true, out emailErrorMessage, out emailLogMessageText);
+        }
+
+        public static bool HandleException(Exception exception, string eventDetailsMessage, bool emailException, out string emailErrorMessage, out string emailLogMessageText)
         {
             try
             {
+                emailErrorMessage = string.Empty;
+                emailLogMessageText = string.Empty;
                 bool closeApplication = false;
                 if (exception == null)
                 {
@@ -80,7 +87,7 @@
                             EntityReaderGeneric<GOC>.GetPropertyName(p => p.SendEmailOnException, false),
                             EntityReaderGeneric<GOC>.GetPropertyName(p => p.EmailClient, false)));
                     }
-                    GOC.Instance.EmailClient.SendExceptionEmailNotification(exception, out string errorMessage, GOC.Instance.AppendHostNameToExceptionEmails);
+                    GOC.Instance.EmailClient.SendExceptionEmailNotification(exception, out emailErrorMessage, out emailLogMessageText, GOC.Instance.AppendHostNameToExceptionEmails);
                 }
                 return closeApplication;
             }
@@ -89,6 +96,8 @@
                 Exception wrappedException = new Exception(ex.Message, exception);
                 Console.WriteLine(LogError.GetErrorMessageFromException(new Exception(ex.Message, exception), eventDetailsMessage));
                 GOC.Instance.Logger.LogMessageToFile(new LogError(wrappedException, eventDetailsMessage, LoggingLevel.Minimum));
+                emailErrorMessage = string.Empty;
+                emailLogMessageText = string.Empty;
                 return true;
             }
         }
