@@ -21,8 +21,9 @@
     {
         #region Methods
 
-        public static List<object> ParseReaderToEntities(DbDataReader reader, Type entityType)
+        public static List<object> ParseReaderToEntities(DbDataReader reader, Type entityType, string propertyNameFilter)
         {
+            propertyNameFilter = propertyNameFilter ?? string.Empty;
             List<object> result = new List<object>();
             if (reader.HasRows)
             {
@@ -31,7 +32,8 @@
                     object e = Activator.CreateInstance(entityType);
                     foreach (PropertyInfo p in entityType.GetProperties())
                     {
-                        if ((p.PropertyType != typeof(string) &&
+                        if (!p.Name.Contains(propertyNameFilter) ||
+                            (p.PropertyType != typeof(string) &&
                             p.PropertyType != typeof(byte) &&
                             p.PropertyType != typeof(byte[])) &&
                             (p.PropertyType.IsClass ||
@@ -63,9 +65,9 @@
             return result;
         }
 
-        public static List<E> ParseReaderToEntities<E>(DbDataReader reader) where E : class
+        public static List<E> ParseReaderToEntities<E>(DbDataReader reader, string propertyNameFilter) where E : class
         {
-            List<object> objects = ParseReaderToEntities(reader, typeof(E));
+            List<object> objects = ParseReaderToEntities(reader, typeof(E), propertyNameFilter);
             List<E> result = new List<E>();
             objects.ForEach(o => result.Add((E)o));
             return result;

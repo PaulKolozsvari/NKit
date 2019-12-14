@@ -254,25 +254,30 @@
         public virtual List<object> Query(
             string columnName,
             object columnValue,
+            string propertyNameFilter,
             Type entityType,
             bool disposeConnectionAfterExecute,
             DbConnection connection,
             DbTransaction transaction)
         {
-            return Query(columnName, columnValue, entityType.Name, entityType, disposeConnectionAfterExecute, connection, transaction);
+            return Query(columnName, columnValue, entityType.Name, propertyNameFilter, entityType, disposeConnectionAfterExecute, connection, transaction);
         }
 
-        public abstract List<object> Query(string sqlQueryString,
+        public abstract List<object> Query(
+            string sqlQueryString,
             OrmAssemblySqlWindows ormCollectibleAssembly,
             string typeName,
+            string propertyNameFilter,
             out OrmTypeWindows ormCollecibleType);
 
         public abstract List<object> Query(
-            QueryWindows query, 
+            QueryWindows query,
+            string propertyNameFilter,
             Type entityType);
 
         public abstract List<object> Query(
             QueryWindows query,
+            string propertyNameFilter,
             Type entityType,
             bool disposeConnectionAfterExecute,
             DbConnection connection,
@@ -282,6 +287,7 @@
             string columnName,
             object columnValue,
             string tableName,
+            string propertyNameFilter,
             Type entityType,
             bool disposeConnectionAfterExecute,
             DbConnection connection,
@@ -295,12 +301,12 @@
                     typeof(DatabaseTableWindows).FullName,
                     tableName));
             }
-            return table.Query(columnName, columnValue, entityType, disposeConnectionAfterExecute, connection, transaction);
+            return table.Query(columnName, columnValue, propertyNameFilter, entityType, disposeConnectionAfterExecute, connection, transaction);
         }
 
-        public List<E> Query<E>(QueryWindows query) where E : class
+        public List<E> Query<E>(QueryWindows query, string propertyNameFilter) where E : class
         {
-            List<object> objects = Query(query, typeof(E));
+            List<object> objects = Query(query, propertyNameFilter, typeof(E));
             List<E> result = new List<E>();
             objects.ForEach(o => result.Add((E)o));
             return result;

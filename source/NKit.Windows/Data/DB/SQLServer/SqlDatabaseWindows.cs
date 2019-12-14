@@ -167,6 +167,7 @@
             string sqlQueryString,
             OrmAssemblySqlWindows ormCollectibleAssembly,
             string typeName,
+            string propertyNameFilter,
             out OrmTypeWindows ormCollecibleType)
         {
             if (ormCollectibleAssembly == null)
@@ -191,14 +192,14 @@
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         ormCollecibleType = ormCollectibleAssembly.CreateOrmTypeFromSqlDataReader(typeName, reader, true);
-                        result = DataHelperWindows.ParseReaderToEntities(reader, ormCollecibleType.DotNetType);
+                        result = DataHelperWindows.ParseReaderToEntities(reader, ormCollecibleType.DotNetType, propertyNameFilter);
                     }
                 }
             }
             return result;
         }
 
-        public override List<object> Query(QueryWindows query, Type entityType)
+        public override List<object> Query(QueryWindows query, string propertyNameFilter, Type entityType)
         {
             List<DatabaseTableWindows> tablesMentioned = GetTablesMentionedInQuery(query);
             List<object> result = null;
@@ -211,7 +212,7 @@
                     command.CommandType = System.Data.CommandType.Text;
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        result = DataHelperWindows.ParseReaderToEntities(reader, entityType);
+                        result = DataHelperWindows.ParseReaderToEntities(reader, entityType, propertyNameFilter);
                     }
                 }
             }
@@ -220,6 +221,7 @@
 
         public override List<object> Query(
             QueryWindows query,
+            string propertyNameFilter,
             Type entityType,
             bool disposeConnectionAfterExecute,
             DbConnection connection,
@@ -247,7 +249,7 @@
                     command.CommandType = System.Data.CommandType.Text;
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        result = DataHelperWindows.ParseReaderToEntities(reader, entityType);
+                        result = DataHelperWindows.ParseReaderToEntities(reader, entityType, propertyNameFilter);
                     }
                 }
             }
@@ -266,6 +268,7 @@
         public List<E> Query<E>(
             string columnName,
             object columnValue,
+            string propertyNameFilter,
             bool disposeConnectionAfterExecute,
             DbConnection connection,
             DbTransaction transaction) where E : class
@@ -278,7 +281,7 @@
                     typeof(DatabaseTableWindows).FullName,
                     typeof(E).Name));
             }
-            List<object> queryResults = Query(columnName, columnValue, typeof(E), disposeConnectionAfterExecute, connection, transaction);
+            List<object> queryResults = Query(columnName, columnValue, propertyNameFilter, typeof(E), disposeConnectionAfterExecute, connection, transaction);
             List<E> results = new List<E>();
             queryResults.ForEach(p => results.Add((E)p));
             return results;
@@ -288,6 +291,7 @@
             string columnName,
             object columnValue,
             string tableName,
+            string propertyNameFilter,
             bool disposeConnectionAfterExecute,
             DbConnection connection,
             DbTransaction transaction) where E : class
@@ -300,7 +304,7 @@
                     typeof(DatabaseTableWindows).FullName,
                     typeof(E).Name));
             }
-            List<object> queryResults = Query(columnName, columnValue, tableName, typeof(E), disposeConnectionAfterExecute, connection, transaction);
+            List<object> queryResults = Query(columnName, columnValue, tableName, propertyNameFilter, typeof(E), disposeConnectionAfterExecute, connection, transaction);
             List<E> results = new List<E>();
             queryResults.ForEach(p => results.Add((E)p));
             return results;

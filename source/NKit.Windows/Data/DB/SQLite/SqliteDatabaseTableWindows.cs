@@ -53,6 +53,7 @@
         public override List<object> Query(
             string columnName,
             object columnValue,
+            string propertyNameFilter,
             Type entityType,
             bool disposeConnectionAfterExecute,
             DbConnection connection,
@@ -94,7 +95,7 @@
                     command.CommandType = System.Data.CommandType.Text;
                     using (SQLiteDataReader reader = command.ExecuteReader())
                     {
-                        result = DataHelperWindows.ParseReaderToEntities(reader, entityType);
+                        result = DataHelperWindows.ParseReaderToEntities(reader, entityType, propertyNameFilter);
                     }
                 }
             }
