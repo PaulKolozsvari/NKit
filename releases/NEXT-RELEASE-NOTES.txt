@@ -18,3 +18,4 @@
     
 *   Removed validation on EntityCache generic when adding entities so that it doesn't throw an exception if an entity already exists with that key.
 *   Added string propertyNameFilter parameter on all sql and sqlite queries to allow filtering for only certain properties of the entity containing that text in their name to be read from the reader to an entity.
+*   Added extra GetConfirmationModelFromSearchParametersString overloads for getting entity ID and parent entity ID out of search parameters to controllers.
