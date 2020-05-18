@@ -17,6 +17,7 @@
     using NKit.Web.Service.WcfRest.Events;
     using System.ServiceModel.Channels;
     using System.Threading;
+    using NKit.Standard.Data.DB.LINQ;
 
     #endregion //Using Directives
 
@@ -465,13 +466,13 @@
                 ValidateRequestMethod(HttpVerb.POST);
                 byte[] fileBytes = StreamHelper.GetBytesFromStream(inputStream);
                 FileStream fs = null;
-                lock (FileUploadSessionsWindows.Instance.FileStreams)
+                lock (FileUploadSessions.Instance.FileStreams)
                 {
-                    FileUploadSessionsWindows.Instance.FileStreams.TryGetValue(fileName, out fs);
+                    FileUploadSessions.Instance.FileStreams.TryGetValue(fileName, out fs);
                     if (fs == null)
                     {
                         fs = File.Open(fileName, FileMode.Create, FileAccess.ReadWrite);
-                        FileUploadSessionsWindows.Instance.FileStreams.Add(fileName, fs);
+                        FileUploadSessions.Instance.FileStreams.Add(fileName, fs);
                     }
                     fs.Write(fileBytes, 0, fileBytes.Length);
                     fs.Flush();
@@ -500,16 +501,16 @@
                 AuditRequest(requestName, null);
                 ValidateRequestMethod(HttpVerb.POST);
                 FileStream fs = null;
-                lock (FileUploadSessionsWindows.Instance.FileStreams)
+                lock (FileUploadSessions.Instance.FileStreams)
                 {
-                    FileUploadSessionsWindows.Instance.FileStreams.TryGetValue(fileName, out fs);
+                    FileUploadSessions.Instance.FileStreams.TryGetValue(fileName, out fs);
                     if (fs == null)
                     {
                         throw new Exception(string.Format("Could not find {0} to closse for file {1}", typeof(FileStream).Name, fileName));
                     }
                     fs.Close();
                     fs.Dispose();
-                    FileUploadSessionsWindows.Instance.FileStreams.Remove(fileName);
+                    FileUploadSessions.Instance.FileStreams.Remove(fileName);
                 }
                 string responseMessage = string.Format("{0} for {1} closed.", typeof(FileStream).Name, fileName);
                 Stream result = StreamHelper.GetStreamFromString(responseMessage, GOCWindows.Instance.Encoding);
@@ -684,7 +685,7 @@
         {
             return new LinqEntityContextWindows(
                 GOCWindows.Instance.GetNewLinqToSqlDataContext(),
-                GOCWindows.Instance.GetByTypeName<LinqFunnelSettingsWindows>(),
+                GOCWindows.Instance.GetByTypeName<LinqFunnelSettings>(),
                 false,
                 GOCWindows.Instance.UserLinqToSqlType,
                 GOCWindows.Instance.ServerActionLinqToSqlType,

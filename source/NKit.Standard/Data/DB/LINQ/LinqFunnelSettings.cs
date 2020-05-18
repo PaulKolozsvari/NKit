@@ -1,24 +1,22 @@
-﻿namespace NKit.Data.DB.LINQ
+﻿namespace NKit.Standard.Data.DB.LINQ
 {
     #region Using Directives
 
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Text;
-    using System.IO;
 
     #endregion //Using Directives
 
-    public class LinqFunnelSettingsWindows
+    public class LinqFunnelSettings
     {
         #region Constructors
 
-        public LinqFunnelSettingsWindows()
+        public LinqFunnelSettings()
         {
         }
 
-        public LinqFunnelSettingsWindows(string connectionString, int linqToSQLCommandTimeout)
+        public LinqFunnelSettings(string connectionString, int linqToSQLCommandTimeout)
         {
             _connectionString = connectionString;
             _linqToSQLCommandTimeout = linqToSQLCommandTimeout;
@@ -47,6 +45,6 @@
             set { _linqToSQLCommandTimeout = value; }
         }
 
-        #endregion //Properties
+        #endregion Properties
     }
 }

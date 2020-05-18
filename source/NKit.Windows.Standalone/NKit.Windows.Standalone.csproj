@@ -204,6 +204,12 @@
     <Compile Include="..\NKit.Standard\Data\DataValidator.cs">
       <Link>Data\DataValidator.cs</Link>
     </Compile>
+    <Compile Include="..\NKit.Standard\Data\DB\LINQ\LinqFunnelChangeResult.cs">
+      <Link>Data\DB\LINQ\LinqFunnelChangeResult.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Standard\Data\DB\LINQ\LinqFunnelSettings.cs">
+      <Link>Data\DB\LINQ\LinqFunnelSettings.cs</Link>
+    </Compile>
     <Compile Include="..\NKit.Standard\Data\EntityCacheBase.cs">
       <Link>Data\EntityCacheBase.cs</Link>
     </Compile>
@@ -454,6 +460,24 @@
     <Compile Include="..\NKit.Standard\Web\MVC\Models\WaitModel.cs">
       <Link>Web\MVC\Models\WaitModel.cs</Link>
     </Compile>
+    <Compile Include="..\NKit.Standard\Web\Service\FileUploadSessions.cs">
+      <Link>Web\FileUploadSessions.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Standard\Web\Service\ServiceException.cs">
+      <Link>Web\ServiceException.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Standard\Web\Service\ServiceFunctionResult.cs">
+      <Link>Web\ServiceFunctionResult.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Standard\Web\Service\ServiceProcedureResult.cs">
+      <Link>Web\ServiceProcedureResult.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Standard\Web\Service\ServiceResult.cs">
+      <Link>Web\ServiceResult.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Standard\Web\Service\ServiceResultCode.cs">
+      <Link>Web\ServiceResultCode.cs</Link>
+    </Compile>
     <Compile Include="..\NKit.Windows\Data\DataHelperWindows.cs">
       <Link>Data\DataHelperWindows.cs</Link>
     </Compile>
@@ -490,14 +514,8 @@
     <Compile Include="..\NKit.Windows\Data\DB\LINQ\LinqEntityContextWindows.cs">
       <Link>Data\DB\LINQ\LinqEntityContextWindows.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Windows\Data\DB\LINQ\LinqFunnelChangeResultWindows.cs">
-      <Link>Data\DB\LINQ\LinqFunnelChangeResultWindows.cs</Link>
-    </Compile>
     <Compile Include="..\NKit.Windows\Data\DB\LINQ\LinqFunnelContextWindows.cs">
       <Link>Data\DB\LINQ\LinqFunnelContextWindows.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Windows\Data\DB\LINQ\LinqFunnelSettingsWindows.cs">
-      <Link>Data\DB\LINQ\LinqFunnelSettingsWindows.cs</Link>
     </Compile>
     <Compile Include="..\NKit.Windows\Data\DB\LINQ\Logging\LinqServerActionWindows.cs">
       <Link>Data\DB\LINQ\Logging\LinqServerActionWindows.cs</Link>
@@ -921,29 +939,11 @@
     <Compile Include="..\NKit.Windows\Web\Service\ContentMapping\WcfRawContentTypeMapperWindows.cs">
       <Link>Web\Service\ContentMapping\WcfRawContentTypeMapperWindows.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Windows\Web\Service\FileUploadSessionsWindows.cs">
-      <Link>Web\Service\FileUploadSessionsWindows.cs</Link>
-    </Compile>
     <Compile Include="..\NKit.Windows\Web\Service\Inspector\WcfServiceMessageInspectorBehaviorWindows.cs">
       <Link>Web\Service\Inspector\WcfServiceMessageInspectorBehaviorWindows.cs</Link>
     </Compile>
     <Compile Include="..\NKit.Windows\Web\Service\Inspector\WcfServiceMessageInspectorWindows.cs">
       <Link>Web\Service\Inspector\WcfServiceMessageInspectorWindows.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Windows\Web\Service\ServiceExceptionWindows.cs">
-      <Link>Web\Service\ServiceExceptionWindows.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Windows\Web\Service\ServiceFunctionResultWindows.cs">
-      <Link>Web\Service\ServiceFunctionResultWindows.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Windows\Web\Service\ServiceProcedureResultWindows.cs">
-      <Link>Web\Service\ServiceProcedureResultWindows.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Windows\Web\Service\ServiceResultCodeWindows.cs">
-      <Link>Web\Service\ServiceResultCodeWindows.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Windows\Web\Service\ServiceResultWindows.cs">
-      <Link>Web\Service\ServiceResultWindows.cs</Link>
     </Compile>
     <Compile Include="..\NKit.Windows\Web\Service\WcfRest\Events\RestServiceDeleteEntityEventArgsWindows.cs">
       <Link>Web\Service\WcfRest\Events\RestServiceDeleteEntityEventArgsWindows.cs</Link>

@@ -11,19 +11,19 @@
 
     #endregion //Using Directives
 
-    public class FileUploadSessionsWindows
+    public class FileUploadSessions
     {
         #region Singleton Setup
 
-        private static FileUploadSessionsWindows _instance;
+        private static FileUploadSessions _instance;
 
-        public static FileUploadSessionsWindows Instance
+        public static FileUploadSessions Instance
         {
             get
             {
                 if (_instance == null)
                 {
-                    _instance = new FileUploadSessionsWindows();
+                    _instance = new FileUploadSessions();
                 }
                 return _instance;
             }
@@ -33,7 +33,7 @@
 
         #region Constructors
 
-        private FileUploadSessionsWindows()
+        private FileUploadSessions()
         {
             _fileStreams = new Dictionary<string, FileStream>();
         }

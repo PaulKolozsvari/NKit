@@ -233,9 +233,7 @@
     <Compile Include="Data\QueryRunners\ISqlQueryRunnerWindows.cs" />
     <Compile Include="Data\DataHelperWindows.cs" />
     <Compile Include="Data\DataShaperWindows.cs" />
-    <Compile Include="Data\DB\LINQ\LinqFunnelChangeResultWindows.cs" />
     <Compile Include="Data\DB\LINQ\LinqFunnelContextWindows.cs" />
-    <Compile Include="Data\DB\LINQ\LinqFunnelSettingsWindows.cs" />
     <Compile Include="Data\QueryRunners\SqlQueryRunnerConfigWindows.cs" />
     <Compile Include="Data\QueryRunners\SqlQueryRunnerDispatcherWindows.cs" />
     <Compile Include="Data\QueryRunners\SqlQueryRunnerInputWindows.cs" />
@@ -353,7 +351,6 @@
     <Compile Include="Web\MVC\Models\FilterModelWindows.cs" />
     <Compile Include="Web\Service\ContentMapping\WcfRawContentTypeMapperWindows.cs" />
     <Compile Include="Web\Service\Inspector\WcfServiceMessageInspectorBehaviorWindows.cs" />
-    <Compile Include="Web\Service\FileUploadSessionsWindows.cs" />
     <Compile Include="Web\Service\WcfRest\Events\RestServiceDeleteEntityEventArgsWindows.cs" />
     <Compile Include="Web\Service\WcfRest\Events\RestServiceEventArgsWindows.cs" />
     <Compile Include="Web\Service\WcfRest\Events\RestServiceEventDelegatesWindows.cs" />
@@ -365,11 +362,6 @@
     <Compile Include="Web\Service\WcfRest\IWcfRestServiceWindows.cs" />
     <Compile Include="Web\Service\Inspector\WcfServiceMessageInspectorWindows.cs" />
     <Compile Include="Web\Service\WcfRest\WcfRestServiceWindows.cs" />
-    <Compile Include="Web\Service\ServiceExceptionWindows.cs" />
-    <Compile Include="Web\Service\ServiceFunctionResultWindows.cs" />
-    <Compile Include="Web\Service\ServiceProcedureResultWindows.cs" />
-    <Compile Include="Web\Service\ServiceResultWindows.cs" />
-    <Compile Include="Web\Service\ServiceResultCodeWindows.cs" />
     <Compile Include="Web\Client\SOAP\SoapClientMessageInspectorWindows.cs" />
     <Compile Include="Web\Client\SOAP\SoapClientMessageInspectorBehaviorWindows.cs" />
     <Compile Include="Web\Service\WcfSoap\WcfSoapServerMessageInspectorBehaviorWindows.cs" />

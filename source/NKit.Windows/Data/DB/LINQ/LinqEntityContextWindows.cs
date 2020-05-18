@@ -14,6 +14,7 @@
     using NKit.Data.DB.SQLServer;
     using System.Data.SqlClient;
     using System.Threading;
+    using NKit.Standard.Data.DB.LINQ;
 
     #endregion //Using Directives
 
@@ -33,7 +34,7 @@
 
         public LinqEntityContextWindows(
             DataContext db,
-            LinqFunnelSettingsWindows settings,
+            LinqFunnelSettings settings,
             bool handleExceptions,
             Type userLinqToSqlType,
             Type serverActionLinqToSqlType,
@@ -57,7 +58,7 @@
 
         public LinqEntityContextWindows(
             DataContext db,
-            LinqFunnelSettingsWindows settings,
+            LinqFunnelSettings settings,
             bool handleExceptions,
             Type userLinqToSqlType,
             Type serverActionLinqToSqlType,
@@ -147,7 +148,7 @@
 
         #region Core Methods
 
-        public ServiceProcedureResultWindows Save<E>(
+        public ServiceProcedureResult Save<E>(
             List<E> entities,
             Nullable<Guid> userId,
             string userName,
@@ -166,7 +167,7 @@
                         }
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -187,10 +188,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(Save)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Save)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows Save(
+        public ServiceProcedureResult Save(
             Type entityType, 
             List<object> entities, 
             Nullable<Guid> userId, 
@@ -210,7 +211,7 @@
                         }
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -231,10 +232,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(Save)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Save)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows Insert<E>(
+        public ServiceProcedureResult Insert<E>(
             List<E> entities,
             Nullable<Guid> userId,
             string userName,
@@ -253,7 +254,7 @@
                         }
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -274,10 +275,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(Insert)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Insert)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows Insert(
+        public ServiceProcedureResult Insert(
             Type entityType,
             List<object> entities,
             Nullable<Guid> userId,
@@ -297,7 +298,7 @@
                         }
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -318,10 +319,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(Insert)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Insert)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows Delete<E>(
+        public ServiceProcedureResult Delete<E>(
             List<E> entities, 
             Nullable<Guid> userId,
             string userName) where E : class
@@ -339,7 +340,7 @@
                         }
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -360,10 +361,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(Delete)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Delete)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows Delete(
+        public ServiceProcedureResult Delete(
             Type entityType, 
             List<object> entities,
             Nullable<Guid> userId,
@@ -382,7 +383,7 @@
                         }
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -403,10 +404,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(Delete)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Delete)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows DeleteBySurrogateKey<E>(
+        public ServiceProcedureResult DeleteBySurrogateKey<E>(
             List<object> surrogateKeys, 
             Nullable<Guid> userId,
             string userName) where E : class
@@ -424,7 +425,7 @@
                         }
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -445,10 +446,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(DeleteBySurrogateKey)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteBySurrogateKey)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows DeleteBySurrogateKey(
+        public ServiceProcedureResult DeleteBySurrogateKey(
             Type entityType, 
             List<object> surrogateKeys, 
             Nullable<Guid> userId,
@@ -467,7 +468,7 @@
                         }
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -488,10 +489,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(DeleteBySurrogateKey)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteBySurrogateKey)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows DeleteAll<E>(
+        public ServiceProcedureResult DeleteAll<E>(
             Nullable<Guid> userId,
             string userName) where E : class
         {
@@ -505,7 +506,7 @@
                         base.DeleteAll<E>().ForEach(c => HandleChange(c, userId, userName));
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -526,10 +527,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResultWindows DeleteAll(
+        public ServiceProcedureResult DeleteAll(
             Type entityType,
             Nullable<Guid> userId,
             string userName)
@@ -544,7 +545,7 @@
                         base.DeleteAll(entityType).ForEach(c => HandleChange(c, userId, userName));
                         t.Complete();
                     }
-                    return new ServiceProcedureResultWindows();
+                    return new ServiceProcedureResult();
                 }
                 catch (SqlException sqlEx)
                 {
@@ -565,10 +566,10 @@
                     throw;
                 }
             }
-            return new ServiceProcedureResultWindows(new ServiceResultWindows() { Code = ServiceResultCodeWindows.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+            return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceFunctionResultWindows<E> GetEntityBySurrogateKey<E>(
+        public ServiceFunctionResult<E> GetEntityBySurrogateKey<E>(
             object keyValue, 
             bool loadChildren, 
             Nullable<Guid> userId,
@@ -576,7 +577,7 @@
         {
             try
             {
-                return new ServiceFunctionResultWindows<E> { Contents = base.GetEntityBySurrogateKey<E>(keyValue, loadChildren) };
+                return new ServiceFunctionResult<E> { Contents = base.GetEntityBySurrogateKey<E>(keyValue, loadChildren) };
             }
             catch (Exception ex)
             {
@@ -588,7 +589,7 @@
             }
         }
 
-        public ServiceFunctionResultWindows<object> GetEntityBySurrogateKey(
+        public ServiceFunctionResult<object> GetEntityBySurrogateKey(
             Type entityType, 
             object keyValue, 
             bool loadChildren, 
@@ -597,7 +598,7 @@
         {
             try
             {
-                return new ServiceFunctionResultWindows<object>() { Contents = base.GetEntityBySurrogateKey(entityType, keyValue, loadChildren) };
+                return new ServiceFunctionResult<object>() { Contents = base.GetEntityBySurrogateKey(entityType, keyValue, loadChildren) };
             }
             catch (Exception ex)
             {
@@ -609,7 +610,7 @@
             }
         }
 
-        public ServiceFunctionResultWindows<List<E>> GetEntitiesByField<E>(
+        public ServiceFunctionResult<List<E>> GetEntitiesByField<E>(
             string fieldName, 
             object fieldValue, 
             bool loadChildren, 
@@ -618,7 +619,7 @@
         {
             try
             {
-                return new ServiceFunctionResultWindows<List<E>>() { Contents = base.GetEntitiesByField<E>(fieldName, fieldValue, loadChildren) };
+                return new ServiceFunctionResult<List<E>>() { Contents = base.GetEntitiesByField<E>(fieldName, fieldValue, loadChildren) };
             }
             catch (Exception ex)
             {
@@ -630,7 +631,7 @@
             }
         }
 
-        public ServiceFunctionResultWindows<List<object>> GetEntitiesByField(
+        public ServiceFunctionResult<List<object>> GetEntitiesByField(
             Type entityType, 
             string fieldName, 
             object fieldValue, 
@@ -640,7 +641,7 @@
         {
             try
             {
-                return new ServiceFunctionResultWindows<List<object>>() { Contents = base.GetEntitiesByField(entityType, fieldName, fieldValue, loadChildren) };
+                return new ServiceFunctionResult<List<object>>() { Contents = base.GetEntitiesByField(entityType, fieldName, fieldValue, loadChildren) };
             }
             catch (Exception ex)
             {
@@ -652,14 +653,14 @@
             }
         }
 
-        public ServiceFunctionResultWindows<List<E>> GetAllEntities<E>(
+        public ServiceFunctionResult<List<E>> GetAllEntities<E>(
             bool loadChildren, 
             Nullable<Guid> userId, 
             string userName) where E : class
         {
             try
             {
-                return new ServiceFunctionResultWindows<List<E>>() { Contents = base.GetAllEntities<E>(loadChildren) };
+                return new ServiceFunctionResult<List<E>>() { Contents = base.GetAllEntities<E>(loadChildren) };
             }
             catch (Exception ex)
             {
@@ -671,7 +672,7 @@
             }
         }
 
-        public ServiceFunctionResultWindows<List<object>> GetAllEntities(
+        public ServiceFunctionResult<List<object>> GetAllEntities(
             Type entityType, 
             bool loadChildren, 
             Nullable<Guid> userId, 
@@ -679,7 +680,7 @@
         {
             try
             {
-                return new ServiceFunctionResultWindows<List<object>>() { Contents = base.GetAllEntities(entityType, loadChildren) };
+                return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType, loadChildren) };
             }
             catch (Exception ex)
             {
@@ -691,13 +692,13 @@
             }
         }
 
-        public ServiceFunctionResultWindows<int> GetTotalCount<E>(
+        public ServiceFunctionResult<int> GetTotalCount<E>(
             Nullable<Guid> userId, 
             string userName) where E : class
         {
             try
             {
-                return new ServiceFunctionResultWindows<int>() { Contents = base.GetTotalCount<E>() };
+                return new ServiceFunctionResult<int>() { Contents = base.GetTotalCount<E>() };
             }
             catch (Exception ex)
             {
@@ -709,13 +710,13 @@
             }
         }
 
-        public ServiceFunctionResultWindows<long> GetTotalCountLong<E>(
+        public ServiceFunctionResult<long> GetTotalCountLong<E>(
             Nullable<Guid> userId,
             string userName) where E : class
         {
             try
             {
-                return new ServiceFunctionResultWindows<long>() { Contents = base.GetTotalCountLong<E>() };
+                return new ServiceFunctionResult<long>() { Contents = base.GetTotalCountLong<E>() };
             }
             catch (Exception ex)
             {
@@ -752,7 +753,7 @@
 
         #region Utility Methods
 
-        protected void HandleChange(LinqFunnelChangeResultWindows change, Nullable<Guid> userId, string userName)
+        protected void HandleChange(LinqFunnelChangeResult change, Nullable<Guid> userId, string userName)
         {
             LinqServerActionWindows serverAction = new LinqServerActionWindows()
             {
@@ -781,7 +782,7 @@
             }
         }
 
-        protected ServiceResultWindows HandleException(Exception ex)
+        protected ServiceResult HandleException(Exception ex)
         {
             return HandleException(ex, null, null);
         }
@@ -819,7 +820,7 @@
         //    }
         //}
 
-        protected ServiceResultWindows HandleException(Exception ex, Nullable<Guid> userId, string userName)
+        protected ServiceResult HandleException(Exception ex, Nullable<Guid> userId, string userName)
         {
             LinqServerErrorWindows serverError = new LinqServerErrorWindows()
             {
@@ -842,10 +843,10 @@
                 context.GetTable(_serverErrorLinqtoSqlType).InsertOnSubmit(serverErrorLinqToSql);
                 context.SubmitChanges();
             }
-            ServiceExceptionWindows serviceException = ex as ServiceExceptionWindows;
+            ServiceException serviceException = ex as ServiceException;
             if (serviceException == null)
             {
-                return new ServiceResultWindows { Code = ServiceResultCodeWindows.FatalError, Message = ex.Message }; //Not a user thrown exception.
+                return new ServiceResult { Code = ServiceResultCode.FatalError, Message = ex.Message }; //Not a user thrown exception.
             }
             else
             {

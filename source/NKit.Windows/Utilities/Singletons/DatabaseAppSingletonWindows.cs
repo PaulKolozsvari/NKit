@@ -11,6 +11,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using NKit.Data.DB.LINQ;
+    using NKit.Standard.Data.DB.LINQ;
     using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
@@ -36,7 +37,7 @@
             Type serverActionLinqToSqlType,
             Type serverErrorLinqToSqlType) where D : DataContext
         {
-            LinqFunnelSettingsWindows linqFunnelSettings = new LinqFunnelSettingsWindows(settings.DatabaseConnectionString, settings.DatabaseCommandTimeout);
+            LinqFunnelSettings linqFunnelSettings = new LinqFunnelSettings(settings.DatabaseConnectionString, settings.DatabaseCommandTimeout);
             GOCWindows.Instance.AddByTypeName(linqFunnelSettings); //Adds an object to Global Object Cache with the key being the name of the type.
             string linqToSqlAssemblyFilePath = Path.Combine(InformationWindows.GetExecutingDirectory(), settings.LinqToSQLClassesAssemblyFileName);
 

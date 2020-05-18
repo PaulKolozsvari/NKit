@@ -9,7 +9,7 @@
 
     #endregion //Using Directives
 
-    public enum ServiceResultCodeWindows
+    public enum ServiceResultCode
     {
         Success = 0,
         Information = 1,

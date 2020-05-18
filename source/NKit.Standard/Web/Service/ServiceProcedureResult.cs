@@ -9,17 +9,17 @@
 
     #endregion //Using Directives
 
-    public class ServiceProcedureResultWindows : ServiceResultWindows
+    public class ServiceProcedureResult : ServiceResult
     {
         #region Constructors
 
-        public ServiceProcedureResultWindows()
+        public ServiceProcedureResult()
         {
-            Code = ServiceResultCodeWindows.Success;
+            Code = ServiceResultCode.Success;
             Message = null;
         }
 
-        public ServiceProcedureResultWindows(ServiceResultWindows result)
+        public ServiceProcedureResult(ServiceResult result)
         {
             Code = result.Code;
             Message = result.Message;

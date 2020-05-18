@@ -320,13 +320,13 @@
         }
 
         protected virtual void GetConfirmationModelFromSearchParametersString(
-    string searchParametersString,
-    out string[] searchParameters,
-    out string searchText,
-    out Nullable<DateTime> startDate,
-    out Nullable<DateTime> endDate,
-    out string parentName,
-    out Nullable<Guid> parentId)
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
+            out Nullable<DateTime> startDate,
+            out Nullable<DateTime> endDate,
+            out string parentName,
+            out Nullable<Guid> parentId)
         {
             searchText = string.Empty;
             startDate = null;

@@ -8,6 +8,8 @@
     using System.Text;
     using System.Data;
     using System.Reflection;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
 
     #endregion //Using Directives
 
@@ -465,6 +467,64 @@
                 }
             }
             return result;
+        }
+
+        /// <summary>
+        /// Determines the primary key of an entity type. The first primary key found on the entity type i.e.
+        /// the assumption is made that the entity type only has one primary key, which is the surrogate key.
+        /// </summary>
+        /// <typeparam name="E">The entity type i.e. the table whose surrogate key needs to be determined.</typeparam>
+        /// <returns>Retruns the PropertyInfo corresponding to the column which is the surrogate key for the specified entity type.</returns>
+        public static PropertyInfo GetLinqToSqlEntitySurrogateKey<E>()
+        {
+            return GetLinqToSqlEntitySurrogateKey(typeof(E));
+        }
+
+        /// <summary>
+        /// Determines the primary key of an entity type. The first primary key found on the entity type i.e.
+        /// the assumption is made that the entity type only has one primary key, which is the surrogate key.
+        /// </summary>
+        /// <typeparam name="E">The entity type i.e. the table whose surrogate key needs to be determined.</typeparam>
+        /// <returns>Retruns the PropertyInfo corresponding to the column which is the surrogate key for the specified entity type.</returns>
+        public static PropertyInfo GetLinqToSqlEntitySurrogateKey(Type entityType)
+        {
+            PropertyInfo[] properties = entityType.GetProperties();
+            PropertyInfo key = null;
+            foreach (PropertyInfo p in properties)
+            {
+                KeyAttribute keyAttribute = p.GetCustomAttribute<KeyAttribute>();
+                if (keyAttribute == null)
+                {
+                    continue;
+                }
+                if (key != null)
+                {
+                    throw new Exception(
+                        string.Format("{0} has more than one primary key. A surrogate key has to be a single field.",
+                        entityType.Name));
+                }
+                key = p;
+            }
+            if (key == null)
+            {
+                throw new NullReferenceException(string.Format("{0} does not have surrogate key.", entityType.Name));
+            }
+            return key;
+        }
+
+        /// <summary>
+        /// Determines whether a property is an identity column.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns>Returns true if the property is an identity column.</returns>
+        public static bool IsLinqToSqlEntityPropertyIdentityColumn(PropertyInfo p)
+        {
+            DatabaseGeneratedAttribute attribute = p.GetCustomAttribute<DatabaseGeneratedAttribute>(false);
+            if (attribute == null)
+            {
+                return false;
+            }
+            return attribute.DatabaseGeneratedOption == DatabaseGeneratedOption.Identity;
         }
 
         #endregion //Methods

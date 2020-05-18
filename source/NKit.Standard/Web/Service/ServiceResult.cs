@@ -9,9 +9,9 @@
 
     #endregion //Using Directives
 
-    public class ServiceResultWindows
+    public class ServiceResult
     {
-        public ServiceResultCodeWindows Code { get; set; }
+        public ServiceResultCode Code { get; set; }
 
         public string Message { get; set; }
     }

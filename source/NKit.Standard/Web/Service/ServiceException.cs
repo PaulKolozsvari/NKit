@@ -9,13 +9,13 @@
 
     #endregion //Using Directives
 
-    public class ServiceExceptionWindows : Exception
+    public class ServiceException : Exception
     {
         #region Constructors
 
-        public ServiceExceptionWindows(string message, ServiceResultCodeWindows code) : base(message)
+        public ServiceException(string message, ServiceResultCode code) : base(message)
         {
-            _result = new ServiceResultWindows()
+            _result = new ServiceResult()
             {
                 Message = message,
                 Code = code
@@ -26,13 +26,13 @@
 
         #region Fields
 
-        private ServiceResultWindows _result;
+        private ServiceResult _result;
 
         #endregion //Fields
 
         #region Properties
 
-        public ServiceResultWindows Result
+        public ServiceResult Result
         {
             get { return _result; }
         }

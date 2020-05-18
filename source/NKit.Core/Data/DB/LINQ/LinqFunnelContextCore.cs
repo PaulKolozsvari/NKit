@@ -1,74 +1,77 @@
-﻿namespace NKit.Data.DB.LINQ
+﻿namespace NKit.Core.Data.DB.LINQ
 {
     #region Using Directives
 
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
     using System.Linq;
-    using System.Web;
-    using System.Reflection;
-    using System.Data.Linq.Mapping;
-    using System.Data.Linq;
     using System.Linq.Expressions;
-    using System.Collections;
-    using System.Text;
+    using System.Reflection;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
 
     #endregion //Using Directives
 
     /// <summary>
-    /// A LINQ to SQL helper that uses generics to allow for easy Saving (Inserting/Updating), Retrieving and Deleting
-    /// of entities.
+    /// A facade wrapper around the DbContext providing CRUD operations on any entities.
     /// </summary>
-    public class LinqFunnelContextWindows : IDisposable
+    /// <typeparam name="D">The underlying entity framework DbContext which should have been registered as service..</typeparam>
+    public class LinqFunnelContextCore<D> where D : DbContext, IDisposable
     {
-        //TODO Implement CompiledQuery only available with .NET 4.0 : http://msdn.microsoft.com/en-us/library/bb896297.aspx
-
         #region Constructors
 
         /// <summary>
-        /// Creates a new LINQ to SQL context. 
+        /// Creates a funnel context using the specified servicce provider from which it will get the entity framework DbContext.
         /// </summary>
-        /// <param name="db">The LINQ to SQL DataContext that must contain all the entity types etc.</param>
-        /// <param name="applyContextSettings">Determines whether the settings in the settings file should be applied to the DataContext</param>
-        public LinqFunnelContextWindows(DataContext db, LinqFunnelSettings settings)
+        /// <param name="serviceProvider">ServiceProvider to be used to get the DbContext of type D</param>
+        /// <param name="settings">Database related settings.</param>
+        public LinqFunnelContextCore(IServiceProvider serviceProvider, LinqFunnelSettings settings)
         {
-            DB = db;
+            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(LinqFunnelContextCore<D>));
+            DataValidator.ValidateObjectNotNull(settings, nameof(settings), nameof(LinqFunnelContextCore<D>));
+            _serviceProvider = serviceProvider;
             _linqFunnelSettings = settings;
-            _db.Connection.ConnectionString = _linqFunnelSettings.ConnectionString;
-            _db.CommandTimeout = _linqFunnelSettings.LinqToSQLCommandTimeout;
-            _db.DeferredLoadingEnabled = false;
+        }
+
+        /// <summary>
+        /// Creates a funnel context using the specified entity framework DbContext.
+        /// </summary>
+        /// <param name="db">The DbContext to use for running operations for the underlying database.</param>
+        /// <param name="settings">Database related settings.</param>
+        public LinqFunnelContextCore(D db, LinqFunnelSettings settings)
+        {
+            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(LinqFunnelContextCore<D>));
+            DataValidator.ValidateObjectNotNull(settings, nameof(settings), nameof(LinqFunnelContextCore<D>));
+            _db = db;
+            _linqFunnelSettings = settings;
         }
 
         #endregion //Constructors
 
         #region Fields
 
-        private DataContext _db;
-        private bool _contextIsFresh = true;
-        private LinqFunnelSettings _linqFunnelSettings;
+        protected IServiceProvider _serviceProvider;
+        protected D _db;
+        protected LinqFunnelSettings _linqFunnelSettings;
 
         #endregion //Fields
 
         #region Properties
 
-        public LinqFunnelSettings LinqFunnelSettings
-        {
-            get { return _linqFunnelSettings; }
-        }
-
         /// <summary>
-        /// Get or set the DataContext.
-        /// Throws an exception if attempting to set it to null or if attempting to retrieve
-        /// it when it is null.
+        /// Gets or sets the underlying entity framework DbContext which should have been registered as a service.
         /// </summary>
-        public DataContext DB
+        public D DB
         {
             get
             {
                 if (_db == null)
                 {
-                    throw new Exception("DataContext has not been set.");
+                    _db = (D)_serviceProvider.GetService(typeof(D));
                 }
                 return _db;
             }
@@ -76,7 +79,7 @@
             {
                 if (value == null)
                 {
-                    throw new NullReferenceException("DataContext may not be set to null.");
+                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(LinqFunnelContextCore<D>)}");
                 }
                 _db = value;
             }
@@ -92,10 +95,14 @@
         /// </summary>
         /// <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
         /// <param name="entity">The the entity to save.</param>
+        /// <param name="entityIdentifier">The value unique identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results i.e. what entities where updated</returns>
-        public virtual List<LinqFunnelChangeResult> Save<E>(E entity, bool saveChildren) where E : class
+        public virtual List<LinqFunnelChangeResult> Save<E>(E entity, object entityIdentifier, bool saveChildren) where E : class
         {
-            return Save(typeof(E), entity, saveChildren);
+            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(typeof(E), entity, entityIdentifier, saveChildren);
+            DB.SaveChanges();
+            return result;
         }
 
         /// <summary>
@@ -104,8 +111,27 @@
         /// </summary>
         /// <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
         /// <param name="entity">The the entity to save.</param>
+        /// <param name="entityIdentifier">The value unique identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results i.e. what entities where updated</returns>
-        public virtual List<LinqFunnelChangeResult> Save(Type entityType, object entity, bool saveChildren)
+        public async virtual Task<List<LinqFunnelChangeResult>> SaveAsync<E>(E entity, object entityIdentifier, bool saveChildren) where E : class
+        {
+            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(typeof(E), entity, entityIdentifier, saveChildren);
+            await DB.SaveChangesAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// Saves (updates/inserts) an entity to the table corrseponding to the entity type.
+        /// If the entity's surrogate key is an identity entity will be inserted and not updated.
+        /// </summary>
+        /// <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
+        /// <param name="entityType">The Type of entity being inserted.</param>
+        /// <param name="entity">The the entity to save.</param>
+        /// <param name="entityIdentifier">The value unique identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
+        /// <returns>Returns a list of change results i.e. what entities where updated</returns>
+        protected virtual List<LinqFunnelChangeResult> SaveWithoutSavingToDb(Type entityType, object entity, object entityIdentifier, bool saveChildren)
         {
             PropertyInfo surrogateKey = GetEntitySurrogateKey(entityType);
             bool containsIdentityColumn = IsIdentityColumn(surrogateKey);
@@ -115,10 +141,12 @@
             List<LinqFunnelChangeResult> result = null;
             if (original == null)
             {
-                DB.GetTable(entityType).InsertOnSubmit(entity);
+                DB.Add(entity);
                 result = new List<LinqFunnelChangeResult>();
                 result.Add(new LinqFunnelChangeResult()
                 {
+                    SurrogateKey = surrogateKeyValue,
+                    EntityIdentifier = entityIdentifier,
                     Function = "INSERT",
                     DateChanged = DateTime.Now,
                     EntityChanged = entityType.Name,
@@ -128,36 +156,127 @@
             }
             else
             {
-                result = UpdateOriginalEntity(entityType, original, entity, saveChildren);
+                result = UpdateOriginalEntity(entityType, original, entity, surrogateKeyValue, entityIdentifier, saveChildren);
             }
-            DB.SubmitChanges();
-            _contextIsFresh = false;
             return result;
         }
 
-        public virtual List<LinqFunnelChangeResult> Insert<E>(E entity, bool saveChildren) where E : class
+        /// <summary>
+        /// Saves (updates/inserts) an entity to the table corrseponding to the entity type.
+        /// If the entity's surrogate key is an identity entity will be inserted and not updated.
+        /// </summary>
+        /// <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
+        /// <param name="entityType">The Type of entity being inserted.</param>
+        /// <param name="entity">The the entity to save.</param>
+        /// <param name="entityIdentifier">The value unique identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
+        /// <returns>Returns a list of change results i.e. what entities where updated</returns>
+        public virtual List<LinqFunnelChangeResult> Save(Type entityType, object entity, object entityIdentifier, bool saveChildren)
         {
-            return Insert(typeof(E), entity, saveChildren);
+            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(entityType, entity, entityIdentifier, saveChildren);
+            DB.SaveChanges();
+            return result;
         }
 
-        public virtual List<LinqFunnelChangeResult> Insert(Type entityType, object entity, bool saveChildren)
+        /// <summary>
+        /// Saves (updates/inserts) an entity to the table corrseponding to the entity type.
+        /// If the entity's surrogate key is an identity entity will be inserted and not updated.
+        /// </summary>
+        /// <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
+        /// <param name="entityType">The Type of entity being inserted.</param>
+        /// <param name="entity">The the entity to save.</param>
+        /// <param name="entityIdentifier">The value unique identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
+        /// <returns>Returns a list of change results i.e. what entities where updated</returns>
+        public async virtual Task<List<LinqFunnelChangeResult>> SaveAsync(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        {
+            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(entityType, entity, entityIdentifier, saveChildren);
+            await DB.SaveChangesAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// Inserts an entity to the database context without saving to the database.
+        /// </summary>
+        /// <param name="entity">The entity being inserted.</param>
+        /// <param name="entityIdentifier">The value unique identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
+        /// <returns>A list of change results.</returns>
+        public virtual List<LinqFunnelChangeResult> Insert<E>(E entity, object entityIdentifier, bool saveChildren) where E : class
+        {
+            return Insert(typeof(E), entity, entityIdentifier, saveChildren);
+        }
+
+        /// <summary>
+        /// Inserts an entity to the database context without saving to the database.
+        /// </summary>
+        /// <param name="entity">The entity being inserted.</param>
+        /// <param name="entityIdentifier">The value uniquely identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
+        /// <returns>A list of change results.</returns>
+        public async virtual Task<List<LinqFunnelChangeResult>> InsertAsync<E>(E entity, object entityIdentifier, bool saveChildren) where E : class
+        {
+            Task<List<LinqFunnelChangeResult>> taskResult = InsertAsync(typeof(E), entity, entityIdentifier, saveChildren);
+            await taskResult;
+            return taskResult.Result;
+        }
+
+        /// <summary>
+        /// Inserts an entity to the database context without saving to the database.
+        /// </summary>
+        /// <param name="entityType">The Type of entity being inserted.</param>
+        /// <param name="entity">The entity being inserted.</param>
+        /// <param name="entityIdentifier">The value uniquely identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
+        /// <returns>A list of change results.</returns>
+        protected virtual List<LinqFunnelChangeResult> InsertWithoutSaveToDb(Type entityType, object entity, object entityIdentifier, bool saveChildren)
         {
             PropertyInfo surrogateKey = GetEntitySurrogateKey(entityType);
             bool containsIdentityColumn = IsIdentityColumn(surrogateKey);
             object surrogateKeyValue = surrogateKey.GetValue(entity, null);
 
-            DB.GetTable(entityType).InsertOnSubmit(entity);
+            DB.Add(entity);
             List<LinqFunnelChangeResult> result = new List<LinqFunnelChangeResult>();
             result.Add(new LinqFunnelChangeResult()
             {
+                SurrogateKey = surrogateKeyValue,
+                EntityIdentifier = entityIdentifier,
                 Function = "INSERT",
                 DateChanged = DateTime.Now,
                 EntityChanged = entityType.Name,
                 FieldChanged = surrogateKey.Name,
                 NewValue = surrogateKey.GetValue(entity, null)
             });
-            DB.SubmitChanges();
-            _contextIsFresh = false;
+            return result;
+        }
+
+        /// <summary>
+        /// Inserts an entity to the database context and calls save on the database.
+        /// </summary>
+        /// <param name="entityType">The Type of entity being inserted.</param>
+        /// <param name="entity">The entity being inserted.</param>
+        /// <param name="entityIdentifier">The value uniquely identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
+        /// <returns>A list of change results.</returns>
+        public virtual List<LinqFunnelChangeResult> Insert(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        {
+            List<LinqFunnelChangeResult> result = InsertWithoutSaveToDb(entityType, entity, entityIdentifier, saveChildren);
+            DB.SaveChanges();
+            return result;
+        }
+
+        /// <summary>
+        /// Inserts an entity to the database context and calls async save on the database.
+        /// </summary>
+        /// <param name="entityType">The Type of entity being inserted.</param>
+        /// <param name="entity">The entity being inserted.</param>
+        /// <param name="entityIdentifier">The value uniquely identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
+        /// <returns>A list of change results.</returns>
+        public async Task<List<LinqFunnelChangeResult>> InsertAsync(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        {
+            List<LinqFunnelChangeResult> result = InsertWithoutSaveToDb(entityType, entity, entityIdentifier, saveChildren);
+            await DB.SaveChangesAsync();
             return result;
         }
 
@@ -169,7 +288,7 @@
         /// <returns>Retruns the PropertyInfo corresponding to the column which is the surrogate key for the specified entity type.</returns>
         public virtual PropertyInfo GetEntitySurrogateKey<E>()
         {
-            return EntityReaderWindows.GetLinqToSqlEntitySurrogateKey<E>();
+            return EntityReader.GetLinqToSqlEntitySurrogateKey<E>();
         }
 
         /// <summary>
@@ -180,7 +299,7 @@
         /// <returns>Retruns the PropertyInfo corresponding to the column which is the surrogate key for the specified entity type.</returns>
         public virtual PropertyInfo GetEntitySurrogateKey(Type entityType)
         {
-            return EntityReaderWindows.GetLinqToSqlEntitySurrogateKey(entityType);
+            return EntityReader.GetLinqToSqlEntitySurrogateKey(entityType);
         }
 
         /// <summary>
@@ -190,7 +309,7 @@
         /// <returns>Returns true if the property is an identity column.</returns>
         public virtual bool IsIdentityColumn(PropertyInfo p)
         {
-            return EntityReaderWindows.IsLinqToSqlEntityPropertyIdentityColumn(p);
+            return EntityReader.IsLinqToSqlEntityPropertyIdentityColumn(p);
         }
 
         /// <summary>
@@ -200,10 +319,13 @@
         /// <typeparam name="E">The entity type i.e. the table whose original record will be updated.</typeparam>
         /// <param name="original">The original entity retrieved from the database.</param>
         /// <param name="latest">The latest entity received from the client.</param>
+        /// <param name="surrogateKeyValue">The value of the entity's surrogate key uniquely identifying the entity.</param>
+        /// <param name="entityIdentifier">The value unique identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results containing all the fields that were changed and their original and new values.</returns>
-        private List<LinqFunnelChangeResult> UpdateOriginalEntity<E>(E original, E latest, bool saveChildren) where E : class
+        protected virtual List<LinqFunnelChangeResult> UpdateOriginalEntity<E>(E original, E latest, object surrogateKeyValue, object entityIdentifier, bool saveChildren) where E : class
         {
-            return UpdateOriginalEntity(typeof(E), original, latest, saveChildren);
+            return UpdateOriginalEntity(typeof(E), original, latest, surrogateKeyValue, entityIdentifier, saveChildren);
         }
 
         /// <summary>
@@ -211,16 +333,26 @@
         /// column values of the latest entity to the original entity.
         /// </summary>
         /// <typeparam name="E">The entity type i.e. the table whose original record will be updated.</typeparam>
+        /// <param name="entityType">The Type of entity being inserted.</param>
         /// <param name="original">The original entity retrieved from the database.</param>
         /// <param name="latest">The latest entity received from the client.</param>
+        /// <param name="surrogateKeyValue">The value of the entity's surrogate key uniquely identifying the entity.</param>
+        /// <param name="entityIdentifier">The value unique identifiying the entity</param>
+        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results containing all the fields that were changed and their original and new values.</returns>
-        private List<LinqFunnelChangeResult> UpdateOriginalEntity(Type entityType, object original, object latest, bool saveChildren)
+        protected virtual List<LinqFunnelChangeResult> UpdateOriginalEntity(
+            Type entityType,
+            object original,
+            object latest,
+            object surrogateKeyValue,
+            object entityIdentifier,
+            bool saveChildren)
         {
             if (entityType != original.GetType())
             {
                 throw new ArgumentException(string.Format(
-                    "Entity Type of {0} does not match the original entity's type of {1}.", 
-                    entityType.FullName, 
+                    "Entity Type of {0} does not match the original entity's type of {1}.",
+                    entityType.FullName,
                     original.GetType().FullName));
             }
             if (original.GetType() != latest.GetType())
@@ -234,17 +366,15 @@
             PropertyInfo[] properties = entityType.GetProperties();
             foreach (PropertyInfo p in properties)
             {
-                object[] columnAttributes = p.GetCustomAttributes(typeof(ColumnAttribute), false);
-                ColumnAttribute columnAttribute = columnAttributes.Length < 1 ? null : (ColumnAttribute)columnAttributes[0];
-                object[] associationAttributes = p.GetCustomAttributes(typeof(AssociationAttribute), false);
-                AssociationAttribute associationAttribute = associationAttributes.Length < 1 ? null : (AssociationAttribute)associationAttributes[0];
-                if (!saveChildren && associationAttribute != null)
+                KeyAttribute keyAttribute = p.GetCustomAttribute<KeyAttribute>();
+                ForeignKeyAttribute foreignKeyAttribute = p.GetCustomAttribute<ForeignKeyAttribute>();
+                if (!saveChildren && foreignKeyAttribute != null)
                 {
                     continue;//Children should not be saved and this is a property holding the children.
                 }
-                if ((columnAttribute == null || columnAttribute.IsPrimaryKey) && associationAttribute == null)
+                if (keyAttribute != null || foreignKeyAttribute != null)
                 {
-                    continue;
+                    continue; //Property is either a key, or foreign key and therefore should be saved/updated.
                 }
                 object originalValue = p.GetValue(original, null);
                 object latestValue = p.GetValue(latest, null);
@@ -254,7 +384,9 @@
                 }
                 result.Add(new LinqFunnelChangeResult()
                 {
-                    Function = "UPDATE FIELD",
+                    SurrogateKey = surrogateKeyValue,
+                    EntityIdentifier = entityIdentifier,
+                    Function = "UPDATE",
                     DateChanged = DateTime.Now,
                     EntityChanged = entityType.Name,
                     FieldChanged = p.Name,
@@ -263,7 +395,6 @@
                 });
                 p.SetValue(original, latestValue, null);
             }
-            _contextIsFresh = false;
             return result;
         }
 
@@ -272,10 +403,12 @@
         /// </summary>
         /// <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
         /// <param name="entity">The entity to be deleted.</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
         /// <returns>Returns a list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> Delete<E>(E entity) where E : class
+        public virtual List<LinqFunnelChangeResult> Delete<E>(E entity, object entityIdentifier) where E : class
         {
-            return this.Delete<E, object>(entity, false);
+            List<LinqFunnelChangeResult> result = this.Delete<E, object>(entity, entityIdentifier, false);
+            return result;
         }
 
         /// <summary>
@@ -283,10 +416,41 @@
         /// </summary>
         /// <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
         /// <param name="entity">The entity to be deleted.</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
         /// <returns>Returns a list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> Delete(object entity)
+        public async virtual Task<List<LinqFunnelChangeResult>> DeleteAsync<E>(E entity, object entityIdentifier) where E : class
         {
-            return this.Delete(entity, false, null);
+            Task<List<LinqFunnelChangeResult>> taskResult = this.DeleteAsync<E, object>(entity, entityIdentifier, false);
+            await taskResult;
+            return taskResult.Result;
+        }
+
+        /// <summary>
+        /// Deletes an entity from the table corresponding to the entity type.
+        /// </summary>
+        /// <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
+        /// <param name="entity">The entity to be deleted.</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
+        /// <returns>Returns a list of change results.</returns>
+        public virtual List<LinqFunnelChangeResult> Delete(object entity, object entityIdentifier)
+        {
+            List<LinqFunnelChangeResult> result = this.DeleteWithoutSavingToDb(entity, entityIdentifier, false, null);
+            DB.SaveChanges();
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes an entity from the table corresponding to the entity type.
+        /// </summary>
+        /// <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
+        /// <param name="entity">The entity to be deleted.</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
+        /// <returns>Returns a list of change results.</returns>
+        public async virtual Task<List<LinqFunnelChangeResult>> DeleteAsync(object entity, object entityIdentifier)
+        {
+            List<LinqFunnelChangeResult> result = this.DeleteWithoutSavingToDb(entity, entityIdentifier, false, null);
+            await DB.SaveChangesAsync();
+            return result;
         }
 
         /// <summary>
@@ -297,13 +461,16 @@
         /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
         /// <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
         /// <param name="entity">The entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
         /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
         /// <returns>Returns a list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> Delete<E, T>(E entity, bool createTombstone)
+        public virtual List<LinqFunnelChangeResult> Delete<E, T>(E entity, object entityIdentifier, bool createTombstone)
             where E : class
             where T : class
         {
-            return Delete(entity, createTombstone, typeof(T));
+            List<LinqFunnelChangeResult> result = DeleteWithoutSavingToDb(entity, entityIdentifier, createTombstone, typeof(T));
+            DB.SaveChanges();
+            return result;
         }
 
         /// <summary>
@@ -314,13 +481,34 @@
         /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
         /// <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
         /// <param name="entity">The entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
         /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
         /// <returns>Returns a list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> Delete(object entity, bool createTombstone, Type tombstoneType)
+        public async virtual Task<List<LinqFunnelChangeResult>> DeleteAsync<E, T>(E entity, object entityIdentifier, bool createTombstone)
+            where E : class
+            where T : class
+        {
+            List<LinqFunnelChangeResult> result = DeleteWithoutSavingToDb(entity, entityIdentifier, createTombstone, typeof(T));
+            await DB.SaveChangesAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes an entity from the table correspoding to the entity type (E) and creates
+        /// a tombstone in the table correspoging to the tombstone entity type (T) if the 
+        /// createTombstone flag is set to true.
+        /// </summary>
+        /// <param name="entity">The entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
+        /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+        /// <param name="tombstoneType">The tombstone entity type i.e. the table where an tombstone will be created.</param>
+        /// <returns>Returns a list of change results.</returns>
+        protected virtual List<LinqFunnelChangeResult> DeleteWithoutSavingToDb(object entity, object entityIdentifier, bool createTombstone, Type tombstoneType)
         {
             Type entityType = entity.GetType();
             PropertyInfo surrogateKey = GetEntitySurrogateKey(entityType);
-            object original = GetEntityBySurrogateKey(entityType, surrogateKey.GetValue(entity, null), false);
+            object surrogateKeyValue = surrogateKey.GetValue(entity, null);
+            object original = GetEntityBySurrogateKey(entityType, surrogateKeyValue, false);
             if (original == null)
             {
                 throw new Exception(
@@ -335,22 +523,56 @@
                 object existingTombstone = GetEntityBySurrogateKey(tombstoneType, surrogateKey.GetValue(entity, null), false);
                 if (existingTombstone != null)
                 {
-                    DB.GetTable(tombstoneType).DeleteOnSubmit(existingTombstone);
+                    DB.Remove(existingTombstone);
                 }
-                DB.GetTable(tombstoneType).InsertOnSubmit(tombstone);
+                DB.Add(tombstone);
             }
-            DB.GetTable(entityType).DeleteOnSubmit(original);
-            DB.SubmitChanges();
+            DB.Remove(original);
 
             List<LinqFunnelChangeResult> result = new List<LinqFunnelChangeResult>();
             result.Add(new LinqFunnelChangeResult()
             {
+                SurrogateKey = surrogateKeyValue,
+                EntityIdentifier = entityIdentifier,
                 Function = "DELETE",
                 DateChanged = DateTime.Now,
                 EntityChanged = entityType.Name,
                 FieldChanged = surrogateKey.Name,
-            });
-            _contextIsFresh = false;
+            }); ;
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes an entity from the table correspoding to the entity type (E) and creates
+        /// a tombstone in the table correspoging to the tombstone entity type (T) if the 
+        /// createTombstone flag is set to true.
+        /// </summary>
+        /// <param name="entity">The entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
+        /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+        /// <param name="tombstoneType">The tombstone entity type i.e. the table where an tombstone will be created.</param>
+        /// <returns>Returns a list of change results.</returns>
+        public virtual List<LinqFunnelChangeResult> Delete(object entity, object entityIdentifier, bool createTombstone, Type tombstoneType)
+        {
+            List<LinqFunnelChangeResult> result = DeleteWithoutSavingToDb(entity, entityIdentifier, createTombstone, tombstoneType);
+            DB.SaveChanges();
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes an entity from the table correspoding to the entity type (E) and creates
+        /// a tombstone in the table correspoging to the tombstone entity type (T) if the 
+        /// createTombstone flag is set to true.
+        /// </summary>
+        /// <param name="entity">The entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
+        /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+        /// <param name="tombstoneType">The tombstone entity type i.e. the table where an tombstone will be created.</param>
+        /// <returns>Returns a list of change results.</returns>
+        public async virtual Task<List<LinqFunnelChangeResult>> DeleteAsync(object entity, object entityIdentifier, bool createTombstone, Type tombstoneType)
+        {
+            List<LinqFunnelChangeResult> result = DeleteWithoutSavingToDb(entity, entityIdentifier, createTombstone, tombstoneType);
+            await DB.SaveChangesAsync();
             return result;
         }
 
@@ -358,22 +580,24 @@
         /// Deletes an entity from the table corresponding to the entity type.
         /// </summary>
         /// <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
-        /// <param name="surrogatekeyValue">The entity to be deleted.</param>
+        /// <param name="surrogateKeyValue">The entity to be deleted.</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
         /// <returns>Returns a list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey<E>(object surrogateKeyValue) where E : class
+        public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey<E>(object surrogateKeyValue, object entityIdentifier) where E : class
         {
-            return this.DeleteBySurrogateKey<E, object>(surrogateKeyValue, false);
+            return this.DeleteBySurrogateKey<E, object>(surrogateKeyValue, entityIdentifier, false);
         }
 
         /// <summary>
         /// Deletes an entity from the table corresponding to the entity type.
         /// </summary>
-        /// <typeparam name="E">The entity type i.e. which table it will be deleted from.</typeparam>
-        /// <param name="surrogatekeyValue">The entity to be deleted.</param>
+        /// <param name="surrogateKeyValue">The surrogate key value uniquely identifying the entity to be deleted.</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
+        /// <param name="entityType">The type of the entity to be deleted.</param>
         /// <returns>Returns a list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey(object surrogateKeyValue, Type entityType)
+        public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey(object surrogateKeyValue, object entityIdentifier, Type entityType)
         {
-            return this.DeleteBySurrogateKey(surrogateKeyValue, false, entityType, null);
+            return this.DeleteBySurrogateKeyWithoutSavingToDb(surrogateKeyValue, entityIdentifier, false, entityType, null);
         }
 
         /// <summary>
@@ -386,11 +610,11 @@
         /// <param name="surrogateKeyValue">The surrogate key of the entity to be deleted</param>
         /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
         /// <returns>Returns a list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey<E, T>(object surrogateKeyValue, bool createTombstone)
+        public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey<E, T>(object surrogateKeyValue, object entityIdentifier, bool createTombstone)
             where E : class
             where T : class
         {
-            return DeleteBySurrogateKey(surrogateKeyValue, createTombstone, typeof(E), typeof(T));
+            return DeleteBySurrogateKeyWithoutSavingToDb(surrogateKeyValue, entityIdentifier, createTombstone, typeof(E), typeof(T));
         }
 
         /// <summary>
@@ -401,11 +625,15 @@
         /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
         /// <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
         /// <param name="surrogateKeyValue">The surrogate key of the entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
         /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+        /// <param name="entityType">The type of the entity to be deleted.</param>
+        /// <param name="tombstoneType">The type of the entity serving as the tombstone where the entity will be archited i.e. the tombstone table.</param>
         /// <returns>Returns a list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey(
-            object surrogateKeyValue, 
-            bool createTombstone, 
+        protected virtual List<LinqFunnelChangeResult> DeleteBySurrogateKeyWithoutSavingToDb(
+            object surrogateKeyValue,
+            object entityIdentifier,
+            bool createTombstone,
             Type entityType,
             Type tombstoneType)
         {
@@ -425,22 +653,72 @@
                 object existingTombstone = GetEntityBySurrogateKey(tombstoneType, surrogateKeyValue, false);
                 if (existingTombstone != null)
                 {
-                    DB.GetTable(tombstoneType).DeleteOnSubmit(existingTombstone);
+                    DB.Remove(existingTombstone);
                 }
-                DB.GetTable(tombstoneType).InsertOnSubmit(tombstone);
+                DB.Add(tombstone);
             }
-            DB.GetTable(entityType).DeleteOnSubmit(original);
-            DB.SubmitChanges();
+            DB.Add(original);
 
             List<LinqFunnelChangeResult> result = new List<LinqFunnelChangeResult>();
             result.Add(new LinqFunnelChangeResult()
             {
+                SurrogateKey = surrogateKeyValue,
+                EntityIdentifier = entityIdentifier,
                 Function = "DELETE",
                 DateChanged = DateTime.Now,
                 EntityChanged = entityType.Name,
                 FieldChanged = surrogateKey.Name,
             });
-            _contextIsFresh = false;
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes an entity from the table with the specified surrogate key correspoding to the entity type (E) and creates
+        /// a tombstone in the table correspoging to the tombstone entity type (T) if the 
+        /// createTombstone flag is set to true.
+        /// </summary>
+        /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+        /// <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
+        /// <param name="surrogateKeyValue">The surrogate key of the entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
+        /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+        /// <param name="entityType">The type of the entity to be deleted.</param>
+        /// <param name="tombstoneType">The type of the entity serving as the tombstone where the entity will be archited i.e. the tombstone table.</param>
+        /// <returns>Returns a list of change results.</returns>
+        public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey(
+            object surrogateKeyValue,
+            object entityIdentifier,
+            bool createTombstone,
+            Type entityType,
+            Type tombstoneType)
+        {
+            List<LinqFunnelChangeResult> result = DeleteBySurrogateKeyWithoutSavingToDb(surrogateKeyValue, entityIdentifier, createTombstone, entityType, tombstoneType);
+            DB.SaveChanges();
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes an entity from the table with the specified surrogate key correspoding to the entity type (E) and creates
+        /// a tombstone in the table correspoging to the tombstone entity type (T) if the 
+        /// createTombstone flag is set to true.
+        /// </summary>
+        /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+        /// <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
+        /// <param name="surrogateKeyValue">The surrogate key of the entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
+        /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
+        /// <param name="entityType">The type of the entity to be deleted.</param>
+        /// <param name="tombstoneType">The type of the entity serving as the tombstone where the entity will be archited i.e. the tombstone table.</param>
+        /// <returns>Returns a list of change results.</returns>
+        public async virtual Task<List<LinqFunnelChangeResult>> DeleteBySurrogateKeyAsync(
+            object surrogateKeyValue,
+            object entityIdentifier,
+            bool createTombstone,
+            Type entityType,
+            Type tombstoneType)
+        {
+            List<LinqFunnelChangeResult> result = DeleteBySurrogateKeyWithoutSavingToDb(surrogateKeyValue, entityIdentifier, createTombstone, entityType, tombstoneType);
+            await DB.SaveChangesAsync();
             return result;
         }
 
@@ -450,21 +728,78 @@
         /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
         /// <param name="dateFieldName">The field name on the entity which must a date time field .</param>
         /// <param name="time">The time relative to the current time i.e. current time subracted by the this time sets the threshhold for entities deleted.</param>
-        public virtual void DeleteOlderThan<E>(string dateFieldName, TimeSpan time) where E : class
+        protected virtual List<LinqFunnelChangeResult> DeleteOlderThanWithoutSavingToDb<E>(string dateFieldName, TimeSpan time) where E : class
         {
-            DeleteOlderThan(typeof(E), dateFieldName, time);
+            DateTime threshold = DateTime.Now.Subtract(time);
+            DbSet<E> table = DB.Set<E>();
+            Type entityType = typeof(E);
+            PropertyInfo dateField = entityType.GetProperty(dateFieldName);
+            if ((dateField == null) || (dateField.PropertyType != typeof(DateTime)))
+            {
+                throw new Exception(
+                    string.Format("Entity {0} does not contain the DateTime field with the name {1}",
+                    entityType.Name,
+                    dateFieldName));
+            }
+            List<object> toDelete = new List<object>();
+            List<LinqFunnelChangeResult> result = new List<LinqFunnelChangeResult>();
+            foreach (E entity in table)
+            {
+                if ((DateTime)dateField.GetValue(entity, null) < threshold)
+                {
+                    table.Remove(entity);
+                    PropertyInfo surrogateKey = GetEntitySurrogateKey<E>();
+                    object surrogateKeyValue = surrogateKey.GetValue(entity, null);
+                    result.Add(new LinqFunnelChangeResult()
+                    {
+                        SurrogateKey = surrogateKeyValue,
+                        EntityIdentifier = null,
+                        Function = "DELETE",
+                        DateChanged = DateTime.Now,
+                        EntityChanged = entityType.Name,
+                        FieldChanged = surrogateKey.Name,
+                    });
+                }
+            }
+            return result;
         }
 
-                /// <summary>
+        /// <summary>
         /// Deletes all the entities in a given table older than the time specified.
         /// </summary>
         /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
         /// <param name="dateFieldName">The field name on the entity which must a date time field .</param>
         /// <param name="time">The time relative to the current time i.e. current time subracted by the this time sets the threshhold for entities deleted.</param>
-        public virtual void DeleteOlderThan(Type entityType, string dateFieldName, TimeSpan time)
+        public virtual List<LinqFunnelChangeResult> DeleteOlderThan<E>(string dateFieldName, TimeSpan time) where E : class
+        {
+            List<LinqFunnelChangeResult> result = this.DeleteOlderThan<E>(dateFieldName, time);
+            DB.SaveChanges();
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes all the entities in a given table older than the time specified.
+        /// </summary>
+        /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
+        /// <param name="dateFieldName">The field name on the entity which must a date time field .</param>
+        /// <param name="time">The time relative to the current time i.e. current time subracted by the this time sets the threshhold for entities deleted.</param>
+        public async virtual Task<List<LinqFunnelChangeResult>> DeleteOlderThanAsync<E>(string dateFieldName, TimeSpan time) where E : class
+        {
+            List<LinqFunnelChangeResult> result = this.DeleteOlderThanWithoutSavingToDb<E>(dateFieldName, time);
+            await DB.SaveChangesAsync();
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes all the entities in a given table older than the time specified.
+        /// </summary>
+        /// <param name="entityType">The Type of the entity to be deleted.</param>
+        /// <param name="dateFieldName">The field name on the entity which must a date time field .</param>
+        /// <param name="time">The time relative to the current time i.e. current time subracted by the this time sets the threshhold for entities deleted.</param>
+        protected virtual void DeleteOlderThanWithoutSavingToDb(Type entityType, string dateFieldName, TimeSpan time)
         {
             DateTime threshold = DateTime.Now.Subtract(time);
-            ITable table = DB.GetTable(entityType);
+            IQueryable table = DB.Set(entityType);
             PropertyInfo dateField = entityType.GetProperty(dateFieldName);
             if ((dateField == null) || (dateField.PropertyType != typeof(DateTime)))
             {
@@ -478,11 +813,56 @@
             {
                 if ((DateTime)dateField.GetValue(e, null) < threshold)
                 {
-                    table.DeleteOnSubmit(e);
+                    DB.Remove(e);
                 }
             }
-            DB.SubmitChanges();
-            _contextIsFresh = false;
+        }
+
+        /// <summary>
+        /// Deletes all the entities in a given table older than the time specified.
+        /// </summary>
+        /// <param name="entityType">The Type of the entity to be deleted.</param>
+        /// <param name="dateFieldName">The field name on the entity which must a date time field .</param>
+        /// <param name="time">The time relative to the current time i.e. current time subracted by the this time sets the threshhold for entities deleted.</param>
+        public virtual void DeleteOlderThan(Type entityType, string dateFieldName, TimeSpan time)
+        {
+            DeleteOlderThanWithoutSavingToDb(entityType, dateFieldName, time);
+            DB.SaveChanges();
+        }
+
+        /// <summary>
+        /// Deletes all the entities in a given table older than the time specified.
+        /// </summary>
+        /// <param name="entityType">The Type of the entity to be deleted.</param>
+        /// <param name="dateFieldName">The field name on the entity which must a date time field .</param>
+        /// <param name="time">The time relative to the current time i.e. current time subracted by the this time sets the threshhold for entities deleted.</param>
+        public async virtual void DeleteOlderThanAsync(Type entityType, string dateFieldName, TimeSpan time)
+        {
+            DeleteOlderThanWithoutSavingToDb(entityType, dateFieldName, time);
+            await DB.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Deletes all entities from the table corresponding to the entity type.
+        /// </summary>
+        /// <typeparam name="E">The entity type i.e. of the table whose records (entities) will be deleted.</typeparam>
+        protected virtual List<LinqFunnelChangeResult> DeleteAllWithoutSavingToDb<E>() where E : class
+        {
+            DbSet<E> table = DB.Set<E>();
+            List<E> entities = new List<E>();
+            foreach (E e in table)
+            {
+                entities.Add(e);
+            }
+            table.RemoveRange(entities);
+            List<LinqFunnelChangeResult> result = new List<LinqFunnelChangeResult>();
+            result.Add(new LinqFunnelChangeResult()
+            {
+                Function = "DELETE ALL",
+                DateChanged = DateTime.Now,
+                EntityChanged = typeof(E).Name,
+            });
+            return result;
         }
 
         /// <summary>
@@ -491,7 +871,20 @@
         /// <typeparam name="E">The entity type i.e. of the table whose records (entities) will be deleted.</typeparam>
         public virtual List<LinqFunnelChangeResult> DeleteAll<E>() where E : class
         {
-            return DeleteAll(typeof(E));
+            List<LinqFunnelChangeResult> result = DeleteAllWithoutSavingToDb<E>();
+            DB.SaveChanges();
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes all entities from the table corresponding to the entity type.
+        /// </summary>
+        /// <typeparam name="E">The entity type i.e. of the table whose records (entities) will be deleted.</typeparam>
+        public async virtual Task<List<LinqFunnelChangeResult>> DeleteAllAsync<E>() where E : class
+        {
+            List<LinqFunnelChangeResult> result = DeleteAllWithoutSavingToDb<E>();
+            await DB.SaveChangesAsync();
+            return result;
         }
 
         /// <summary>
@@ -500,14 +893,14 @@
         /// <typeparam name="E">The entity type i.e. of the table whose records (entities) will be deleted.</typeparam>
         public virtual List<LinqFunnelChangeResult> DeleteAll(Type entityType)
         {
-            ITable table = DB.GetTable(entityType);
+            IQueryable table = DB.Set(entityType);
             List<object> entities = new List<object>();
             foreach (object e in table)
             {
                 entities.Add(e);
             }
-            table.DeleteAllOnSubmit(entities);
-            DB.SubmitChanges();
+            DB.RemoveRange(entities);
+            DB.SaveChanges();
 
             List<LinqFunnelChangeResult> result = new List<LinqFunnelChangeResult>();
             result.Add(new LinqFunnelChangeResult()
@@ -516,7 +909,6 @@
                 DateChanged = DateTime.Now,
                 EntityChanged = entityType.Name,
             });
-            _contextIsFresh = false;
             return result;
         }
 
@@ -537,6 +929,8 @@
         /// Copies all the values from the original entity to a tombstone entity. If the fields/columns on the two entities
         /// do not match an exception will be thrown.
         /// </summary>
+        /// <param name="entityType">The Type of the original entity to be copied to the tombstone entity.</param>
+        /// <param name="tombstoneType">The Type of the tombstone entity containing the same fields/columns as the original entity.</param>
         /// <param name="original">The original entity retrieved from the database.</param>
         /// <param name="tombstone">The tombstone entity containing the same fields/columns as the original entity.</param>
         public virtual void CopyToTombstoneEntity(Type entityType, Type tombstoneType, object original, object tombstone)
@@ -563,14 +957,6 @@
             }
         }
 
-        private void SetDeferredLoadingEnabled(bool value)
-        {
-            if (_contextIsFresh && DB.DeferredLoadingEnabled != value)
-            {
-                DB.DeferredLoadingEnabled = value;
-            }
-        }
-
         /// <summary>
         /// Queries for and returns the first entity filtered by the specified expression.
         /// </summary>
@@ -591,7 +977,7 @@
         /// <returns>Returns the first entity filtered by the specified expression.</returns>
         public virtual E GetFirstEntity<E>(Expression<Func<E, bool>> expression, bool throwExceptionOnNotFound) where E : class
         {
-            E result = DB.GetTable<E>().Where(expression.Compile()).FirstOrDefault();
+            E result = DB.Set<E>().Where(expression.Compile()).FirstOrDefault();
             if (result == null && throwExceptionOnNotFound)
             {
                 throw new Exception(string.Format("Could not find {0} for expression {1}'.",
@@ -609,7 +995,7 @@
         /// <returns>Returns a list of entities filtered by the specified expression.</returns>
         public virtual List<E> GetEntities<E>(Expression<Func<E, bool>> expression) where E : class
         {
-            return DB.GetTable<E>().Where(expression.Compile()).ToList();
+            return DB.Set<E>().Where(expression.Compile()).ToList();
         }
 
         //public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue, bool loadChildren, bool throwExceptionOnNotFound)
@@ -661,7 +1047,7 @@
         /// <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
         public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue, bool loadChildren, bool throwExceptionOnNotFound)
         {
-            MethodInfo methodDefinition = GetType().GetMethod("GetEntityBySurrogateKey", new Type[] { typeof(object), typeof(bool), typeof(bool)}); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
+            MethodInfo methodDefinition = GetType().GetMethod("GetEntityBySurrogateKey", new Type[] { typeof(object), typeof(bool), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
             MethodInfo method = methodDefinition.MakeGenericMethod(entityType);
             return method.Invoke(this, new object[] { keyValue, loadChildren, throwExceptionOnNotFound });
         }
@@ -690,7 +1076,6 @@
         /// <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
         public virtual E GetEntityBySurrogateKey<E>(object keyValue, bool loadChildren, bool throwExceptionOnNotFound) where E : class
         {
-            SetDeferredLoadingEnabled(loadChildren);
             Type entityType = typeof(E);
             PropertyInfo surrogateKey = GetEntitySurrogateKey(entityType);
             object keyValueConverted = EntityReader.ConvertValueTypeTo(keyValue, surrogateKey.PropertyType);
@@ -699,12 +1084,7 @@
             ConstantExpression constantExpression = Expression.Constant(keyValueConverted, surrogateKey.PropertyType); //Value of the surrogate key : right hand side of the expression.
             BinaryExpression binaryExpression = Expression.Equal(memberExpression, constantExpression);
             Expression<Func<E, bool>> lambdaExpression = Expression.Lambda<Func<E, bool>>(binaryExpression, e);
-            E result = DB.GetTable<E>().SingleOrDefault(lambdaExpression);
-            if (result == null && throwExceptionOnNotFound)
-            {
-                throw new NullReferenceException($"{nameof(GetEntityBySurrogateKey)} could not find entity {typeof(E).Name} with key value of '{keyValue}'.");
-            }
-            return result;
+            return DB.Set<E>().SingleOrDefault(lambdaExpression);
         }
 
         /// <summary>
@@ -753,8 +1133,8 @@
             MethodInfo methodDefinition = GetType().GetMethod("GetEntitiesByField", new Type[] { typeof(string), typeof(object), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
             MethodInfo method = methodDefinition.MakeGenericMethod(entityType);
             object queryResult = method.Invoke(this, new object[] { fieldName, fieldValue, loadChildren });
-            IList genericList = (IList)queryResult;
-            List <object> result = new List<object>();
+            System.Collections.IList genericList = (System.Collections.IList)queryResult;
+            List<object> result = new List<object>();
             foreach (var e in genericList)
             {
                 result.Add(e);
@@ -773,8 +1153,6 @@
         /// <returns>Returns a list of entities of the specified type with the specified field/column and field value.</returns>
         public virtual List<E> GetEntitiesByField<E>(string fieldName, object fieldValue, bool loadChildren) where E : class
         {
-            SetDeferredLoadingEnabled(loadChildren);
-
             Type entityType = typeof(E);
             PropertyInfo field = entityType.GetProperty(fieldName);
             object keyValueConverted = EntityReader.ConvertValueTypeTo(fieldValue, field.PropertyType);
@@ -783,7 +1161,7 @@
             ConstantExpression constantExpression = Expression.Constant(keyValueConverted, field.PropertyType); //Value of the surrogate key : right hand side of the expression.
             BinaryExpression binaryExpression = Expression.Equal(memberExpression, constantExpression);
             Expression<Func<E, bool>> lambdaExpression = Expression.Lambda<Func<E, bool>>(binaryExpression, e);
-            return DB.GetTable<E>().Where(lambdaExpression).ToList();
+            return DB.Set<E>().Where(lambdaExpression).ToList();
         }
 
         /// <summary>
@@ -805,13 +1183,9 @@
         /// <returns>Returns all the entities of the specified type.</returns>
         public virtual List<object> GetAllEntities(Type entityType, bool loadChildren)
         {
-            if (loadChildren)
-            {
-                DB.DeferredLoadingEnabled = true;
-            }
-            _contextIsFresh = false;
             List<object> result = new List<object>();
-            foreach(object e in DB.GetTable(entityType))
+            IQueryable table = DB.Set(entityType);
+            foreach (object e in table)
             {
                 result.Add(e);
             }
@@ -825,8 +1199,7 @@
         /// <returns>Returns the total count of an entity type.</returns>
         public virtual int GetTotalCount<E>() where E : class
         {
-            _contextIsFresh = false;
-            return DB.GetTable<E>().Count();
+            return DB.Set<E>().Count();
         }
 
         /// <summary>
@@ -836,8 +1209,7 @@
         /// <returns>Returns the total count of an entity type.</returns>
         public virtual long GetTotalCountLong<E>() where E : class
         {
-            _contextIsFresh = false;
-            return DB.GetTable<E>().LongCount();
+            return DB.Set<E>().LongCount();
         }
 
         /// <summary>
@@ -847,7 +1219,6 @@
         /// <returns>Returns the total count of an entity type.</returns>
         public virtual int GetTotalCount(Type entityType)
         {
-            _contextIsFresh = false;
             return GetAllEntities(entityType, false).Count;
         }
 
@@ -858,47 +1229,12 @@
         /// <returns>Returns the total count of an entity type.</returns>
         public virtual long GetTotalCountLong(Type entityType)
         {
-            _contextIsFresh = false;
             return GetAllEntities(entityType, false).LongCount();
         }
 
         /// <summary>
-        /// Searches through all changes that caused a concurrency conflict in the DataContext and 
-        /// compiles an error message listing all the conflicts on all tables and each member (field) that caused the conflicts.
-        /// This method should be called after having called SubmitChanges on a DataContext and where a ChangeConflictException
-        /// has occured.
+        /// Disposes the underlying Entity Framework DbContext.
         /// </summary>
-        /// <returns></returns>
-        public static string GetLinqToSqlChangeConflictErrorMessage(DataContext dataContext)
-        {
-            StringBuilder result = new StringBuilder();
-            result.AppendLine("LINQ to SQL optimistic concurrency error:");
-            result.AppendLine();
-            foreach (ObjectChangeConflict conflict in dataContext.ChangeConflicts)
-            {
-                MetaTable metatable = dataContext.Mapping.GetTable(conflict.Object.GetType());
-                result.AppendLine($"Conflict Table name: {metatable.TableName}");
-                object entityInConflict = conflict.Object;
-                PropertyInfo surrogateKey = EntityReaderWindows.GetLinqToSqlEntitySurrogateKey(entityInConflict.GetType());
-                bool containsIdentityColumn = EntityReaderWindows.IsLinqToSqlEntityPropertyIdentityColumn(surrogateKey);
-                object surrogateKeyValue = surrogateKey.GetValue(entityInConflict, null);
-                result.Append($"Conflict Entity ID: {surrogateKeyValue}");
-                foreach (MemberChangeConflict memberConflict in conflict.MemberConflicts)
-                {
-                    object currentValue = memberConflict.CurrentValue;
-                    object originalValue = memberConflict.OriginalValue;
-                    object databaseValue = memberConflict.DatabaseValue;
-                    MemberInfo member = memberConflict.Member;
-                    result.AppendLine($"Conflict Member: {member.Name}");
-                    result.AppendLine($"Current Value: {currentValue}");
-                    result.AppendLine($"Original Value {originalValue}");
-                    result.AppendLine($"Database Value: {databaseValue}");
-                }
-                result.AppendLine();
-            }
-            return result.ToString();
-        }
-
         public void Dispose()
         {
             if (_db != null)

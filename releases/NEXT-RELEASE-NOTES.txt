@@ -19,3 +19,7 @@
 *   Removed validation on EntityCache generic when adding entities so that it doesn't throw an exception if an entity already exists with that key.
 *   Added string propertyNameFilter parameter on all sql and sqlite queries to allow filtering for only certain properties of the entity containing that text in their name to be read from the reader to an entity.
 *   Added extra GetConfirmationModelFromSearchParametersString overloads for getting entity ID and parent entity ID out of search parameters to controllers.
+*   Moved the ServerResult and related classes to the NKit.Standard project.
+*   Created NKit.Core project with the following new features/classes.
+    -   LinqEntityContextCore and LinqFunnelContextCore for running CRUD queries against an Entity Framework DbContext. Currently only targeting Sql Server.
+        -   Supports both synchronous and asynchronous operations on the DbContext.
