@@ -28,3 +28,4 @@
 *   Added an overload of GetConfirmationModelFromSearchParametersString to NToolkitControllerWindows.
 *   Added GetFormDataQueryString method to WebServiceClient.
 *   Implemented unique identifier and entity identifier on the linq funnel context, entity windows context and rest service for storing those fields on the LinqFunnelChangeResult.
+*   Added ANY MimeContentType.
