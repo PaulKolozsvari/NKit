@@ -7,14 +7,13 @@
     using System.Data.Linq;
     using System.Reflection;
     using System.Transactions;
-    using NKit.Data;
-    using NKit.Data.DB.LINQ.Logging;
-    using NKit.Web.Service;
     using System.Data;
-    using NKit.Data.DB.SQLServer;
     using System.Data.SqlClient;
     using System.Threading;
     using NKit.Standard.Data.DB.LINQ;
+    using NKit.Web.Service;
+    using NKit.Data.DB.SQLServer;
+    using NKit.Data.DB.LINQ.Logging;
 
     #endregion //Using Directives
 
@@ -101,7 +100,7 @@
         protected TransactionScopeOption _transactionScopeOption;
         protected TransactionOptions _transactionOptions;
         protected int _transactionDeadlockRetryAttempts;
-        private int _transactionDeadlockRetryWaitPeriod;
+        protected int _transactionDeadlockRetryWaitPeriod;
 
         #endregion //Fields
 
@@ -163,7 +162,7 @@
                     {
                         foreach (E e in entities)
                         {
-                            base.Save<E>(e, saveChildren).ForEach(c => HandleChange(c, userId, userName));
+                            base.Save<E>(e, null, saveChildren).ForEach(c => HandleChange(c, userId, userName));
                         }
                         t.Complete();
                     }
@@ -192,9 +191,9 @@
         }
 
         public ServiceProcedureResult Save(
-            Type entityType, 
-            List<object> entities, 
-            Nullable<Guid> userId, 
+            Type entityType,
+            List<object> entities,
+            Nullable<Guid> userId,
             string userName,
             bool saveChildren)
         {
@@ -207,7 +206,7 @@
                     {
                         foreach (object e in entities)
                         {
-                            base.Save(entityType, e, false).ForEach(c => HandleChange(c, userId, userName));
+                            base.Save(entityType, e, null, false).ForEach(c => HandleChange(c, userId, userName));
                         }
                         t.Complete();
                     }
@@ -250,7 +249,7 @@
                     {
                         foreach (E e in entities)
                         {
-                            base.Insert<E>(e, false).ForEach(c => HandleChange(c, userId, userName)); 
+                            base.Insert<E>(e, null, false).ForEach(c => HandleChange(c, userId, userName));
                         }
                         t.Complete();
                     }
@@ -294,7 +293,7 @@
                     {
                         foreach (object e in entities)
                         {
-                            base.Insert(entityType, e, false).ForEach(c => HandleChange(c, userId, userName));
+                            base.Insert(entityType, e, null, false).ForEach(c => HandleChange(c, userId, userName));
                         }
                         t.Complete();
                     }
@@ -323,7 +322,7 @@
         }
 
         public ServiceProcedureResult Delete<E>(
-            List<E> entities, 
+            List<E> entities,
             Nullable<Guid> userId,
             string userName) where E : class
         {
@@ -336,7 +335,7 @@
                     {
                         foreach (E e in entities)
                         {
-                            base.Delete<E>(e).ForEach(c => HandleChange(c, userId, userName));
+                            base.Delete<E>(e, null).ForEach(c => HandleChange(c, userId, userName));
                         }
                         t.Complete();
                     }
@@ -365,7 +364,7 @@
         }
 
         public ServiceProcedureResult Delete(
-            Type entityType, 
+            Type entityType,
             List<object> entities,
             Nullable<Guid> userId,
             string userName)
@@ -379,7 +378,7 @@
                     {
                         foreach (object e in entities)
                         {
-                            base.Delete(e).ForEach(c => HandleChange(c, userId, userName));
+                            base.Delete(e, null).ForEach(c => HandleChange(c, userId, userName));
                         }
                         t.Complete();
                     }
@@ -408,7 +407,7 @@
         }
 
         public ServiceProcedureResult DeleteBySurrogateKey<E>(
-            List<object> surrogateKeys, 
+            List<object> surrogateKeys,
             Nullable<Guid> userId,
             string userName) where E : class
         {
@@ -421,7 +420,7 @@
                     {
                         foreach (object keyValue in surrogateKeys)
                         {
-                            base.DeleteBySurrogateKey<E>(keyValue).ForEach(c => HandleChange(c, userId, userName));
+                            base.DeleteBySurrogateKey<E>(keyValue, null).ForEach(c => HandleChange(c, userId, userName));
                         }
                         t.Complete();
                     }
@@ -450,8 +449,8 @@
         }
 
         public ServiceProcedureResult DeleteBySurrogateKey(
-            Type entityType, 
-            List<object> surrogateKeys, 
+            Type entityType,
+            List<object> surrogateKeys,
             Nullable<Guid> userId,
             string userName)
         {
@@ -464,7 +463,7 @@
                     {
                         foreach (object key in surrogateKeys)
                         {
-                            base.DeleteBySurrogateKey(key, entityType).ForEach(c => HandleChange(c, userId, userName));
+                            base.DeleteBySurrogateKey(key, null, entityType).ForEach(c => HandleChange(c, userId, userName));
                         }
                         t.Complete();
                     }
@@ -570,8 +569,8 @@
         }
 
         public ServiceFunctionResult<E> GetEntityBySurrogateKey<E>(
-            object keyValue, 
-            bool loadChildren, 
+            object keyValue,
+            bool loadChildren,
             Nullable<Guid> userId,
             string userName) where E : class
         {
@@ -590,9 +589,9 @@
         }
 
         public ServiceFunctionResult<object> GetEntityBySurrogateKey(
-            Type entityType, 
-            object keyValue, 
-            bool loadChildren, 
+            Type entityType,
+            object keyValue,
+            bool loadChildren,
             Nullable<Guid> userId,
             string userName)
         {
@@ -611,9 +610,9 @@
         }
 
         public ServiceFunctionResult<List<E>> GetEntitiesByField<E>(
-            string fieldName, 
-            object fieldValue, 
-            bool loadChildren, 
+            string fieldName,
+            object fieldValue,
+            bool loadChildren,
             Nullable<Guid> userId,
             string userName) where E : class
         {
@@ -632,10 +631,10 @@
         }
 
         public ServiceFunctionResult<List<object>> GetEntitiesByField(
-            Type entityType, 
-            string fieldName, 
-            object fieldValue, 
-            bool loadChildren, 
+            Type entityType,
+            string fieldName,
+            object fieldValue,
+            bool loadChildren,
             Nullable<Guid> userId,
             string userName)
         {
@@ -654,8 +653,8 @@
         }
 
         public ServiceFunctionResult<List<E>> GetAllEntities<E>(
-            bool loadChildren, 
-            Nullable<Guid> userId, 
+            bool loadChildren,
+            Nullable<Guid> userId,
             string userName) where E : class
         {
             try
@@ -673,9 +672,9 @@
         }
 
         public ServiceFunctionResult<List<object>> GetAllEntities(
-            Type entityType, 
-            bool loadChildren, 
-            Nullable<Guid> userId, 
+            Type entityType,
+            bool loadChildren,
+            Nullable<Guid> userId,
             string userName)
         {
             try
@@ -693,7 +692,7 @@
         }
 
         public ServiceFunctionResult<int> GetTotalCount<E>(
-            Nullable<Guid> userId, 
+            Nullable<Guid> userId,
             string userName) where E : class
         {
             try
@@ -762,7 +761,7 @@
                 EntityChanged = change.EntityChanged,
                 FieldChanged = change.FieldChanged
             };
-            if(userId.HasValue && !string.IsNullOrEmpty(userName))
+            if (userId.HasValue && !string.IsNullOrEmpty(userName))
             {
                 serverAction.UserId = userId;
                 serverAction.UserName = userName;
@@ -875,7 +874,7 @@
                     result.Add(column);
                 }
             }
-             return result;
+            return result;
         }
 
         public List<SqlDatabaseTableWindows> GetSqlDatabaseTableNames()

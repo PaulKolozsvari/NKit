@@ -106,6 +106,7 @@
             ThreadHelper.GetCurrentThreadCount(out int workerThreadsRunning, out int completionPortThreadsRunning);
             int totalThreadsRunning = ThreadHelper.GetTotalThreadsRunningCountInCurrentProcess();
             logMessage.AppendLine($"Request URI: {GetCurrentRequestUri()}");
+            logMessage.AppendLine($"Request Verb: {WebOperationContext.Current.IncomingRequest.Method}");
             logMessage.AppendLine($"Service Instance ID: {_serviceInstanceId}");
             logMessage.AppendLine($"Worker Threads Running: {workerThreadsRunning}");
             logMessage.AppendLine($"Completion Port Threads Running: {completionPortThreadsRunning}");
@@ -340,7 +341,7 @@
                     entityType,
                     new List<object>() { inputEntity },
                     userId,
-                    userName, 
+                    userName,
                     false);
                 if (OnAfterPut != null)
                 {

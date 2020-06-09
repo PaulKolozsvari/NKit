@@ -14,6 +14,7 @@
     using System.Security.Principal;
     using NKit.Utilities;
     using NKit.Utilities.Logging;
+    using System.Collections.Specialized;
 
     #endregion //Using Directives
 
@@ -98,6 +99,25 @@
         #endregion //Properties
 
         #region Methods
+
+        #region Utility Methods
+
+        /// <summary>
+        /// Returns the query string to populate form-data fields, from a passed in a dictionary of field names and their values.
+        /// </summary>
+        /// <param name="formDataFields"></param>
+        /// <returns>Returns query string for form-data post requests.</returns>
+        public static string GetFormDataQueryString(Dictionary<string, string> formDataFields)
+        {
+            NameValueCollection result = System.Web.HttpUtility.ParseQueryString(String.Empty);
+            foreach (KeyValuePair<string, string> field in formDataFields)
+            {
+                result.Add(field.Key, field.Value);
+            }
+            return result.ToString();
+        }
+
+        #endregion //Utility Methods
 
         /// <summary>
         /// Performs a GET operation to the server at the base URL to determine if it can reach the server.

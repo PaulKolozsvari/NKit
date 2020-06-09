@@ -23,3 +23,8 @@
 *   Created NKit.Core project with the following new features/classes.
     -   LinqEntityContextCore and LinqFunnelContextCore for running CRUD queries against an Entity Framework DbContext. Currently only targeting Sql Server.
         -   Supports both synchronous and asynchronous operations on the DbContext.
+*   Added verb to be logged in the WcfRestServiceWindows.
+*   Added FORM_DATA content type to MimeContentType.
+*   Added an overload of GetConfirmationModelFromSearchParametersString to NToolkitControllerWindows.
+*   Added GetFormDataQueryString method to WebServiceClient.
+*   Implemented unique identifier and entity identifier on the linq funnel context, entity windows context and rest service for storing those fields on the LinqFunnelChangeResult.
