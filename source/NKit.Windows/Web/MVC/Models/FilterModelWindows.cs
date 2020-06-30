@@ -3,10 +3,11 @@
     #region Using Directives
 
     using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Web;
+    using NKit.Data.DB.SQLQuery;
 
     #endregion //Using Directives
 
@@ -25,6 +26,11 @@ using System.Web;
         #endregion //Constructors
 
         #region Properties
+
+        public SortDirectionTypeWindows SortDirectionType
+        {
+            get { return SortDirectionWindows.GetSortDirectionType(Sortdir); }
+        }
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

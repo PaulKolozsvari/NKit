@@ -559,6 +559,12 @@
     <Compile Include="..\NKit.Windows\Data\DB\SQLQuery\QueryWindows.cs">
       <Link>Data\DB\SQLQuery\QueryWindows.cs</Link>
     </Compile>
+    <Compile Include="..\NKit.Windows\Data\DB\SQLQuery\SortDirectionTypeWindows.cs">
+      <Link>Data\DB\SQLQuery\SortDirectionTypeWindows.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Windows\Data\DB\SQLQuery\SortDirectionWindows.cs">
+      <Link>Data\DB\SQLQuery\SortDirectionWindows.cs</Link>
+    </Compile>
     <Compile Include="..\NKit.Windows\Data\DB\SQLQuery\WhereClauseColumnWindows.cs">
       <Link>Data\DB\SQLQuery\WhereClauseColumnWindows.cs</Link>
     </Compile>

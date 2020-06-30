@@ -209,6 +209,8 @@
     <Compile Include="Data\DB\SQLite\SqliteTypeConversionInfoWindows.cs" />
     <Compile Include="Data\DB\SQLite\SqliteTypeConverterWindows.cs" />
     <Compile Include="Data\DB\SQLQuery\QueryWindows.cs" />
+    <Compile Include="Data\DB\SQLQuery\SortDirectionWindows.cs" />
+    <Compile Include="Data\DB\SQLQuery\SortDirectionTypeWindows.cs" />
     <Compile Include="Data\DB\SQLQuery\WhereClauseWindows.cs" />
     <Compile Include="Data\DB\SQLQuery\WhereClauseColumnWindows.cs" />
     <Compile Include="Data\DB\SQLQuery\WhereClauseComparisonOperatorWindows.cs" />
