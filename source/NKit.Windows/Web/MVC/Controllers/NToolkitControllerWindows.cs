@@ -3,6 +3,7 @@
     #region Using Directives
 
     using NKit.Data;
+    using NKit.Data.DB.LINQ;
     using NKit.Utilities;
     using NKit.Utilities.Logging;
     using NKit.Web;
@@ -432,6 +433,18 @@
         }
 
         #endregion //Header Methods
+
+        #region Data Methods
+
+        public void DisposeEntityContext(LinqEntityContextWindows context)
+        {
+            if (context != null)
+            {
+                context.Dispose();
+            }
+        }
+
+        #endregion //Data Methods
 
         #endregion //Methods
     }

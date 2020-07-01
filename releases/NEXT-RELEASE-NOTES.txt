@@ -30,3 +30,4 @@
 *   Implemented unique identifier and entity identifier on the linq funnel context, entity windows context and rest service for storing those fields on the LinqFunnelChangeResult.
 *   Added ANY MimeContentType.
 *   Implemented fields for paging on the FilterModel, including to sort direction to for the data layer to know the direction to order by for the model results.
+*   Added method in the MVC base controller for disposing of a Linq entity context.
