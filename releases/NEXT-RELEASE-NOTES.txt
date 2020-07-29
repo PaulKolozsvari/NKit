@@ -33,3 +33,4 @@
 *   Added method in the MVC base controller for disposing of a Linq entity context.
 *   Added FirstRecordOnPageDisplayIndex and LastRecordOnPageDisplayIndex properties on the FilterModel to enable displaying the number of records loaded in current page on a WebGrid.
 *   Added GetNumberOfRecordsToSkipForCurrentPage static method in the FilterModel to allow calculating the number of records to skip without creating an instance of the FilterModel.
+*   Added GetSearchFilterLowered and ConvertEmptyGuidToNull to the DataShaper.
