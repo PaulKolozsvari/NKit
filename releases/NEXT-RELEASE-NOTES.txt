@@ -34,3 +34,5 @@
 *   Added FirstRecordOnPageDisplayIndex and LastRecordOnPageDisplayIndex properties on the FilterModel to enable displaying the number of records loaded in current page on a WebGrid.
 *   Added GetNumberOfRecordsToSkipForCurrentPage static method in the FilterModel to allow calculating the number of records to skip without creating an instance of the FilterModel.
 *   Added GetSearchFilterLowered and ConvertEmptyGuidToNull to the DataShaper.
+*   Added method GetAbsoluteFilePath to FileSystemHelper which determines if the given filepath is an absolute file path and if not it returns the absolute path relative to the current executing directory.
+*   Fixed the WCF Rest Service to enable authentication, which was not working as as the settings were not actually being applied to the HTTP Binding in WcfRestWebServiceAppSingletonWindows.

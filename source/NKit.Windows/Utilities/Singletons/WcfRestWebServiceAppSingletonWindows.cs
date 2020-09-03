@@ -60,21 +60,8 @@
 
         protected CustomBinding GetBinding(
             WcfRestWebServiceAppSettingsWindows settings,
-            WebHttpSecurityMode webHttpSecurityMode,
-            HttpClientCredentialType httpClientCredentialType,
-            out WebHttpBinding webHttpBinding)
+            WebHttpBinding webHttpBinding)
         {
-           webHttpBinding = new WebHttpBinding()
-            {
-                MaxBufferPoolSize = settings.RestServiceMaxBufferPoolSize,
-                MaxBufferSize = Convert.ToInt32(settings.RestServiceMaxBufferSize),
-                MaxReceivedMessageSize = settings.RestServiceMaxReceivedMessageSize
-            };
-            if (settings.RestServiceUseAuthentication)
-            {
-                webHttpBinding.Security.Mode = webHttpSecurityMode;
-                webHttpBinding.Security.Transport.ClientCredentialType = httpClientCredentialType;
-            }
             CustomBinding result = new CustomBinding(webHttpBinding);
             WebMessageEncodingBindingElement webMEBE = result.Elements.Find<WebMessageEncodingBindingElement>();
             webMEBE.ContentTypeMapper = new WcfRawContentTypeMapperWindows();
@@ -95,7 +82,18 @@
             GOCWindows.Instance.JsonSerializer.IncludeOrmTypeNamesInJsonResponse = settings.RestServiceIncludeOrmTypeNamesInJsonResponse;
             GOCWindows.Instance.SetEncoding(settings.RestServiceTextResponseEncoding);
 
-            CustomBinding customBinding = GetBinding(settings, webHttpSecurityMode, httpClientCredentialType, out WebHttpBinding webHttpBinding);
+            WebHttpBinding webHttpBinding = new WebHttpBinding()
+            {
+                MaxBufferPoolSize = settings.RestServiceMaxBufferPoolSize,
+                MaxBufferSize = Convert.ToInt32(settings.RestServiceMaxBufferSize),
+                MaxReceivedMessageSize = settings.RestServiceMaxReceivedMessageSize
+            };
+            if (settings.RestServiceUseAuthentication)
+            {
+                webHttpBinding.Security.Mode = webHttpSecurityMode;
+                webHttpBinding.Security.Transport.ClientCredentialType = httpClientCredentialType;
+            }
+            CustomBinding customBinding = GetBinding(settings, webHttpBinding);
             ServiceHost serviceHost = new ServiceHost(typeof(R));
             restWebServiceUrl = string.Format("http://127.0.0.1:{0}/{1}", settings.RestServicePortNumber, settings.RestServiceHostAddressSuffix);
 
