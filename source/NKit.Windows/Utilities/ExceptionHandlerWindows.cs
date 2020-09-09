@@ -8,6 +8,7 @@
     using System.Windows.Forms;
     using NKit.Utilities.Logging;
     using NKit.Data;
+    using NKit.Utilities.Email;
 
     #endregion //Using Directives
 
@@ -41,35 +42,75 @@
 
         public static bool HandleException(Exception exception)
         {
-            return HandleException(exception, out string emailErrorMessage, out string emailLogErrorMessage);
+            return HandleException(exception, out string emailErrorMessage, out string emailLogErrorMessage, null);
         }
 
-        public static bool HandleException(Exception exception, out string emailErrorMessage, out string emailLogMessageText)
+        public static bool HandleException(Exception exception, List<EmailNotificationRecipient> emailNotificationRecipients)
         {
-            return HandleException(exception, null, null, null, true, out emailErrorMessage, out emailLogMessageText);
+            return HandleException(exception, out string emailErrorMessage, out string emailLogErrorMessage, emailNotificationRecipients);
         }
 
-        public static bool HandleException(Exception exception, bool emailException, out string emailErrorMessage, out string emailLogMessageText)
+        public static bool HandleException(
+            Exception exception, 
+            out string emailErrorMessage, 
+            out string emailLogMessageText, 
+            List<EmailNotificationRecipient> emailNotificationRecipients)
         {
-            return HandleException(exception, null, null, null, emailException, out emailErrorMessage, out emailLogMessageText);
+            return HandleException(exception, null, null, null, true, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients);
         }
 
-        public static bool HandleException(Exception exception, string eventDetailsMessage, out string emailErrorMessage, out string emailLogMessageText)
+        public static bool HandleException(
+            Exception exception, 
+            bool emailException, 
+            out string emailErrorMessage, 
+            out string emailLogMessageText,
+            List<EmailNotificationRecipient> emailNotificationRecipients)
         {
-            return HandleException(exception, null, null, eventDetailsMessage, true, out emailErrorMessage, out emailLogMessageText);
+            return HandleException(exception, null, null, null, emailException, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients);
         }
 
-        public static bool HandleException(Exception exception, string eventDetailsMessage, bool emailException, out string emailErrorMessage, out string emailLogMessageText)
+        public static bool HandleException(
+            Exception exception, 
+            string eventDetailsMessage, 
+            out string emailErrorMessage, 
+            out string emailLogMessageText,
+            List<EmailNotificationRecipient> emailNotificationRecipients)
         {
-            return HandleException(exception, null, null, eventDetailsMessage, emailException, out emailErrorMessage, out emailLogMessageText);
+            return HandleException(exception, null, null, eventDetailsMessage, true, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients);
         }
 
-        public static bool HandleException(Exception exception, Form form, KeyEventHandler keyEventHandler, string eventDetailsMessage, out string emailErrorMessage, out string emailLogMessageText)
+        public static bool HandleException(
+            Exception exception, 
+            string eventDetailsMessage, 
+            bool emailException, 
+            out string emailErrorMessage, 
+            out string emailLogMessageText,
+            List<EmailNotificationRecipient> emailNotificationRecipients)
         {
-            return HandleException(exception, form, keyEventHandler, eventDetailsMessage, true, out emailErrorMessage, out emailLogMessageText);
+            return HandleException(exception, null, null, eventDetailsMessage, emailException, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients);
         }
 
-        public static bool HandleException(Exception exception, Form form, KeyEventHandler keyEventHandler, string eventDetailsMessage, bool emailException, out string emailErrorMessage, out string emailLogMessageText)
+        public static bool HandleException(
+            Exception exception, 
+            Form form, 
+            KeyEventHandler keyEventHandler, 
+            string eventDetailsMessage, 
+            out string emailErrorMessage, 
+            out string emailLogMessageText, 
+            List<EmailNotificationRecipient> emailNotificationRecipients)
+        {
+            return HandleException(exception, form, keyEventHandler, eventDetailsMessage, true, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients);
+        }
+
+        public static bool HandleException(
+            Exception exception, 
+            Form form, 
+            KeyEventHandler keyEventHandler, 
+            string eventDetailsMessage, 
+            bool emailException, 
+            out string emailErrorMessage, 
+            out string emailLogMessageText,
+            List<EmailNotificationRecipient> emailNotificationRecipients)
         {
             try
             {
@@ -107,7 +148,7 @@
                             EntityReaderGeneric<GOCWindows>.GetPropertyName(p => p.SendEmailOnException, false),
                             EntityReaderGeneric<GOCWindows>.GetPropertyName(p => p.EmailClient, false)));
                     }
-                    GOCWindows.Instance.EmailClient.SendExceptionEmailNotification(exception, out emailErrorMessage, out emailLogMessageText, GOCWindows.Instance.AppendHostNameToExceptionEmails);
+                    GOCWindows.Instance.EmailClient.SendExceptionEmailNotification(exception, out emailErrorMessage, out emailLogMessageText, GOCWindows.Instance.AppendHostNameToExceptionEmails, emailNotificationRecipients);
                 }
                 return closeApplication;
             }
