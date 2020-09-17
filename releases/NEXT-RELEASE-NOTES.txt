@@ -38,3 +38,4 @@
 *   Fixed the WCF Rest Service to enable authentication, which was not working as as the settings were not actually being applied to the HTTP Binding in WcfRestWebServiceAppSingletonWindows.
 *   Added List<EmailNotificationRecipient> emailNotificationRecipients parameter to all ExceptionHander methods on to allow user to specify their own list of email recipients on top of the Default Email Recipients.
 *   Changed the EmailClient to check whether an email address exists in any of the To, CC or BCC before adding it to the recipients list. If the recipient exists in ay of them, it should not add the recipient.
+*   Changed the DataShaper to add extra methods of generating passwords: GenerateSimplePassword and GenerateGuidPassword.
