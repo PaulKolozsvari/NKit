@@ -486,12 +486,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NKit.Standard\NKit.Standard.csproj">
-      <Project>{d7db37cb-2a0c-4e1c-8b03-20a092ea4d71}</Project>
-      <Name>NKit.Standard</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="READ-ME.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NKit.Windows", "NKit.Window
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NKit.Windows.Standalone", "NKit.Windows.Standalone\NKit.Windows.Standalone.csproj", "{96E25C71-9E61-4131-98E1-EBF04F5A6D02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NKit.Core", "NKit.Core\NKit.Core.csproj", "{F675C316-E1E8-4701-94AE-CD18BCEEC5E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKit.Core", "NKit.Core\NKit.Core.csproj", "{F675C316-E1E8-4701-94AE-CD18BCEEC5E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

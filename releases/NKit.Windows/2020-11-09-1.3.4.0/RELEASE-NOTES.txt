@@ -1,0 +1,1 @@
+*   Added ability to change supply the serializer to GetObjectFromStream method on the WCF Rest service instead of defaulting to Json.

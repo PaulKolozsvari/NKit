@@ -330,7 +330,7 @@
                 string userName = null;
                 Type entityType = GetEntityType(entityName);
                 GetUserDetails(context, out userId, out userName);
-                object inputEntity = GetObjectFromStream(entityType, inputStream, out string serializedtext);
+                object inputEntity = GetObjectFromStream(entityType, inputStream, GOCWindows.Instance.JsonSerializer, out string serializedtext);
                 AuditRequest(requestName, serializedtext);
                 if (OnBeforePut != null)
                 {
@@ -377,7 +377,7 @@
                 string userName = null;
                 Type entityType = GetEntityType(entityName);
                 GetUserDetails(context, out userId, out userName);
-                object inputEntity = GetObjectFromStream(entityType, inputStream, out string serializedText);
+                object inputEntity = GetObjectFromStream(entityType, inputStream, GOCWindows.Instance.JsonSerializer, out string serializedText);
                 AuditRequest(requestName, serializedText);
                 if (OnBeforePost != null)
                 {
@@ -628,25 +628,25 @@
             return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
         }
 
-        protected virtual E GetObjectFromStream<E>(Stream stream) where E : class
+        protected virtual E GetObjectFromStream<E>(Stream stream, ISerializer serializer) where E : class
         {
-            return (E)GetObjectFromStream(typeof(E), stream, out string serializedText);
+            return (E)GetObjectFromStream(typeof(E), stream, serializer, out string serializedText);
         }
 
-        protected virtual E GetObjectFromStream<E>(Stream stream, out string serializedText) where E : class
+        protected virtual E GetObjectFromStream<E>(Stream stream, ISerializer serializer, out string serializedText) where E : class
         {
-            return (E)GetObjectFromStream(typeof(E), stream, out serializedText);
+            return (E)GetObjectFromStream(typeof(E), stream, serializer, out serializedText);
         }
 
-        protected virtual object GetObjectFromStream(Type entityType, Stream stream)
+        protected virtual object GetObjectFromStream(Type entityType, Stream stream, ISerializer serializer)
         {
-            return GetObjectFromStream(entityType, stream, out string serializedText);
+            return GetObjectFromStream(entityType, stream, serializer, out string serializedText);
         }
 
-        protected virtual object GetObjectFromStream(Type entityType, Stream stream, out string serializedText)
+        protected virtual object GetObjectFromStream(Type entityType, Stream stream, ISerializer serializer, out string serializedText)
         {
             serializedText = StreamHelper.GetStringFromStream(stream, GOCWindows.Instance.Encoding);
-            object result = GOCWindows.Instance.JsonSerializer.DeserializeFromText(entityType, serializedText);
+            object result = serializer.DeserializeFromText(entityType, serializedText);
             if (result == null)
             {
                 throw new Exception(string.Format("The following text could not be deserialized to a {0} : {1}", entityType.FullName, serializedText));

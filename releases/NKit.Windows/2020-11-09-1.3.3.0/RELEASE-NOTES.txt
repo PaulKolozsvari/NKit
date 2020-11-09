@@ -1,0 +1,41 @@
+*   Added ability for Sqlite and Sql server where clause column wrappers to allow querying by a LIKE operator.
+*   Fixed Sqlite and Sql server tables to allow creating table by classes that have properties withthat are lists.
+*   Added method on Sqlite database wrapper class allowing to query whether a table exists in the database.
+*   Added method on the Sql Server and Sqlite database table wrappers to be able to generate sql drop table script.
+*   Email out parameters on the EmailClient to return the log message that has been logged and propogated those changes on the upper layers in the Exception Handlers.
+*   Added GetWindowsDomainAndMachineName and GetWindowsMachineDomainName in InformationWindows class to get the real domain name not the user's domain name.
+*   Added overload of the SendExceptionEmailNotification method to allow for including event details in the exception email alert.
+*   Fixed PopulateFromDataRow method on EntityReader to check if a property is a string (which was missing) and convert the DataRow column to a string in this case to prevent it from falling to the last else statement doing a straight object to object conversion.
+*   Added the following utility methods on the DataShaper:
+    -   GetNumericStringRange
+    -   IncrementNumericPartOfString
+    -   GetAplhaPartOfString
+    -   GetNumericPartOfString
+    -   GetValidAlphaNumericRangeCharacters
+    -   GetValidAlphabetRangeCharacters
+    -   GetValidNumericRangeCharacters
+    -   IsStringOnlyDigits
+    
+*   Removed validation on EntityCache generic when adding entities so that it doesn't throw an exception if an entity already exists with that key.
+*   Added string propertyNameFilter parameter on all sql and sqlite queries to allow filtering for only certain properties of the entity containing that text in their name to be read from the reader to an entity.
+*   Added extra GetConfirmationModelFromSearchParametersString overloads for getting entity ID and parent entity ID out of search parameters to controllers.
+*   Moved the ServerResult and related classes to the NKit.Standard project.
+*   Created NKit.Core project with the following new features/classes.
+    -   LinqEntityContextCore and LinqFunnelContextCore for running CRUD queries against an Entity Framework DbContext. Currently only targeting Sql Server.
+        -   Supports both synchronous and asynchronous operations on the DbContext.
+*   Added verb to be logged in the WcfRestServiceWindows.
+*   Added FORM_DATA content type to MimeContentType.
+*   Added an overload of GetConfirmationModelFromSearchParametersString to NToolkitControllerWindows.
+*   Added GetFormDataQueryString method to WebServiceClient.
+*   Implemented unique identifier and entity identifier on the linq funnel context, entity windows context and rest service for storing those fields on the LinqFunnelChangeResult.
+*   Added ANY MimeContentType.
+*   Implemented fields for paging on the FilterModel, including to sort direction to for the data layer to know the direction to order by for the model results.
+*   Added method in the MVC base controller for disposing of a Linq entity context.
+*   Added FirstRecordOnPageDisplayIndex and LastRecordOnPageDisplayIndex properties on the FilterModel to enable displaying the number of records loaded in current page on a WebGrid.
+*   Added GetNumberOfRecordsToSkipForCurrentPage static method in the FilterModel to allow calculating the number of records to skip without creating an instance of the FilterModel.
+*   Added GetSearchFilterLowered and ConvertEmptyGuidToNull to the DataShaper.
+*   Added method GetAbsoluteFilePath to FileSystemHelper which determines if the given filepath is an absolute file path and if not it returns the absolute path relative to the current executing directory.
+*   Fixed the WCF Rest Service to enable authentication, which was not working as as the settings were not actually being applied to the HTTP Binding in WcfRestWebServiceAppSingletonWindows.
+*   Added List<EmailNotificationRecipient> emailNotificationRecipients parameter to all ExceptionHander methods on to allow user to specify their own list of email recipients on top of the Default Email Recipients.
+*   Changed the EmailClient to check whether an email address exists in any of the To, CC or BCC before adding it to the recipients list. If the recipient exists in ay of them, it should not add the recipient.
+*   Changed the DataShaper to add extra methods of generating passwords: GenerateSimplePassword and GenerateGuidPassword.

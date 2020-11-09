@@ -33,15 +33,15 @@
 		2.	Switch to Release build configuration.
 		3.	Right click project and click Pack, which will create the nupkg for the project.
 		4.	Login to NuGet and create an Key (if you don't have one already): https://www.nuget.org/account/apikeys
-			-	NuGet API Key: oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja
+			-	Nuget API Key (2020-11-09): oy2lryqu75ui4d3utfdahl2ztqjtw6oufkn5mrx3dl2fke
 		5.	Publish Package with .NET CLI (Command Line Interface):
 			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
 			-	Run the following command and just replacing the key with your own key:
-					dotnet nuget push NKit.Standard.1.3.0.nupkg -k oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja -s https://api.nuget.org/v3/index.json
+					dotnet nuget push NKit.Standard.1.3.2.nupkg -k oy2lryqu75ui4d3utfdahl2ztqjtw6oufkn5mrx3dl2fke -s https://api.nuget.org/v3/index.json
 		6.	Publish the package with Nuget Push:
 			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
 			-	Run the following command and just replacing the key with your own key:
-					nuget push NKit.Standard.1.3.1.nupkg oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja -Source https://api.nuget.org/v3/index.json
+					nuget push NKit.Standard.1.3.2.nupkg oy2lryqu75ui4d3utfdahl2ztqjtw6oufkn5mrx3dl2fke -Source https://api.nuget.org/v3/index.json
 
 
 *	Create and use NuGet from your DevOps organization:
@@ -64,3 +64,7 @@
 *	Include multiple Nuget Sources in your solution without having to manually add them on Nuget Manager:
 	-	Open from a run dialog: %APPDATA%
 	-	Copy the NuGet.Config file and add it to your solution.
+
+*	Using the NetStandard library in .NET Framework project:
+	Include the following line in the PropertyGroup for each configuration i.e. Debug/Release. Otherwise it will not be able to load the references that the NetStandard project has e.g. System.ServiceModel.Http.
+		-	<RestoreProjectStyle>PackageReference</RestoreProjectStyle>

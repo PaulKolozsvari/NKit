@@ -16,11 +16,11 @@
 		6.	Package the NuGet Package: From a command prompt in the folder containing your .nuspec file, run the command
 			-	nuget pack
 		4.	Login to NuGet and create an Key (if you don't have one already): https://www.nuget.org/account/apikeys
-			-	NuGet API Key: oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja
+			-	Nuget API Key (2020-11-09): oy2lryqu75ui4d3utfdahl2ztqjtw6oufkn5mrx3dl2fke
 			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
 			-	Run the following command and just replacing the key with your own key:
-					dotnet nuget push NKit.Standard.1.3.1.nupkg -k oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja -s https://api.nuget.org/v3/index.json
+					dotnet nuget push NKit.Windows.1.3.3.nupkg -k oy2lryqu75ui4d3utfdahl2ztqjtw6oufkn5mrx3dl2fke -s https://api.nuget.org/v3/index.json
 		6.	Publish the package with Nuget Push:
 			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
 			-	Run the following command and just replacing the key with your own key:
-					nuget push NKit.Windows.1.3.1.nupkg oy2jrak37o4ba6wbdgcanvuf2qyqyhgu5epmplqckqgxja -Source https://api.nuget.org/v3/index.json
+					nuget push NKit.Windows.1.3.4.nupkg oy2lryqu75ui4d3utfdahl2ztqjtw6oufkn5mrx3dl2fke -Source https://api.nuget.org/v3/index.json
