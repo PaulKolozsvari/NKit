@@ -5,7 +5,7 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyName>NKit.Standard</AssemblyName>
     <RootNamespace>NKit</RootNamespace>
-    <Company>Nacelle</Company>
+    <Company>Binary Chef</Company>
     <Product>NKit.Standard</Product>
     <Authors>Paul Kolozsvari</Authors>
     <RepositoryUrl>https://github.com/PaulKolozsvari/NKit</RepositoryUrl>
