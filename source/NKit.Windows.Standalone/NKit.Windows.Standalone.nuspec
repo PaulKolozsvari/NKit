@@ -11,7 +11,7 @@
     <!--<iconUrl></iconUrl>-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>First version of the NKit, which is took the Figlut Toolkit (https://github.com/PaulKolozsvari/Figlut-Suite) and converted it to .NET Standard and .NET Framework versions and renaming it to NKit.</releaseNotes>
+    <releaseNotes>.NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications.</releaseNotes>
     <copyright>Copyright 2020</copyright>
     <tags>.NET Toolkit</tags>
   </metadata>

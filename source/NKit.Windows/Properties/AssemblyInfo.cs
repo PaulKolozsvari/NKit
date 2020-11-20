@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NKit.Windows")]
 [assembly: AssemblyDescription(".NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications. NKit.Windows is the .NET Framework compatible version of NKit, but is dependent on the NKit.Standard.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Nacelle")]
+[assembly: AssemblyCompany("Paul Kolozsvari")]
 [assembly: AssemblyProduct("NKit.Windows")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.3.4.0")]
-[assembly: AssemblyFileVersion("1.3.4.0")]
+[assembly: AssemblyVersion("1.3.5.0")]
+[assembly: AssemblyFileVersion("1.3.5.0")]
