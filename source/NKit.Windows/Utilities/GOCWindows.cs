@@ -64,6 +64,7 @@
 
         #region Fields
 
+        protected SettingsCache _settingsCache;
         protected DatabaseCacheWindows _databaseCache;
         protected LoggerWindows _logger;
         protected Image _logo;
@@ -108,6 +109,46 @@
         #endregion //Properties
 
         #region Methods
+
+        public S GetSettings<S>() where S : Settings
+        {
+            return GetSettings<S>(false, false);
+        }
+
+        public S GetSettings<S>(bool refreshFromFile, bool validateAllSettingValuesSet) where S : Settings
+        {
+            string cacheId = typeof(S).Name;
+            S result;
+            if (_settingsCache.Exists(cacheId))
+            {
+                result = (S)_settingsCache[cacheId];
+            }
+            else
+            {
+                result = Activator.CreateInstance<S>();
+                _settingsCache.Add(cacheId, result);
+            }
+            if (refreshFromFile)
+            {
+                //The validateAllSettingValuesSet check is done when when reading the settings file.
+                result.RefreshFromFile(true, validateAllSettingValuesSet);
+            }
+            else if (validateAllSettingValuesSet)
+            {
+                foreach (PropertyInfo p in typeof(S).GetProperties())
+                {
+                    object value = p.GetValue(result, null);
+                    if (value == null)
+                    {
+                        throw new NullReferenceException(string.Format(
+                            "{0} not set in {1}.",
+                            p.Name,
+                            result.FilePath));
+                    }
+                }
+            }
+            return result;
+        }
 
         public void AddDatabase<D>(D database) where D : DatabaseWindows
         {

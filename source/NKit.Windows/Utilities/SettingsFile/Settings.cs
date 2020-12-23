@@ -13,6 +13,7 @@
     using NKit.Utilities.Serialization;
     using NKit.Utilities.Logging;
     using NKit.Utilities.Email;
+    using NKit.Mmc.Forms;
 
     #endregion //Using Directives
 
@@ -68,13 +69,13 @@
         /// <summary>
         /// The name of the application.
         /// </summary>
-        [SettingInfo("Application", AutoFormatDisplayName = true, Description = "The name of the application. This setting should be loaded in the GOC for it to be displayed relevant places.", CategorySequenceId = 0)]
+        [SettingInfoAttribute("Application", AutoFormatDisplayName = true, Description = "The name of the application. This setting should be loaded in the GOC for it to be displayed relevant places.", CategorySequenceId = 0)]
         public string ApplicationName { get; set; }
 
         /// <summary>
         /// Whether or not a message box should be shown when an exception occurs. This should only be enabled for Windows Forms application.
         /// </summary>
-        [SettingInfo("Application", AutoFormatDisplayName = true, Description = "Whether or not a message box should be shown when an exception occurs. This setting should be loaded into GOC for the Exception Handler to determine behavior. This should only be enabled for Windows Forms application.", CategorySequenceId = 1)]
+        [SettingInfoAttribute("Application", AutoFormatDisplayName = true, Description = "Whether or not a message box should be shown when an exception occurs. This setting should be loaded into GOC for the Exception Handler to determine behavior. This should only be enabled for Windows Forms application.", CategorySequenceId = 1)]
         public bool ShowMessageBoxOnException { get; set; }
 
         #endregion //GOC Settings
@@ -234,6 +235,7 @@
                         c.Description,
                         c.CategorySequenceId,
                         c.PasswordChar,
+                        null,
                         new SettingsCategoryInfo(this, c.Category));
                     settingItems.Add(settingItem);
                 }
@@ -280,12 +282,51 @@
                             c.Description,
                             c.CategorySequenceId,
                             c.PasswordChar,
+                            null,
                             settingsCategoryInfo);
                         settingItems.Add(settingItem);
                     }
                 }
             }
             string entityCacheName = string.Format("{0} {1} Settings", DataShaper.ShapeCamelCaseString(settingsType.Name).Replace("Settings", "").Trim(), settingsCategoryInfo.Category);
+            EntityCacheGeneric<string, SettingItem> result = new EntityCacheGeneric<string, SettingItem>(entityCacheName);
+            settingItems.OrderBy(p => p.CategorySequenceId).ToList().ForEach(p => result.Add(p.SettingName, p));
+            return result;
+        }
+
+        public EntityCacheGeneric<string, SettingItem> GetSettingsByCategory(SettingsCategoryInfo settingsCategoryInfo, SettingsControlWindows settingsControl)
+        {
+            string categoryLower = settingsCategoryInfo.Category.Trim().ToLower();
+            Type settingsType = this.GetType();
+            List<SettingItem> settingItems = new List<SettingItem>();
+            foreach (PropertyInfo p in settingsType.GetProperties())
+            {
+                object[] categoryAttributes = p.GetCustomAttributes(typeof(SettingInfoAttribute), true);
+                if (categoryAttributes == null)
+                {
+                    continue;
+                }
+                foreach (SettingInfoAttribute c in categoryAttributes)
+                {
+                    if (c.Category.Trim().ToLower() == categoryLower)
+                    {
+                        SettingItem settingItem = new SettingItem(
+                            c.Category,
+                            p.Name,
+                            EntityReader.GetPropertyValue(p.Name, this, false),
+                            p.PropertyType,
+                            c.AutoFormatDisplayName,
+                            c.DisplayName,
+                            c.Description,
+                            c.CategorySequenceId,
+                            c.PasswordChar,
+                            settingsControl,
+                            settingsCategoryInfo);
+                        settingItems.Add(settingItem);
+                    }
+                }
+            }
+            string entityCacheName = string.Format("{0} {1} Settings", DataShaperWindows.ShapeCamelCaseString(settingsType.Name).Replace("Settings", "").Trim(), settingsCategoryInfo.Category);
             EntityCacheGeneric<string, SettingItem> result = new EntityCacheGeneric<string, SettingItem>(entityCacheName);
             settingItems.OrderBy(p => p.CategorySequenceId).ToList().ForEach(p => result.Add(p.SettingName, p));
             return result;

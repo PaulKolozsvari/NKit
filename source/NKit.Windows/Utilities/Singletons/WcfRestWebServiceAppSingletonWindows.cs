@@ -26,7 +26,7 @@
 
         protected void InitializeAllDefaultSettings<R, I, D>(
             bool startRestWebService,
-            WcfRestWebServiceAppSettingsWindows settings,
+            WcfRestWebServiceAppSettings settings,
             WebHttpSecurityMode webHttpSecurityMode,
             HttpClientCredentialType httpClientCredentialType,
             UserNamePasswordValidator userNamePasswordValidator,
@@ -59,7 +59,7 @@
         }
 
         protected CustomBinding GetBinding(
-            WcfRestWebServiceAppSettingsWindows settings,
+            WcfRestWebServiceAppSettings settings,
             WebHttpBinding webHttpBinding)
         {
             CustomBinding result = new CustomBinding(webHttpBinding);
@@ -70,7 +70,7 @@
 
         protected virtual void InitializeRestWebServiceServiceHost<R, I>(
             bool startRestWebService,
-            WcfRestWebServiceAppSettingsWindows settings,
+            WcfRestWebServiceAppSettings settings,
             WebHttpSecurityMode webHttpSecurityMode,
             HttpClientCredentialType httpClientCredentialType,
             UserNamePasswordValidator userNamePasswordValidator,
@@ -128,7 +128,7 @@
             }
         }
 
-        protected virtual void SetServiceHostDebugBehavior(ServiceHost serviceHost, WcfRestWebServiceAppSettingsWindows settings)
+        protected virtual void SetServiceHostDebugBehavior(ServiceHost serviceHost, WcfRestWebServiceAppSettings settings)
         {
             ServiceDebugBehavior debugBehaviour = serviceHost.Description.Behaviors.Find<ServiceDebugBehavior>();
             if (debugBehaviour == null) //This should never be, but just in case.
@@ -139,7 +139,7 @@
             debugBehaviour.IncludeExceptionDetailInFaults = settings.RestServiceIncludeExceptionDetailInResponse;
         }
 
-        protected virtual void SetServiceHostThrottlingBehavior(ServiceHost serviceHost, WcfRestWebServiceAppSettingsWindows settings)
+        protected virtual void SetServiceHostThrottlingBehavior(ServiceHost serviceHost, WcfRestWebServiceAppSettings settings)
         {
             ServiceThrottlingBehavior throttlingBehavior = serviceHost.Description.Behaviors.Find<ServiceThrottlingBehavior>();
             if (throttlingBehavior == null)

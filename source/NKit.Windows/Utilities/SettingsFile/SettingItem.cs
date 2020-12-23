@@ -6,7 +6,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Windows.Forms;
     using NKit.Data;
+    using NKit.Mmc.Forms;
 
     #endregion //Using Directives
 
@@ -24,6 +26,7 @@
             string settingDescription,
             int categorySequenceId,
             char passwordChar,
+            SettingsControlWindows settingControl,
             SettingsCategoryInfo settingsCategoryInfo)
         {
             _category = category;
@@ -42,6 +45,19 @@
             _settingDescription = settingDescription;
             _categorySequenceId = categorySequenceId;
             _passwordChar = passwordChar;
+
+            _listViewItem = new ListViewItem(_settingDisplayName);
+            if (_passwordChar != '\0')
+            {
+                _listViewItem.SubItems.Add(DataShaperWindows.MaskPasswordString(_settingValue.ToString(), _passwordChar));
+            }
+            else
+            {
+                _listViewItem.SubItems.Add(_settingValue != null ? _settingValue.ToString() : null);
+            }
+            _listViewItem.SubItems.Add(_settingDescription);
+            _listViewItem.Tag = this;
+            _settingControl = settingControl;
         }
 
         #endregion //Constructors
@@ -57,6 +73,8 @@
         protected int _categorySequenceId;
         protected char _passwordChar;
         protected SettingsCategoryInfo _settingsCategoryInfo;
+        protected ListViewItem _listViewItem;
+        protected SettingsControlWindows _settingControl;
 
         #endregion //Fields
 
@@ -110,6 +128,21 @@
             get { return _settingsCategoryInfo; }
         }
 
+        public ListViewItem ListViewItem
+        {
+            get { return _listViewItem; }
+        }
+
         #endregion //Properties
+
+        #region Methods
+
+        public void RefreshSettingsByCategory(string settingValue)
+        {
+            _listViewItem.SubItems[1].Text = settingValue;
+            _settingControl.RefreshData();
+        }
+
+        #endregion //Methods
     }
 }

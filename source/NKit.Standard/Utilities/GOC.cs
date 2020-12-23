@@ -14,7 +14,6 @@
     using System.Diagnostics;
     using NKit.Utilities.Logging;
     using NKit.Utilities.Serialization;
-    using NKit.Utilities.SettingsFile;
     using NKit.Utilities.Email;
     using System.Transactions;
 
@@ -44,7 +43,6 @@
 
         public GOC()
         {
-            _settingsCache = new SettingsCache();
             _webServiceCache = new WebServiceClientCache();
             _loggerStandard = new Logger();
             _xSerializer = new XSerializer();
@@ -61,7 +59,6 @@
         protected string _executableName;
         protected string _version;
         protected string _userAgent;
-        protected SettingsCache _settingsCache;
         protected WebServiceClientCache _webServiceCache;
         protected Logger _loggerStandard;
         protected XSerializer _xSerializer;
@@ -298,46 +295,6 @@
                 return default(E);
             }
             return (E)this[id];
-        }
-
-        public S GetSettings<S>() where S : Settings
-        {
-            return GetSettings<S>(false, false);
-        }
-
-        public S GetSettings<S>(bool refreshFromFile, bool validateAllSettingValuesSet) where S : Settings
-        {
-            string cacheId = typeof(S).Name;
-            S result;
-            if (_settingsCache.Exists(cacheId))
-            {
-                result = (S)_settingsCache[cacheId];
-            }
-            else
-            {
-                result = Activator.CreateInstance<S>();
-                _settingsCache.Add(cacheId, result);
-            }
-            if (refreshFromFile)
-            {
-                //The validateAllSettingValuesSet check is done when when reading the settings file.
-                result.RefreshFromFile(true, validateAllSettingValuesSet);
-            }
-            else if(validateAllSettingValuesSet)
-            {
-                foreach (PropertyInfo p in typeof(S).GetProperties())
-                {
-                    object value = p.GetValue(result, null);
-                    if (value == null)
-                    {
-                        throw new NullReferenceException(string.Format(
-                            "{0} not set in {1}.",
-                            p.Name,
-                            result.FilePath));
-                    }
-                }
-            }
-            return result;
         }
 
         public W GetWebService<W>() where W : IWebService

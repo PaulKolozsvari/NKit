@@ -28,7 +28,7 @@
         #region Fields
 
         private EditSettingPage _parentPropertyPage;
-        private SettingItemWindows _selectedSettingItem;
+        private SettingItem _selectedSettingItem;
 
         #endregion //Fields
 
@@ -40,7 +40,7 @@
         /// </summary>
         public void RefreshData(object selectionObject)
         {
-            _selectedSettingItem = (SettingItemWindows)selectionObject;
+            _selectedSettingItem = (SettingItem)selectionObject;
             if (!_selectedSettingItem.SettingType.Equals(typeof(Int64)))
             {
                 throw new ArgumentException(string.Format(
@@ -70,7 +70,7 @@
         /// <param name="userNode">Node being updated by property page</param>
         public void UpdateData(object selectionObject)
         {
-            SettingItemWindows selectedSetting = (SettingItemWindows)selectionObject;
+            SettingItem selectedSetting = (SettingItem)selectionObject;
             long value = Convert.ToInt64(txtValue.Value);
             EntityReader.SetPropertyValue(selectedSetting.SettingName, selectedSetting.SettingsCategoryInfo.Settings, value);
             selectedSetting.RefreshSettingsByCategory(value.ToString());

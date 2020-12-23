@@ -1,79 +1,79 @@
-﻿namespace NKit.Utilities.Email
-{
-    #region Using Directives
+﻿//namespace NKit.Utilities.Email
+//{
+//    #region Using Directives
 
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+//    using System;
+//    using System.Collections;
+//    using System.Collections.Generic;
+//    using System.Linq;
+//    using System.Text;
+//    using System.Threading.Tasks;
 
-    #endregion //Using Directives
+//    #endregion //Using Directives
 
-    public partial class EmailNotificationRecipientList : IEnumerable<EmailNotificationRecipient>
-    {
-        #region Constructors
+//    public partial class EmailNotificationRecipientList : IEnumerable<EmailNotificationRecipient>
+//    {
+//        #region Constructors
 
-        public EmailNotificationRecipientList()
-        {
-            _emailNotificationRecipients = new List<EmailNotificationRecipient>();
-        }
+//        public EmailNotificationRecipientList()
+//        {
+//            _emailNotificationRecipients = new List<EmailNotificationRecipient>();
+//        }
 
-        public EmailNotificationRecipientList(List<EmailNotificationRecipient> emailNotificationRecipientList)
-        {
-            _emailNotificationRecipients = emailNotificationRecipientList;
-        }
+//        public EmailNotificationRecipientList(List<EmailNotificationRecipient> emailNotificationRecipientList)
+//        {
+//            _emailNotificationRecipients = emailNotificationRecipientList;
+//        }
 
-        #endregion //Constructors
+//        #endregion //Constructors
 
-        #region Fields
+//        #region Fields
 
-        private List<EmailNotificationRecipient> _emailNotificationRecipients;
+//        private List<EmailNotificationRecipient> _emailNotificationRecipients;
 
-        #endregion //Fields
+//        #endregion //Fields
 
-        #region Properties
+//        #region Properties
 
-        public List<EmailNotificationRecipient> EmailNotificationRecipients
-        {
-            get { return _emailNotificationRecipients; }
-        }
+//        public List<EmailNotificationRecipient> EmailNotificationRecipients
+//        {
+//            get { return _emailNotificationRecipients; }
+//        }
 
-        #endregion //Properties
+//        #endregion //Properties
 
-        #region Methods
+//        #region Methods
 
-        public void Add(EmailNotificationRecipient recipient)
-        {
-            _emailNotificationRecipients.Add(recipient);
-        }
+//        public void Add(EmailNotificationRecipient recipient)
+//        {
+//            _emailNotificationRecipients.Add(recipient);
+//        }
 
-        public IEnumerator<EmailNotificationRecipient> GetEnumerator()
-        {
-            return _emailNotificationRecipients.GetEnumerator();
-        }
+//        public IEnumerator<EmailNotificationRecipient> GetEnumerator()
+//        {
+//            return _emailNotificationRecipients.GetEnumerator();
+//        }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+//        IEnumerator IEnumerable.GetEnumerator()
+//        {
+//            return GetEnumerator();
+//        }
 
-        public override string ToString()
-        {
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < _emailNotificationRecipients.Count; i++)
-            {
-                EmailNotificationRecipient r = _emailNotificationRecipients[i];
-                result.Append(r.ToString());
-                if (i < (_emailNotificationRecipients.Count - 1))
-                {
-                    result.Append(",");
-                }
-            }
-            return result.ToString();
-        }
+//        public override string ToString()
+//        {
+//            StringBuilder result = new StringBuilder();
+//            for (int i = 0; i < _emailNotificationRecipients.Count; i++)
+//            {
+//                EmailNotificationRecipient r = _emailNotificationRecipients[i];
+//                result.Append(r.ToString());
+//                if (i < (_emailNotificationRecipients.Count - 1))
+//                {
+//                    result.Append(",");
+//                }
+//            }
+//            return result.ToString();
+//        }
 
-        #endregion //Methods
-    }
-}
+//        #endregion //Methods
+//    }
+//}

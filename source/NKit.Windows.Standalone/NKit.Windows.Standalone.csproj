@@ -346,36 +346,6 @@
     <Compile Include="..\NKit.Standard\Utilities\Serialization\XSerializer.cs">
       <Link>Utilities\Serialization\XSerializer.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\Default\AppSettings.cs">
-      <Link>Utilities\SettingsFile\Default\AppSettings.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\Default\DatabaseAppSettings.cs">
-      <Link>Utilities\SettingsFile\Default\DatabaseAppSettings.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\Default\WcfRestWebServiceAppSettings.cs">
-      <Link>Utilities\SettingsFile\Default\WcfRestWebServiceAppSettings.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\Default\WebServiceClientAppSettings.cs">
-      <Link>Utilities\SettingsFile\Default\WebServiceClientAppSettings.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\Default\WebServiceMobileClientAppSettings.cs">
-      <Link>Utilities\SettingsFile\Default\WebServiceMobileClientAppSettings.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\SettingInfoAttribute.cs">
-      <Link>Utilities\SettingsFile\SettingInfoAttribute.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\SettingItem.cs">
-      <Link>Utilities\SettingsFile\SettingItem.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\Settings.cs">
-      <Link>Utilities\SettingsFile\Settings.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\SettingsCache.cs">
-      <Link>Utilities\SettingsFile\SettingsCache.cs</Link>
-    </Compile>
-    <Compile Include="..\NKit.Standard\Utilities\SettingsFile\SettingsCategoryInfo.cs">
-      <Link>Utilities\SettingsFile\SettingsCategoryInfo.cs</Link>
-    </Compile>
     <Compile Include="..\NKit.Standard\Utilities\StreamHelper.cs">
       <Link>Utilities\StreamHelper.cs</Link>
     </Compile>
@@ -870,17 +840,35 @@
     <Compile Include="..\NKit.Windows\Utilities\RAS\RasEventDelegatesWindows.cs">
       <Link>Utilities\RAS\RasEventDelegatesWindows.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\Default\WcfRestWebServiceAppSettingsWindows.cs">
-      <Link>Utilities\SettingsFile\Default\WcfRestWebServiceAppSettingsWindows.cs</Link>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\Default\AppSettings.cs">
+      <Link>Utilities\SettingsFile\Default\AppSettings.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingItemWindows.cs">
-      <Link>Utilities\SettingsFile\SettingItemWindows.cs</Link>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\Default\DatabaseAppSettings.cs">
+      <Link>Utilities\SettingsFile\Default\DatabaseAppSettings.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingsCategoryInfoWindows.cs">
-      <Link>Utilities\SettingsFile\SettingsCategoryInfoWindows.cs</Link>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\Default\WcfRestWebServiceAppSettings.cs">
+      <Link>Utilities\SettingsFile\Default\WcfRestWebServiceAppSettings.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingsWindows.cs">
-      <Link>Utilities\SettingsFile\SettingsWindows.cs</Link>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\Default\WebServiceClientAppSettings.cs">
+      <Link>Utilities\SettingsFile\Default\WebServiceClientAppSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\Default\WebServiceMobileClientAppSettings.cs">
+      <Link>Utilities\SettingsFile\Default\WebServiceMobileClientAppSettings.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingInfoAttribute.cs">
+      <Link>Utilities\SettingsFile\SettingInfoAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingItem.cs">
+      <Link>Utilities\SettingsFile\SettingItem.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\Settings.cs">
+      <Link>Utilities\SettingsFile\Settings.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingsCache.cs">
+      <Link>Utilities\SettingsFile\SettingsCache.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingsCategoryInfo.cs">
+      <Link>Utilities\SettingsFile\SettingsCategoryInfo.cs</Link>
     </Compile>
     <Compile Include="..\NKit.Windows\Utilities\Singletons\AppSingletonWindows.cs">
       <Link>Utilities\Singletons\AppSingletonWindows.cs</Link>

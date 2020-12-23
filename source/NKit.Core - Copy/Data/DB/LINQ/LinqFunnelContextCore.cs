@@ -1,4 +1,4 @@
-﻿namespace NKit.Data.DB.LINQ
+﻿namespace NKit.Core.Data.DB.LINQ
 {
     #region Using Directives
 

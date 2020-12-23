@@ -84,7 +84,7 @@ namespace NKit.Mmc.Forms
         public void RefreshData()
         {
             lstvSettings.Items.Clear();
-            SettingsCategoryInfoWindows settingsCategoryInfo = _settingsFormView.ViewDescriptionTag as SettingsCategoryInfoWindows; //Provides the settings and the category in the settings to be used to populate the list view.
+            SettingsCategoryInfo settingsCategoryInfo = _settingsFormView.ViewDescriptionTag as SettingsCategoryInfo; //Provides the settings and the category in the settings to be used to populate the list view.
             if (settingsCategoryInfo == null)
             {
                 throw new NullReferenceException(string.Format(
@@ -92,7 +92,7 @@ namespace NKit.Mmc.Forms
                     typeof(SettingsCategoryInfo).FullName,
                     typeof(SettingsFormViewWindows).FullName));
             }
-            foreach (SettingItemWindows s in settingsCategoryInfo.Settings.GetSettingsByCategory(settingsCategoryInfo, this))
+            foreach (SettingItem s in settingsCategoryInfo.Settings.GetSettingsByCategory(settingsCategoryInfo, this))
             {
                 lstvSettings.Items.Add(s.ListViewItem);
             }
@@ -102,13 +102,13 @@ namespace NKit.Mmc.Forms
         /// Build string of selected users
         /// </summary>
         /// <returns></returns>
-        private SettingItemWindows GetSelectedSetting()
+        private SettingItem GetSelectedSetting()
         {
             if (lstvSettings.SelectedItems.Count < 1)
             {
                 return null;
             }
-            return (SettingItemWindows)lstvSettings.SelectedItems[0].Tag;
+            return (SettingItem)lstvSettings.SelectedItems[0].Tag;
         }
 
         #endregion //Methods

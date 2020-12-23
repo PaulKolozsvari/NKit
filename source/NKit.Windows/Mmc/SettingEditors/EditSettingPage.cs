@@ -19,7 +19,7 @@
 
         public EditSettingPage(object selectionObject)
         {
-            SettingItemWindows selectedSetting = (SettingItemWindows)selectionObject;
+            SettingItem selectedSetting = (SettingItem)selectionObject;
             if (selectedSetting.SettingType.Equals(typeof(string)))
             {
                 _childSettingControl = new EditTextSettingControlWindows(this);

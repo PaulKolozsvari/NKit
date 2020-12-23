@@ -31,7 +31,7 @@
         #region Fields
 
         private EditSettingPage _parentPropertyPage;
-        private SettingItemWindows _selectedSettingItem;
+        private SettingItem _selectedSettingItem;
 
         #endregion //Fields
 
@@ -39,7 +39,7 @@
 
         public void RefreshData(object selectionObject)
         {
-            _selectedSettingItem = (SettingItemWindows)selectionObject;
+            _selectedSettingItem = (SettingItem)selectionObject;
             if (!_selectedSettingItem.SettingType.IsEnum)
             {
                 throw new ArgumentException(string.Format(
@@ -72,7 +72,7 @@
 
         public void UpdateData(object selectionObject)
         {
-            SettingItemWindows selectedSetting = (SettingItemWindows)selectionObject;
+            SettingItem selectedSetting = (SettingItem)selectionObject;
             EntityReader.SetPropertyValue(selectedSetting.SettingName, selectedSetting.SettingsCategoryInfo.Settings, cboValue.SelectedItem);
             selectedSetting.RefreshSettingsByCategory(cboValue.SelectedItem.ToString());
             selectedSetting.SettingsCategoryInfo.Settings.SaveToFile();

@@ -8,7 +8,6 @@
     using System.IO;
     using System.Diagnostics;
     using NKit.Data;
-    using NKit.Utilities.SettingsFile;
 
     #endregion //Using Directives
 
@@ -111,15 +110,6 @@
             {
                 writer.WriteLine(logMessage.ToString());
             }
-        }
-
-        public void LogSettings(Settings settings)
-        {
-            StringBuilder result = new StringBuilder();
-            result.AppendLine("Application Settings:");
-            result.AppendLine();
-            result.Append(settings.ToString());
-            LogMessage(new LogMessage(result.ToString(), LogMessageType.Information, LoggingLevel.Normal));
         }
 
         public virtual void LogMessage(LogMessage logMessage)
