@@ -1,2 +1,3 @@
 *   Added option to the FtpClient UploadFile and DownloadFile methods to enable or disable SSL for the FTP request.
 *   Moved all the settings related classes from the Standard library to the Windows library because Core library will implement settings differently i.e. via Options pattern. 
+*   In NKit.Core, fixed the EntityFrameworkExtensionsCore Set in method for dynamic types to prevent ambiguious error exception where it cannot find the correct generic Set overload method on DbContext.

@@ -10,6 +10,7 @@
     using System.Transactions;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
+    using NKit.Core.Utilities.SettingsFile.Default;
     using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
     using NKit.Web.Service;
@@ -28,55 +29,38 @@
         /// Creates an entity context with the service provider from which it will get the entity framework DbContext.
         /// </summary>
         /// <param name="serviceProvider">Service provider to be used for finding the DbContext.</param>
-        /// <param name="settings">Database related settings.</param>
-        /// <param name="transactionScopeOption">TransactionScopeOption to used for constructing a TransactionScope.</param>
-        /// <param name="transactionOptions">TransactionOptions to used for constructing a TransactionScope.</param>
-        /// <param name="transactionDeadlockRetryAttempts">Number of times to retry an operation in case of a transaction deadlock.</param>
-        /// <param name="transactionDeadlockRetryWaitPeriod">Number of millisends to wait before each retry an operation causes a transaction deadlock.</param>
+        /// <param name="databaseSettings">Database related settings.</param>
         public LinqEntityContextCore(
             IServiceProvider serviceProvider,
-            LinqFunnelSettings settings,
-            TransactionScopeOption transactionScopeOption,
-            TransactionOptions transactionOptions,
-            int transactionDeadlockRetryAttempts,
-            int transactionDeadlockRetryWaitPeriod) : base(serviceProvider, settings)
+            DatabaseSettings databaseSettings) : base(serviceProvider, databaseSettings)
         {
-            Initialize(transactionScopeOption, transactionOptions, transactionDeadlockRetryAttempts, transactionDeadlockRetryWaitPeriod);
+            Initialize(databaseSettings);
         }
 
         /// <summary>
         /// Creates an entity context using the specified entity framework DbContext.
         /// </summary>
         /// <param name="db">The DbContext to use for running operations against the database.</param>
-        /// <param name="settings">Database related settings.</param>
-        /// <param name="transactionScopeOption">TransactionScopeOption to used for constructing a TransactionScope.</param>
-        /// <param name="transactionOptions">TransactionOptions to used for constructing a TransactionScope.</param>
-        /// <param name="transactionDeadlockRetryAttempts">Number of times to retry an operation in case of a transaction deadlock.</param>
-        /// <param name="transactionDeadlockRetryWaitPeriod">Number of millisends to wait before each retry an operation causes a transaction deadlock.</param>
-        public LinqEntityContextCore(
-            D db,
-            LinqFunnelSettings settings,
-            TransactionScopeOption transactionScopeOption,
-            TransactionOptions transactionOptions,
-            int transactionDeadlockRetryAttempts,
-            int transactionDeadlockRetryWaitPeriod) : base(db, settings)
+        /// <param name="databaseSettings">Database related settings.</param>
+        public LinqEntityContextCore(D db, DatabaseSettings databaseSettings) : base(db, databaseSettings)
         {
-            Initialize(transactionScopeOption, transactionOptions, transactionDeadlockRetryAttempts, transactionDeadlockRetryWaitPeriod);
+            Initialize(databaseSettings);
         }
 
-        private void Initialize(
-            TransactionScopeOption transactionScopeOption,
-            TransactionOptions transactionOptions,
-            int transactionDeadlockRetryAttempts,
-            int transactionDeadlockRetryWaitPeriod)
+        private void Initialize(DatabaseSettings databaseSettings)
         {
-            DataValidator.ValidateIntegerNotNegative(transactionDeadlockRetryAttempts, nameof(transactionDeadlockRetryAttempts), nameof(LinqEntityContextCore<D>));
-            DataValidator.ValidateIntegerNotNegative(transactionDeadlockRetryWaitPeriod, nameof(transactionDeadlockRetryWaitPeriod), nameof(LinqEntityContextCore<D>));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqEntityContextCore<D>));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(LinqEntityContextCore<D>));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(LinqEntityContextCore<D>));
 
-            _transactionScopeOption = transactionScopeOption;
-            _transactionOptions = transactionOptions;
-            _transactionDeadlockRetryAttempts = transactionDeadlockRetryAttempts;
-            _transactionDeadlockRetryWaitPeriod = transactionDeadlockRetryWaitPeriod;
+            _transactionScopeOption = databaseSettings.DatabaseTransactionScopeOption;
+            _transactionOptions = new TransactionOptions() 
+            { 
+                IsolationLevel = databaseSettings.DatabaseTransactionIsolationLevel, 
+                Timeout = new TimeSpan(0, 0, databaseSettings.DatabaseTransactionTimeoutSeconds) 
+            };
+            _transactionDeadlockRetryAttempts = databaseSettings.DatabaseTransactionDeadlockRetryAttempts;
+            _transactionDeadlockRetryWaitPeriod = databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod;
         }
 
         #endregion //Constructors
@@ -528,14 +512,14 @@
             return new ServiceFunctionResult<List<E>>() { Contents = base.GetAllEntities<E>(loadChildren) };
         }
 
-        public ServiceFunctionResult<List<object>> GetAllEntities(
-            Type entityType,
-            bool loadChildren,
-            Nullable<Guid> userId,
-            string userName)
-        {
-            return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType, loadChildren) };
-        }
+        //public ServiceFunctionResult<List<object>> GetAllEntities(
+        //    Type entityType,
+        //    bool loadChildren,
+        //    Nullable<Guid> userId,
+        //    string userName)
+        //{
+        //    return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType, loadChildren) };
+        //}
 
         public ServiceFunctionResult<int> GetTotalCount<E>(
             Nullable<Guid> userId,
