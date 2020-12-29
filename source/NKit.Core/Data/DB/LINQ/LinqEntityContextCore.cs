@@ -512,14 +512,14 @@
             return new ServiceFunctionResult<List<E>>() { Contents = base.GetAllEntities<E>(loadChildren) };
         }
 
-        //public ServiceFunctionResult<List<object>> GetAllEntities(
-        //    Type entityType,
-        //    bool loadChildren,
-        //    Nullable<Guid> userId,
-        //    string userName)
-        //{
-        //    return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType, loadChildren) };
-        //}
+        public ServiceFunctionResult<List<object>> GetAllEntities(
+            Type entityType,
+            bool loadChildren,
+            Nullable<Guid> userId,
+            string userName)
+        {
+            return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType, loadChildren) };
+        }
 
         public ServiceFunctionResult<int> GetTotalCount<E>(
             Nullable<Guid> userId,

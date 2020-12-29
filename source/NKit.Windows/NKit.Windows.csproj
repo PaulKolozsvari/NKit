@@ -454,12 +454,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Mmc\Forms\SettingsControlWindows.resx">
       <DependentUpon>SettingsControlWindows.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Mmc\SettingEditors\EditBoolSettingControlWindows.resx">
       <DependentUpon>EditBoolSettingControlWindows.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Mmc\SettingEditors\EditEnumSettingControlWindows.resx">
       <DependentUpon>EditEnumSettingControlWindows.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Mmc\SettingEditors\EditLongSettingControlWindows.resx">
       <DependentUpon>EditLongSettingControlWindows.cs</DependentUpon>

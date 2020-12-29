@@ -811,7 +811,6 @@
                     entityType.Name,
                     dateFieldName));
             }
-            List<object> toDelete = new List<object>();
             foreach (object e in table)
             {
                 if ((DateTime)dateField.GetValue(e, null) < threshold)
