@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Web.API.ContentMapping
+﻿namespace NKit.Web.Service.CoreRest.ContentMapping
 {
     #region Using Directives
 

@@ -5,15 +5,13 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using NKit.Utilities.Logging;
 
     #endregion //Using Directives
 
     public class LoggingSettings : Settings
     {
-        #region Properties
+        #region Logging
 
         /// <summary>
         /// Whether or not to log to a text log file in the executing directory.
@@ -57,19 +55,6 @@
         [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The extent of messages being logged: None = logging is disabled, Minimum = logs server start/stop and exceptions, Normal = logs additional information messages, Maximum = logs all requests and responses to the server.", CategorySequenceId = 6)]
         public LoggingLevel LoggingLevel { get; set; }
 
-        #endregion //Properties
-
-        #region Methods
-
-        /// <summary>
-        /// Register Configuration from the appsettings.json which will be made available as IOptions to all services.
-        /// </summary>
-        /// <param name="services"></param>
-        public static void RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
-        {
-            services.Configure<LoggingSettings>(configuration.GetSection(nameof(LoggingSettings)));
-        }
-
-        #endregion //Methods
+        #endregion //Logging        
     }
 }

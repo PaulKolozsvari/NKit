@@ -3,10 +3,11 @@
     #region Using Directives
 
     using System;
+    using System.Collections.Generic;
     using System.IO;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
+    using System.Text;
     using NKit.Utilities;
+    using NKit.Utilities.SettingsFile;
 
     #endregion //Using Directives
 
@@ -64,30 +65,5 @@
         public string ApplicationName { get; set; }
 
         #endregion Properties
-
-        #region Methods
-
-        /// <summary>
-        /// Reads the configuration section from the appsettings.json file and deserializes it to the specified Settings type.
-        /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
-        /// </summary>
-        /// <typeparam name="S"></typeparam>
-        /// <param name="configuration"></param>
-        /// <returns></returns>
-        public static S GetSettings<S>(IConfiguration configuration) where S : Settings
-        {
-            return configuration.GetSection(typeof(S).Name).Get<S>();
-        }
-
-        /// <summary>
-        /// Register Configurations from the appsettings.json which will be made available as IOptions to all services.
-        /// </summary>
-        /// <param name="services"></param>
-        public static void RegisterConfiguration<S>(IConfiguration configuration, IServiceCollection services) where S : Settings
-        {
-            services.Configure<S>(configuration.GetSection(typeof(S).Name));
-        }
-
-        #endregion //Methods
     }
 }

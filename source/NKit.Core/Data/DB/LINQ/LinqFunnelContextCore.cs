@@ -11,9 +11,12 @@
     using System.Reflection;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using NKit.Core.Utilities.SettingsFile.Default;
+    using NKit.Utilities.SettingsFile.Default;
     using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
+    using NKit.Web.Service.CoreRest.Models;
+    using Dapper;
+    using System.Data.Common;
 
     #endregion //Using Directives
 
@@ -21,7 +24,7 @@
     /// A facade wrapper around the DbContext providing CRUD operations on any entities.
     /// </summary>
     /// <typeparam name="D">The underlying entity framework DbContext which should have been registered as service..</typeparam>
-    public class LinqFunnelContextCore<D> where D : DbContext, IDisposable
+    public class LinqFunnelContextCore
     {
         #region Constructors
 
@@ -30,11 +33,13 @@
         /// </summary>
         /// <param name="serviceProvider">ServiceProvider to be used to get the DbContext of type D</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public LinqFunnelContextCore(IServiceProvider serviceProvider, DatabaseSettings databaseSettings)
+        public LinqFunnelContextCore(IServiceProvider serviceProvider, Type dbContextType, DatabaseSettings databaseSettings)
         {
-            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(LinqFunnelContextCore<D>));
-            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqFunnelContextCore<D>));
+            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(LinqFunnelContextCore));
+            DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(LinqFunnelContextCore));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqFunnelContextCore));
             _serviceProvider = serviceProvider;
+            _dbContextType = dbContextType;
             _databaseSettings = databaseSettings;
         }
 
@@ -43,10 +48,10 @@
         /// </summary>
         /// <param name="db">The DbContext to use for running operations for the underlying database.</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public LinqFunnelContextCore(D db, DatabaseSettings databaseSettings)
+        public LinqFunnelContextCore(DbContext db, DatabaseSettings databaseSettings)
         {
-            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(LinqFunnelContextCore<D>));
-            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqFunnelContextCore<D>));
+            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(LinqFunnelContextCore));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqFunnelContextCore));
             _databaseSettings = databaseSettings;
             _db = db;
             _db.Database.SetConnectionString(_databaseSettings.DatabaseConnectionString);
@@ -58,7 +63,8 @@
         #region Fields
 
         protected IServiceProvider _serviceProvider;
-        protected D _db;
+        protected Type _dbContextType;
+        protected DbContext _db;
         protected DatabaseSettings _databaseSettings;
 
         #endregion //Fields
@@ -68,13 +74,13 @@
         /// <summary>
         /// Gets or sets the underlying entity framework DbContext which should have been registered as a service.
         /// </summary>
-        public D DB
+        public DbContext DB
         {
             get
             {
                 if ((_db == null) && (_serviceProvider != null))
                 {
-                    _db = (D)_serviceProvider.GetService(typeof(D));
+                    _db = (DbContext)_serviceProvider.GetService(_dbContextType);
                 }
                 return _db;
             }
@@ -82,7 +88,7 @@
             {
                 if (value == null)
                 {
-                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(LinqFunnelContextCore<D>)}");
+                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(LinqFunnelContextCore)}");
                 }
                 _db = value;
             }
@@ -1210,6 +1216,47 @@
         public virtual long GetTotalCountLong<E>() where E : class
         {
             return DB.Set<E>().LongCount();
+        }
+
+        /// <summary>
+        /// Logs the Exception to the NKitLogEntry table if the table exists in the database.
+        /// A sql query is run against the database first to check that the table exists in the database before trying to insert a log entry to it.
+        /// To ensure that the table exists the NKitLogEntry model needs to registered by underlying DbContext as a DbSet in the application using the NKit.
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public NKitLogEntryCore LogExceptionToNKitLogEntry(Exception ex, string source)
+        {
+            if (!SqlServerTableExists(nameof(NKitLogEntryCore)))
+            {
+                return null;
+            }
+            NKitLogEntryCore logEntry = new NKitLogEntryCore()
+            {
+                NKitLogEntryId = Guid.NewGuid(),
+                Message = ex.Message,
+                Source = source,
+                ClassName = ex.TargetSite != null ? ex.TargetSite.Name : null,
+                FunctionName = ex.TargetSite != null ? ex.TargetSite.DeclaringType.FullName : null,
+                StackTrace = ex.StackTrace != null ? ex.StackTrace : null
+            };
+            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntryCore>(logEntry, logEntry.NKitLogEntryId, false);
+            return logEntry;
+        }
+
+        public bool SqlServerTableExists(string tableName)
+        {
+            string sqlQuery = $"SELECT COUNT(*) as Count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
+            using (DbConnection conn = DB.Database.GetDbConnection())
+            {
+                if (conn != null)
+                {
+                    var count = conn.Query<int>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
+                    return (count > 0);
+                }
+            }
+            return false;
         }
 
         /// <summary>

@@ -10,10 +10,12 @@
     using System.Transactions;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
-    using NKit.Core.Utilities.SettingsFile.Default;
+    using NKit.Utilities.SettingsFile.Default;
     using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
     using NKit.Web.Service;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.Extensions.DependencyInjection;
 
     #endregion //Using Directives
 
@@ -21,7 +23,7 @@
     /// A wrapper around the LinqFunnelContext that allows management of multiple entities at a time.
     /// </summary>
     /// <typeparam name="D"></typeparam>
-    public class LinqEntityContextCore<D> : LinqFunnelContextCore<D> where D : DbContext
+    public class LinqEntityContextCore : LinqFunnelContextCore
     {
         #region Constructors
 
@@ -32,7 +34,8 @@
         /// <param name="databaseSettings">Database related settings.</param>
         public LinqEntityContextCore(
             IServiceProvider serviceProvider,
-            DatabaseSettings databaseSettings) : base(serviceProvider, databaseSettings)
+            Type dbContextType,
+            DatabaseSettings databaseSettings) : base(serviceProvider, dbContextType, databaseSettings)
         {
             Initialize(databaseSettings);
         }
@@ -42,16 +45,16 @@
         /// </summary>
         /// <param name="db">The DbContext to use for running operations against the database.</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public LinqEntityContextCore(D db, DatabaseSettings databaseSettings) : base(db, databaseSettings)
+        public LinqEntityContextCore(DbContext db, DatabaseSettings databaseSettings) : base(db, databaseSettings)
         {
             Initialize(databaseSettings);
         }
 
         private void Initialize(DatabaseSettings databaseSettings)
         {
-            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqEntityContextCore<D>));
-            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(LinqEntityContextCore<D>));
-            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(LinqEntityContextCore<D>));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqEntityContextCore));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(LinqEntityContextCore));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(LinqEntityContextCore));
 
             _transactionScopeOption = databaseSettings.DatabaseTransactionScopeOption;
             _transactionOptions = new TransactionOptions() 

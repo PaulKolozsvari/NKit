@@ -1,0 +1,6 @@
+﻿*	Use ASP.NET Core APIs in a class library:
+	-	Include the following tag in the .NET Core project's file:
+
+		<ItemGroup>
+			<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		</ItemGroup>

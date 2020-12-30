@@ -9,7 +9,7 @@
 
     #endregion //Using Directives
 
-    public static class EntityFrameworkExtensionsCore
+    public static class DbContextExtensionsCore
     {
         #region Methods
 

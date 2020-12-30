@@ -1,4 +1,4 @@
-﻿namespace NKit.Utilities.SettingsFile.Default
+﻿namespace NKit.Core.Utilities.SettingsFile.Default
 {
     #region Using Directives
 
@@ -6,16 +6,12 @@
     using System.Collections.Generic;
     using System.Text;
     using System.Transactions;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using NKit.Utilities.SettingsFile;
 
     #endregion //Using Directives
 
     public class DatabaseSettings : Settings
     {
-        #region Properties
-
         /// <summary>
         /// The connection string to the server database.
         /// </summary>
@@ -57,20 +53,5 @@
         /// </summary>
         [SettingInfo("Database", AutoFormatDisplayName = true, Description = "The number milliseconds to wait before retry attempts on transaction deadlocks.", CategorySequenceId = 6)]
         public int DatabaseTransactionDeadlockRetryWaitPeriod { get; set; }
-
-        #endregion //Properties
-
-        #region Methods
-
-        /// <summary>
-        /// Register Configurations from the appsettings.json which will be made available as IOptions to all services.
-        /// </summary>
-        /// <param name="services"></param>
-        public static void RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
-        {
-            services.Configure<DatabaseSettings>(configuration.GetSection(nameof(DatabaseSettings)));
-        }
-
-        #endregion //Methods
     }
 }

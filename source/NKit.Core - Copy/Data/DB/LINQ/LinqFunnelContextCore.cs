@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Data.DB.LINQ
+﻿namespace NKit.Data.DB.LINQ
 {
     #region Using Directives
 
@@ -11,6 +11,7 @@
     using System.Reflection;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using NKit.Core.Utilities.SettingsFile.Default;
     using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
 
@@ -28,26 +29,28 @@
         /// Creates a funnel context using the specified servicce provider from which it will get the entity framework DbContext.
         /// </summary>
         /// <param name="serviceProvider">ServiceProvider to be used to get the DbContext of type D</param>
-        /// <param name="settings">Database related settings.</param>
-        public LinqFunnelContextCore(IServiceProvider serviceProvider, LinqFunnelSettings settings)
+        /// <param name="databaseSettings">Database related settings.</param>
+        public LinqFunnelContextCore(IServiceProvider serviceProvider, DatabaseSettings databaseSettings)
         {
             DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(LinqFunnelContextCore<D>));
-            DataValidator.ValidateObjectNotNull(settings, nameof(settings), nameof(LinqFunnelContextCore<D>));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqFunnelContextCore<D>));
             _serviceProvider = serviceProvider;
-            _linqFunnelSettings = settings;
+            _databaseSettings = databaseSettings;
         }
 
         /// <summary>
         /// Creates a funnel context using the specified entity framework DbContext.
         /// </summary>
         /// <param name="db">The DbContext to use for running operations for the underlying database.</param>
-        /// <param name="settings">Database related settings.</param>
-        public LinqFunnelContextCore(D db, LinqFunnelSettings settings)
+        /// <param name="databaseSettings">Database related settings.</param>
+        public LinqFunnelContextCore(D db, DatabaseSettings databaseSettings)
         {
             DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(LinqFunnelContextCore<D>));
-            DataValidator.ValidateObjectNotNull(settings, nameof(settings), nameof(LinqFunnelContextCore<D>));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqFunnelContextCore<D>));
+            _databaseSettings = databaseSettings;
             _db = db;
-            _linqFunnelSettings = settings;
+            _db.Database.SetConnectionString(_databaseSettings.DatabaseConnectionString);
+            _db.Database.SetCommandTimeout(_databaseSettings.DatabaseCommandTimeout);
         }
 
         #endregion //Constructors
@@ -56,7 +59,7 @@
 
         protected IServiceProvider _serviceProvider;
         protected D _db;
-        protected LinqFunnelSettings _linqFunnelSettings;
+        protected DatabaseSettings _databaseSettings;
 
         #endregion //Fields
 
@@ -69,7 +72,7 @@
         {
             get
             {
-                if (_db == null)
+                if ((_db == null) && (_serviceProvider != null))
                 {
                     _db = (D)_serviceProvider.GetService(typeof(D));
                 }
@@ -808,7 +811,6 @@
                     entityType.Name,
                     dateFieldName));
             }
-            List<object> toDelete = new List<object>();
             foreach (object e in table)
             {
                 if ((DateTime)dateField.GetValue(e, null) < threshold)
@@ -1171,9 +1173,7 @@
         /// <returns>Returns all the entities of the specified type.</returns>
         public virtual List<E> GetAllEntities<E>(bool loadChildren) where E : class
         {
-            List<E> result = new List<E>();
-            GetAllEntities(typeof(E), loadChildren).ForEach(e => result.Add((E)e));
-            return result;
+            return DB.Set<E>().ToList<E>();
         }
 
         /// <summary>
@@ -1217,20 +1217,20 @@
         /// </summary>
         /// <typeparam name="E">The entity type i.e. the table from which the entities will be counted.</typeparam>
         /// <returns>Returns the total count of an entity type.</returns>
-        public virtual int GetTotalCount(Type entityType)
-        {
-            return GetAllEntities(entityType, false).Count;
-        }
+        //public virtual int GetTotalCount(Type entityType)
+        //{
+        //    return GetAllEntities(entityType, false).Count;
+        //}
 
         /// <summary>
         /// Returns the total count of an entity type.
         /// </summary>
         /// <typeparam name="E">The entity type i.e. the table from which the entities will be counted.</typeparam>
         /// <returns>Returns the total count of an entity type.</returns>
-        public virtual long GetTotalCountLong(Type entityType)
-        {
-            return GetAllEntities(entityType, false).LongCount();
-        }
+        //public virtual long GetTotalCountLong(Type entityType)
+        //{
+        //    return GetAllEntities(entityType, false).LongCount();
+        //}
 
         /// <summary>
         /// Disposes the underlying Entity Framework DbContext.

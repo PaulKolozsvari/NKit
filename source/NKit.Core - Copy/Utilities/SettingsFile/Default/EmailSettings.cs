@@ -5,8 +5,6 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
     using NKit.Utilities.Email;
     using NKit.Utilities.SettingsFile;
 
@@ -14,7 +12,7 @@
 
     public class EmailSettings : Settings
     {
-        #region Properties
+        #region Email
 
         /// <summary>
         /// Whether or not email notifications should be enabled.
@@ -136,19 +134,6 @@
         [SettingInfo("Email", AutoFormatDisplayName = true, Description = "The default list of recipients that should be included in every email sent out i.e. if default recipients are configured to be included.", CategorySequenceId = 18)]
         public List<EmailNotificationRecipient> DefaultEmailRecipients { get; set; }
 
-        #endregion //Properties
-
-        #region Methods
-
-        /// <summary>
-        /// Register Configuration from the appsettings.json which will be made available as IOptions to all services.
-        /// </summary>
-        /// <param name="services"></param>
-        public static void RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
-        {
-            services.Configure<EmailSettings>(configuration.GetSection(nameof(EmailSettings)));
-        }
-
-        #endregion //Methods
+        #endregion //Email
     }
 }

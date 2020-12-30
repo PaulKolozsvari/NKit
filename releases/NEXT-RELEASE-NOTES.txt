@@ -2,3 +2,8 @@
 *   Moved all the settings related classes from the Standard library to the Windows library because Core library will implement settings differently i.e. via Options pattern. 
 *   In NKit.Core, fixed the EntityFrameworkExtensionsCore Set in method for dynamic types to prevent ambiguious error exception where it cannot find the correct generic Set overload method on DbContext.
 *   Implemented ControllerInputFormatter to allow configuring controllers to allow receiving of plain text or any of the media types specified in the constructor of this class.
+*   Added utility methods in the Settings class to read specific settings sections from the appsettings.json file and also register them onfigurations to make them accessible to the services collection.
+*   Implemented NKitBaseModel that can be inherrited by any models in an app.
+*   Implemented NKitLogEntry model that is used by the LinqFunnelContextCore to log exceptions and info to the database NKitLogEntry which needs to be registered by underlying DbContext
+    as a DbSet in the application using the NKit.
+*   Added exception handling middleware which logs to the AppLogger as well as to the database in the NKitLogEntry table.

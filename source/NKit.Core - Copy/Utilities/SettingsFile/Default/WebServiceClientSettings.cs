@@ -1,4 +1,4 @@
-﻿namespace NKit.Utilities.SettingsFile.Default
+﻿namespace NKit.Core.Utilities.SettingsFile.Default
 {
     #region Using Directives
 
@@ -8,14 +8,12 @@
     using System.Text;
     using NKit.Utilities;
     using NKit.Utilities.Serialization;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Configuration;
 
     #endregion //Using Directives
 
     public class WebServiceClientSettings : Settings
     {
-        #region Properties
+        #region Web Service
 
         /// <summary>
         /// The URL of the web service.
@@ -65,19 +63,6 @@
         [SettingInfo("Web Service Client", DisplayName = "Messaging Format", Description = "The format of the messages exchanged between the application and the web service e.g. XML, JSON or CSV.", CategorySequenceId = 7)]
         public SerializerType WebServiceMessagingFormat { get; set; }
 
-        #endregion //Properties
-
-        #region Methods
-
-        /// <summary>
-        /// Register Configuration from the appsettings.json which will be made available as IOptions to all services.
-        /// </summary>
-        /// <param name="services"></param>
-        public static void RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
-        {
-            services.Configure<WebServiceClientSettings>(configuration.GetSection(nameof(WebServiceClientSettings)));
-        }
-
-        #endregion //Methods
+        #endregion //Web Service
     }
 }
