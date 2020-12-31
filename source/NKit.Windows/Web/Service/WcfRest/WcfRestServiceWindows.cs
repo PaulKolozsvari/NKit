@@ -67,6 +67,8 @@
 
         #region Methods
 
+        #region Utility Methods
+
         protected void AuditRequest(string requestName, string requestMessage)
         {
             if (!_auditServiceCalls)
@@ -153,6 +155,182 @@
             return result;
         }
 
+        protected virtual void UpdateHttpStatusOnException(Exception ex)
+        {
+            WebOperationContext context = WebOperationContext.Current;
+            if (context.OutgoingResponse.StatusCode == HttpStatusCode.OK ||
+                context.OutgoingResponse.StatusCode == HttpStatusCode.Created)
+            {
+                context.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+            }
+            /*A status description with escape sequences causes the server to not respond to the request 
+            causing the client to not get a response therefore not know what the exception was.*/
+            string errorMessage = ex.Message.Replace("\r", string.Empty);
+            errorMessage = errorMessage.Replace("\n", string.Empty);
+            errorMessage = errorMessage.Replace("\t", string.Empty);
+            context.OutgoingResponse.StatusDescription = errorMessage;
+        }
+
+        protected virtual void ValidateRequestMethod(HttpVerb verb)
+        {
+            ValidateRequestMethod(verb.ToString());
+        }
+
+        protected virtual void ValidateRequestMethod(string verb)
+        {
+            if (WebOperationContext.Current.IncomingRequest.Method != verb)
+            {
+                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.MethodNotAllowed;
+                throw new UserThrownException(
+                    string.Format(
+                    "Unexpected Method of {0} on incoming POST Request {1}.",
+                    WebOperationContext.Current.IncomingRequest.Method,
+                    WebOperationContext.Current.IncomingRequest.UriTemplateMatch.RequestUri.ToString()),
+                    LoggingLevel.Normal);
+            }
+        }
+
+        protected virtual Stream GetStreamFromObject(object obj)
+        {
+            return GetStreamFromObject(obj, out string serializedText);
+        }
+
+        protected virtual Stream GetStreamFromObject(object obj, out string serializedText)
+        {
+            serializedText = GOCWindows.Instance.JsonSerializer.SerializeToText(obj);
+            return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
+        }
+
+        protected virtual Stream GetStreamFromObject(object obj, Type[] extraTypes)
+        {
+            return GetStreamFromObject(obj, extraTypes, out string serializedText);
+        }
+
+        protected virtual Stream GetStreamFromObject(object obj, Type[] extraTypes, out string serializedText)
+        {
+            serializedText = GOCWindows.Instance.JsonSerializer.SerializeToText(obj, extraTypes);
+            return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
+        }
+
+        protected virtual Stream GetStreamFromObject(object obj, ISerializer serializer)
+        {
+            return StreamHelper.GetStreamFromString(serializer.SerializeToText(obj), GOCWindows.Instance.Encoding);
+        }
+
+        protected virtual Stream GetStreamFromObject(object obj, ISerializer serializer, out string serializedText)
+        {
+            serializedText = serializer.SerializeToText(obj);
+            return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
+        }
+
+        protected virtual Stream GetStreamFromObject(object obj, ISerializer serializer, Type[] extraTypes)
+        {
+            return StreamHelper.GetStreamFromString(serializer.SerializeToText(obj, extraTypes), GOCWindows.Instance.Encoding);
+        }
+
+        protected virtual Stream GetStreamFromObject(object obj, ISerializer serializer, Type[] extraTypes, out string serializedText)
+        {
+            serializedText = serializer.SerializeToText(obj, extraTypes);
+            return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
+        }
+
+        protected virtual E GetObjectFromStream<E>(Stream stream, ISerializer serializer) where E : class
+        {
+            return (E)GetObjectFromStream(typeof(E), stream, serializer, out string serializedText);
+        }
+
+        protected virtual E GetObjectFromStream<E>(Stream stream, ISerializer serializer, out string serializedText) where E : class
+        {
+            return (E)GetObjectFromStream(typeof(E), stream, serializer, out serializedText);
+        }
+
+        protected virtual object GetObjectFromStream(Type entityType, Stream stream, ISerializer serializer)
+        {
+            return GetObjectFromStream(entityType, stream, serializer, out string serializedText);
+        }
+
+        protected virtual object GetObjectFromStream(Type entityType, Stream stream, ISerializer serializer, out string serializedText)
+        {
+            serializedText = StreamHelper.GetStringFromStream(stream, GOCWindows.Instance.Encoding);
+            object result = serializer.DeserializeFromText(entityType, serializedText);
+            if (result == null)
+            {
+                throw new Exception(string.Format("The following text could not be deserialized to a {0} : {1}", entityType.FullName, serializedText));
+            }
+            return result;
+        }
+
+        protected virtual void GetUserDetails(LinqEntityContextWindows context, out Nullable<Guid> userId, out string userName)
+        {
+            userId = null;
+            userName = null;
+            if (ServiceSecurityContext.Current != null && !string.IsNullOrEmpty(ServiceSecurityContext.Current.WindowsIdentity.Name))
+            {
+                if (context != null && context.UserLinqToSqlType != null)
+                {
+                    userId = context.GetUserId(ServiceSecurityContext.Current.WindowsIdentity.Name);
+                }
+                userName = ServiceSecurityContext.Current.WindowsIdentity.Name;
+            }
+        }
+
+        protected virtual Type GetEntityType(string entityName)
+        {
+            Type result = AssemblyReader.FindType(
+                GOCWindows.Instance.LinqToClassesAssembly,
+                GOCWindows.Instance.LinqToSQLClassesNamespace,
+                entityName,
+                false);
+            if (result == null)
+            {
+                throw new NullReferenceException(string.Format("Could not find entity with name {0}.", entityName));
+            }
+            return result;
+        }
+
+        public static LinqEntityContextWindows GetEntityContext()
+        {
+            return new LinqEntityContextWindows(
+                GOCWindows.Instance.GetNewLinqToSqlDataContext(),
+                GOCWindows.Instance.GetByTypeName<LinqFunnelSettings>(),
+                false,
+                GOCWindows.Instance.UserLinqToSqlType,
+                GOCWindows.Instance.ServerActionLinqToSqlType,
+                GOCWindows.Instance.ServerErrorLinqToSqlType,
+                GOCWindows.Instance.DatabaseTransactionScopeOption,
+                new System.Transactions.TransactionOptions()
+                {
+                    IsolationLevel = GOCWindows.Instance.DatabaseTransactionIsolationLevel,
+                    Timeout = new TimeSpan(0, 0, GOCWindows.Instance.DatabaseTransactionTimeoutSeconds)
+                },
+                GOCWindows.Instance.DatabaseTransactionDeadlockRetryAttempts,
+                GOCWindows.Instance.DatabaseTransactionDeadlockRetryWaitPeriod);
+        }
+
+        public static void DisposeEntityContext(LinqEntityContextWindows context)
+        {
+            if (context != null)
+            {
+                context.Dispose();
+            }
+        }
+
+        protected string GetCurrentRequestClientIpAddress()
+        {
+            MessageProperties props = OperationContext.Current.IncomingMessageProperties;
+            RemoteEndpointMessageProperty endpointProperty = props[RemoteEndpointMessageProperty.Name] as RemoteEndpointMessageProperty;
+            string result = null;
+            if (endpointProperty != null)
+            {
+                result = endpointProperty.Address;
+            }
+            return result;
+        }
+
+        #endregion //Utility Methods
+
+        #region REST Service Methods
+
         public virtual Stream AllURIs()
         {
             try
@@ -180,8 +358,6 @@
                 throw ex;
             }
         }
-
-        #region REST Service Methods
 
         public virtual Stream GetEntities(string entityName)
         {
@@ -330,8 +506,8 @@
                 string userName = null;
                 Type entityType = GetEntityType(entityName);
                 GetUserDetails(context, out userId, out userName);
-                object inputEntity = GetObjectFromStream(entityType, inputStream, GOCWindows.Instance.JsonSerializer, out string serializedtext);
-                AuditRequest(requestName, serializedtext);
+                object inputEntity = GetObjectFromStream(entityType, inputStream, GOCWindows.Instance.JsonSerializer, out string serializedText);
+                AuditRequest(requestName, serializedText);
                 if (OnBeforePut != null)
                 {
                     OnBeforePut(this, new RestServicePutEntityEventArgsWindows(
@@ -546,182 +722,6 @@
         }
 
         #endregion //REST Service Methods
-
-        #region Utility Methods
-
-        protected virtual void UpdateHttpStatusOnException(Exception ex)
-        {
-            WebOperationContext context = WebOperationContext.Current;
-            if (context.OutgoingResponse.StatusCode == HttpStatusCode.OK ||
-                context.OutgoingResponse.StatusCode == HttpStatusCode.Created)
-            {
-                context.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
-            }
-            /*A status description with escape sequences causes the server to not respond to the request 
-            causing the client to not get a response therefore not know what the exception was.*/
-            string errorMessage = ex.Message.Replace("\r", string.Empty);
-            errorMessage = errorMessage.Replace("\n", string.Empty);
-            errorMessage = errorMessage.Replace("\t", string.Empty);
-            context.OutgoingResponse.StatusDescription = errorMessage;
-        }
-
-        protected virtual void ValidateRequestMethod(HttpVerb verb)
-        {
-            ValidateRequestMethod(verb.ToString());
-        }
-
-        protected virtual void ValidateRequestMethod(string verb)
-        {
-            if (WebOperationContext.Current.IncomingRequest.Method != verb)
-            {
-                WebOperationContext.Current.OutgoingResponse.StatusCode = HttpStatusCode.MethodNotAllowed;
-                throw new UserThrownException(
-                    string.Format(
-                    "Unexpected Method of {0} on incoming POST Request {1}.",
-                    WebOperationContext.Current.IncomingRequest.Method,
-                    WebOperationContext.Current.IncomingRequest.UriTemplateMatch.RequestUri.ToString()),
-                    LoggingLevel.Normal);
-            }
-        }
-
-        protected virtual Stream GetStreamFromObject(object obj)
-        {
-            return GetStreamFromObject(obj, out string serializedText);
-        }
-
-        protected virtual Stream GetStreamFromObject(object obj, out string serializedText)
-        {
-            serializedText = GOCWindows.Instance.JsonSerializer.SerializeToText(obj);
-            return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
-        }
-
-        protected virtual Stream GetStreamFromObject(object obj, Type[] extraTypes)
-        {
-            return GetStreamFromObject(obj, extraTypes, out string serializedText);
-        }
-
-        protected virtual Stream GetStreamFromObject(object obj, Type[] extraTypes, out string serializedText)
-        {
-            serializedText = GOCWindows.Instance.JsonSerializer.SerializeToText(obj, extraTypes);
-            return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
-        }
-
-        protected virtual Stream GetStreamFromObject(object obj, ISerializer serializer)
-        {
-            return StreamHelper.GetStreamFromString(serializer.SerializeToText(obj), GOCWindows.Instance.Encoding);
-        }
-
-        protected virtual Stream GetStreamFromObject(object obj, ISerializer serializer, out string serializedText)
-        {
-            serializedText = serializer.SerializeToText(obj);
-            return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
-        }
-
-        protected virtual Stream GetStreamFromObject(object obj, ISerializer serializer, Type[] extraTypes)
-        {
-            return StreamHelper.GetStreamFromString(serializer.SerializeToText(obj, extraTypes), GOCWindows.Instance.Encoding);
-        }
-
-        protected virtual Stream GetStreamFromObject(object obj, ISerializer serializer, Type[] extraTypes, out string serializedText)
-        {
-            serializedText = serializer.SerializeToText(obj, extraTypes);
-            return StreamHelper.GetStreamFromString(serializedText, GOCWindows.Instance.Encoding);
-        }
-
-        protected virtual E GetObjectFromStream<E>(Stream stream, ISerializer serializer) where E : class
-        {
-            return (E)GetObjectFromStream(typeof(E), stream, serializer, out string serializedText);
-        }
-
-        protected virtual E GetObjectFromStream<E>(Stream stream, ISerializer serializer, out string serializedText) where E : class
-        {
-            return (E)GetObjectFromStream(typeof(E), stream, serializer, out serializedText);
-        }
-
-        protected virtual object GetObjectFromStream(Type entityType, Stream stream, ISerializer serializer)
-        {
-            return GetObjectFromStream(entityType, stream, serializer, out string serializedText);
-        }
-
-        protected virtual object GetObjectFromStream(Type entityType, Stream stream, ISerializer serializer, out string serializedText)
-        {
-            serializedText = StreamHelper.GetStringFromStream(stream, GOCWindows.Instance.Encoding);
-            object result = serializer.DeserializeFromText(entityType, serializedText);
-            if (result == null)
-            {
-                throw new Exception(string.Format("The following text could not be deserialized to a {0} : {1}", entityType.FullName, serializedText));
-            }
-            return result;
-        }
-
-        protected virtual void GetUserDetails(LinqEntityContextWindows context, out Nullable<Guid> userId, out string userName)
-        {
-            userId = null;
-            userName = null;
-            if (ServiceSecurityContext.Current != null && !string.IsNullOrEmpty(ServiceSecurityContext.Current.WindowsIdentity.Name))
-            {
-                if (context != null && context.UserLinqToSqlType != null)
-                {
-                    userId = context.GetUserId(ServiceSecurityContext.Current.WindowsIdentity.Name);
-                }
-                userName = ServiceSecurityContext.Current.WindowsIdentity.Name;
-            }
-        }
-
-        protected virtual Type GetEntityType(string entityName)
-        {
-            Type result = AssemblyReader.FindType(
-                GOCWindows.Instance.LinqToClassesAssembly,
-                GOCWindows.Instance.LinqToSQLClassesNamespace,
-                entityName,
-                false);
-            if (result == null)
-            {
-                throw new NullReferenceException(string.Format("Could not find entity with name {0}.", entityName));
-            }
-            return result;
-        }
-
-        public static LinqEntityContextWindows GetEntityContext()
-        {
-            return new LinqEntityContextWindows(
-                GOCWindows.Instance.GetNewLinqToSqlDataContext(),
-                GOCWindows.Instance.GetByTypeName<LinqFunnelSettings>(),
-                false,
-                GOCWindows.Instance.UserLinqToSqlType,
-                GOCWindows.Instance.ServerActionLinqToSqlType,
-                GOCWindows.Instance.ServerErrorLinqToSqlType,
-                GOCWindows.Instance.DatabaseTransactionScopeOption,
-                new System.Transactions.TransactionOptions()
-                {
-                    IsolationLevel = GOCWindows.Instance.DatabaseTransactionIsolationLevel,
-                    Timeout = new TimeSpan(0, 0, GOCWindows.Instance.DatabaseTransactionTimeoutSeconds)
-                },
-                GOCWindows.Instance.DatabaseTransactionDeadlockRetryAttempts,
-                GOCWindows.Instance.DatabaseTransactionDeadlockRetryWaitPeriod);
-        }
-
-        public static void DisposeEntityContext(LinqEntityContextWindows context)
-        {
-            if (context != null)
-            {
-                context.Dispose();
-            }
-        }
-
-        protected string GetCurrentRequestClientIpAddress()
-        {
-            MessageProperties props = OperationContext.Current.IncomingMessageProperties;
-            RemoteEndpointMessageProperty endpointProperty = props[RemoteEndpointMessageProperty.Name] as RemoteEndpointMessageProperty;
-            string result = null;
-            if (endpointProperty != null)
-            {
-                result = endpointProperty.Address;
-            }
-            return result;
-        }
-
-        #endregion //Utility Methods
 
         #endregion //Methods
     }

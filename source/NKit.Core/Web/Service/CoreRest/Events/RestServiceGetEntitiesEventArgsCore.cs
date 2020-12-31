@@ -7,39 +7,39 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives
 
-    public class RestServiceDeleteEntityEventArgsCore : RestServiceEventArgsCore
+    public class RestServiceGetEntitiesEventArgsCore : RestServiceEventArgsCore
     {
         #region Constructors
 
-        public RestServiceDeleteEntityEventArgsCore(
+        public RestServiceGetEntitiesEventArgsCore(
             string entityName,
-            Nullable<Guid> userId,
             string userName,
-            LinqEntityContextWindows entityContext,
+            DbContextCrudTransactionsRepositoryCore entityContext,
             Type entityType,
-            string entityId)
-            : base(entityName, userId, userName, entityContext, entityType)
+            List<object> outputEntities)
+            : base(entityName, userName, entityContext, entityType)
         {
-            _entityId = entityId;
+            _outputEntities = outputEntities;
         }
 
         #endregion //Constructors
 
         #region Fields
 
-        private string _entityId;
+        private List<object> _outputEntities;
 
         #endregion //Fields
 
         #region Properties
 
-        public string EntityId
+        public List<object> OutputEntities
         {
-            get { return _entityId; }
+            get { return _outputEntities; }
         }
 
         #endregion //Properties

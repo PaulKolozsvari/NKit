@@ -17,7 +17,7 @@
     /// </summary>
     public static class ApplicationBuilderMiddlewareExtensionsCore
     {
-        public static IApplicationBuilder UseHttpStatusCodeExceptionMiddleware<D>(this IApplicationBuilder applicationBuilder) where D : LinqEntityContextCore
+        public static IApplicationBuilder UseHttpStatusCodeExceptionMiddleware<D>(this IApplicationBuilder applicationBuilder) where D : DbContextCrudTransactionsRepositoryCore
         {
             return applicationBuilder.UseMiddleware<HttpStatusCodeExceptionMiddlewareCore<D>>();
         }

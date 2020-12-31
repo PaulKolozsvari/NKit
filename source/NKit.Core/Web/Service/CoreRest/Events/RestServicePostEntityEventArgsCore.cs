@@ -8,21 +8,21 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
 
     #endregion //Using Directives
 
-    public class RestServicePostEntityEventArgsWindowsCore : RestServiceEventArgsCore
+    public class RestServicePostEntityEventArgsCore : RestServiceEventArgsCore
     {
-         #region Constructors
+        #region Constructors
 
-        public RestServicePostEntityEventArgsWindowsCore(
+        public RestServicePostEntityEventArgsCore(
             string entityName,
-            Nullable<Guid> userId,
             string userName,
-            LinqEntityContextWindows entityContext,
+            DbContextCrudTransactionsRepositoryCore entityContext,
             Type entityType,
             object inputEntity)
-            : base(entityName, userId, userName, entityContext, entityType)
+            : base(entityName, userName, entityContext, entityType)
         {
             _inputEntity = inputEntity;
         }

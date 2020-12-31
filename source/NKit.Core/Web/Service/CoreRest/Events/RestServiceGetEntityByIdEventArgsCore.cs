@@ -7,23 +7,23 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives
 
-    public class RestServiceGetEntityByIdEventArgsWindowsCore : RestServiceEventArgsCore
+    public class RestServiceGetEntityByIdEventArgsCore : RestServiceEventArgsCore
     {
         #region Constructors
 
-        public RestServiceGetEntityByIdEventArgsWindowsCore(
+        public RestServiceGetEntityByIdEventArgsCore(
             string entityName,
-            Nullable<Guid> userId,
             string userName,
-            LinqEntityContextWindows entityContext,
+            DbContextCrudTransactionsRepositoryCore entityContext,
             Type entityType,
             string entityId,
             object outputEntity)
-            : base(entityName, userId, userName, entityContext, entityType)
+            : base(entityName, userName, entityContext, entityType)
         {
             _entityId = entityId;
             _outputEntity = outputEntity;

@@ -17,14 +17,17 @@
     using NKit.Web.Service.CoreRest.Models;
     using Dapper;
     using System.Data.Common;
+    using Microsoft.Extensions.Options;
 
     #endregion //Using Directives
 
     /// <summary>
-    /// A facade wrapper around the DbContext providing CRUD operations on any entities.
+    /// A facade wrapper (repository) around the Entity Framework DbContext providing CRUD operations on single entities at a time.
+    /// Methods in this class are NOT wrapped in Transactions.
+    /// Managing DbContext the right way with Entity Framework 6: an in-depth guide: https://mehdi.me/ambient-dbcontext-in-ef6/
     /// </summary>
     /// <typeparam name="D">The underlying entity framework DbContext which should have been registered as service..</typeparam>
-    public class LinqFunnelContextCore
+    public class DbContextCrudRepositoryCore
     {
         #region Constructors
 
@@ -33,14 +36,14 @@
         /// </summary>
         /// <param name="serviceProvider">ServiceProvider to be used to get the DbContext of type D</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public LinqFunnelContextCore(IServiceProvider serviceProvider, Type dbContextType, DatabaseSettings databaseSettings)
+        public DbContextCrudRepositoryCore(IServiceProvider serviceProvider, Type dbContextType, IOptions<DatabaseSettings> databaseOptions)
         {
-            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(LinqFunnelContextCore));
-            DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(LinqFunnelContextCore));
-            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqFunnelContextCore));
+            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(DbContextCrudRepositoryCore));
+            DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(DbContextCrudRepositoryCore));
+            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(DbContextCrudRepositoryCore));
             _serviceProvider = serviceProvider;
             _dbContextType = dbContextType;
-            _databaseSettings = databaseSettings;
+            _databaseSettings = databaseOptions.Value;
         }
 
         /// <summary>
@@ -48,11 +51,11 @@
         /// </summary>
         /// <param name="db">The DbContext to use for running operations for the underlying database.</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public LinqFunnelContextCore(DbContext db, DatabaseSettings databaseSettings)
+        public DbContextCrudRepositoryCore(DbContext db, IOptions<DatabaseSettings> databaseOptions)
         {
-            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(LinqFunnelContextCore));
-            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqFunnelContextCore));
-            _databaseSettings = databaseSettings;
+            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(DbContextCrudRepositoryCore));
+            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(DbContextCrudRepositoryCore));
+            _databaseSettings = databaseOptions.Value;
             _db = db;
             _db.Database.SetConnectionString(_databaseSettings.DatabaseConnectionString);
             _db.Database.SetCommandTimeout(_databaseSettings.DatabaseCommandTimeout);
@@ -88,7 +91,7 @@
             {
                 if (value == null)
                 {
-                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(LinqFunnelContextCore)}");
+                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(DbContextCrudRepositoryCore)}");
                 }
                 _db = value;
             }

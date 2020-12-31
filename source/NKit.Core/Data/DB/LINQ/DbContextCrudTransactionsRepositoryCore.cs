@@ -10,18 +10,24 @@
     using System.Transactions;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
-    using NKit.Core.Utilities.SettingsFile.Default;
+    using NKit.Utilities.SettingsFile.Default;
     using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
     using NKit.Web.Service;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
 
     #endregion //Using Directives
 
     /// <summary>
-    /// A wrapper around the LinqFunnelContext that allows management of multiple entities at a time.
+    /// A class extending the functionality of the DbContextCrudRepositoryCore that allows management of multiple entities at a time.
+    /// Methods in this class are wrapped in Transactions.
+    /// Managing DbContext the right way with Entity Framework 6: an in-depth guide: https://mehdi.me/ambient-dbcontext-in-ef6/
+    /// Database.BeginTransaction vs Transactions.TransactionScope: https://stackoverflow.com/questions/22382892/database-begintransaction-vs-transactions-transactionscope
     /// </summary>
     /// <typeparam name="D"></typeparam>
-    public class LinqEntityContextCore<D> : LinqFunnelContextCore<D> where D : DbContext
+    public class DbContextCrudTransactionsRepositoryCore : DbContextCrudRepositoryCore
     {
         #region Constructors
 
@@ -30,28 +36,29 @@
         /// </summary>
         /// <param name="serviceProvider">Service provider to be used for finding the DbContext.</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public LinqEntityContextCore(
+        public DbContextCrudTransactionsRepositoryCore(
             IServiceProvider serviceProvider,
-            DatabaseSettings databaseSettings) : base(serviceProvider, databaseSettings)
+            Type dbContextType,
+            IOptions<DatabaseSettings> databaseOptions) : base(serviceProvider, dbContextType, databaseOptions)
         {
-            Initialize(databaseSettings);
+            Initialize(databaseOptions.Value);
         }
 
         /// <summary>
         /// Creates an entity context using the specified entity framework DbContext.
         /// </summary>
         /// <param name="db">The DbContext to use for running operations against the database.</param>
-        /// <param name="databaseSettings">Database related settings.</param>
-        public LinqEntityContextCore(D db, DatabaseSettings databaseSettings) : base(db, databaseSettings)
+        /// <param name="databaseOptions">Database related settings.</param>
+        public DbContextCrudTransactionsRepositoryCore(DbContext db, IOptions<DatabaseSettings> databaseOptions) : base(db, databaseOptions)
         {
-            Initialize(databaseSettings);
+            Initialize(databaseOptions.Value);
         }
 
         private void Initialize(DatabaseSettings databaseSettings)
         {
-            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(LinqEntityContextCore<D>));
-            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(LinqEntityContextCore<D>));
-            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(LinqEntityContextCore<D>));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(DbContextCrudTransactionsRepositoryCore));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(DbContextCrudTransactionsRepositoryCore));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(DbContextCrudTransactionsRepositoryCore));
 
             _transactionScopeOption = databaseSettings.DatabaseTransactionScopeOption;
             _transactionOptions = new TransactionOptions() 
@@ -125,7 +132,6 @@
 
         public ServiceProcedureResult Save<E>(
             List<E> entities,
-            Nullable<Guid> userId,
             string userName,
             bool saveChildren) where E : class
         {
@@ -161,7 +167,6 @@
         public ServiceProcedureResult Save(
             Type entityType,
             List<object> entities,
-            Nullable<Guid> userId,
             string userName,
             bool saveChildren)
         {
@@ -196,7 +201,6 @@
 
         public ServiceProcedureResult Insert<E>(
             List<E> entities,
-            Nullable<Guid> userId,
             string userName,
             bool saveChildren) where E : class
         {
@@ -232,7 +236,6 @@
         public ServiceProcedureResult Insert(
             Type entityType,
             List<object> entities,
-            Nullable<Guid> userId,
             string userName,
             bool saveChildren)
         {
@@ -267,7 +270,6 @@
 
         public ServiceProcedureResult Delete<E>(
             List<E> entities,
-            Nullable<Guid> userId,
             string userName) where E : class
         {
             int attempts = 0;
@@ -302,7 +304,6 @@
         public ServiceProcedureResult Delete(
             Type entityType,
             List<object> entities,
-            Nullable<Guid> userId,
             string userName)
         {
             int attempts = 0;
@@ -336,7 +337,6 @@
 
         public ServiceProcedureResult DeleteBySurrogateKey<E>(
             List<object> surrogateKeys,
-            Nullable<Guid> userId,
             string userName) where E : class
         {
             int attempts = 0;
@@ -371,7 +371,6 @@
         public ServiceProcedureResult DeleteBySurrogateKey(
             Type entityType,
             List<object> surrogateKeys,
-            Nullable<Guid> userId,
             string userName)
         {
             int attempts = 0;
@@ -404,7 +403,6 @@
         }
 
         public ServiceProcedureResult DeleteAll<E>(
-            Nullable<Guid> userId,
             string userName) where E : class
         {
             int attempts = 0;
@@ -435,7 +433,6 @@
 
         public ServiceProcedureResult DeleteAll(
             Type entityType,
-            Nullable<Guid> userId,
             string userName)
         {
             int attempts = 0;
@@ -467,7 +464,6 @@
         public ServiceFunctionResult<E> GetEntityBySurrogateKey<E>(
             object keyValue,
             bool loadChildren,
-            Nullable<Guid> userId,
             string userName) where E : class
         {
             return new ServiceFunctionResult<E> { Contents = base.GetEntityBySurrogateKey<E>(keyValue, loadChildren) };
@@ -477,7 +473,6 @@
             Type entityType,
             object keyValue,
             bool loadChildren,
-            Nullable<Guid> userId,
             string userName)
         {
             return new ServiceFunctionResult<object>() { Contents = base.GetEntityBySurrogateKey(entityType, keyValue, loadChildren) };
@@ -487,7 +482,6 @@
             string fieldName,
             object fieldValue,
             bool loadChildren,
-            Nullable<Guid> userId,
             string userName) where E : class
         {
             return new ServiceFunctionResult<List<E>>() { Contents = base.GetEntitiesByField<E>(fieldName, fieldValue, loadChildren) };
@@ -498,7 +492,6 @@
             string fieldName,
             object fieldValue,
             bool loadChildren,
-            Nullable<Guid> userId,
             string userName)
         {
             return new ServiceFunctionResult<List<object>>() { Contents = base.GetEntitiesByField(entityType, fieldName, fieldValue, loadChildren) };
@@ -506,7 +499,6 @@
 
         public ServiceFunctionResult<List<E>> GetAllEntities<E>(
             bool loadChildren,
-            Nullable<Guid> userId,
             string userName) where E : class
         {
             return new ServiceFunctionResult<List<E>>() { Contents = base.GetAllEntities<E>(loadChildren) };
@@ -515,21 +507,18 @@
         public ServiceFunctionResult<List<object>> GetAllEntities(
             Type entityType,
             bool loadChildren,
-            Nullable<Guid> userId,
             string userName)
         {
             return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType, loadChildren) };
         }
 
         public ServiceFunctionResult<int> GetTotalCount<E>(
-            Nullable<Guid> userId,
             string userName) where E : class
         {
             return new ServiceFunctionResult<int>() { Contents = base.GetTotalCount<E>() };
         }
 
         public ServiceFunctionResult<long> GetTotalCountLong<E>(
-            Nullable<Guid> userId,
             string userName) where E : class
         {
             try

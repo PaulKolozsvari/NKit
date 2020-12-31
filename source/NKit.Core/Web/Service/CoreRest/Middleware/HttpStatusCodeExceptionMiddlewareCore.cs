@@ -23,9 +23,9 @@
     /// ASP.NET Core - Middleware Pipeline: https://www.tutorialsteacher.com/core/aspnet-core-middleware
     /// You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     /// </summary>
-    public class HttpStatusCodeExceptionMiddlewareCore<D> where D : LinqEntityContextCore
+    public class HttpStatusCodeExceptionMiddlewareCore<D> where D : DbContextCrudTransactionsRepositoryCore
     {
-        #region Constants
+        #region Constructors
 
         public HttpStatusCodeExceptionMiddlewareCore(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
         {
@@ -36,7 +36,7 @@
             _context = _serviceProvider.GetService<D>();
         }
 
-        #endregion //Constants
+        #endregion //Constructors
 
         #region Constants
 
@@ -46,11 +46,11 @@
 
         #region Fields
 
-        private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
-        private IServiceScopeFactory _serviceScopeFactory;
-        private IServiceProvider _serviceProvider;
-        private LinqEntityContextCore _context;
+        protected readonly RequestDelegate _next;
+        protected readonly ILogger _logger;
+        protected IServiceScopeFactory _serviceScopeFactory;
+        protected IServiceProvider _serviceProvider;
+        protected DbContextCrudTransactionsRepositoryCore _context;
 
         #endregion //Fields
 
@@ -97,6 +97,18 @@
                 context.Response.ContentType = @"text/plain";
                 await context.Response.WriteAsync(ex.Message);
                 return;
+            }
+            finally
+            {
+                //DisposeEntityContext();
+            }
+        }
+
+        protected void DisposeEntityContext()
+        {
+            if (_context != null)
+            {
+                _context.Dispose();
             }
         }
 

@@ -4,6 +4,7 @@
 
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -67,7 +68,9 @@
             string typeName,
             bool throwExceptionOnError)
         {
-            Assembly assembly = Assembly.LoadFrom(assemblyName);
+            string executingDirectory = Information.GetExecutingDirectory();
+            string assemblyFilePath = Path.Combine(executingDirectory, assemblyName);
+            Assembly assembly = Assembly.LoadFrom(assemblyFilePath);
             return FindType(assembly, typeNamespace, typeName, throwExceptionOnError);
         }
 

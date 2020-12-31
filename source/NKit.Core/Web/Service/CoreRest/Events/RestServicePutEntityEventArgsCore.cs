@@ -2,28 +2,27 @@
 {
     #region Using Directives
 
-    using NKit.Data.DB.LINQ;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives
 
-    public class RestServicePostEntityEventArgsWindowsCore : RestServiceEventArgsCore
+    public class RestServicePutEntityEventArgsCore : RestServiceEventArgsCore
     {
         #region Constructors
 
-        public RestServicePostEntityEventArgsWindowsCore(
+        public RestServicePutEntityEventArgsCore(
             string entityName,
-            Nullable<Guid> userId,
             string userName,
-            LinqEntityContextCore entityContext,
+            DbContextCrudTransactionsRepositoryCore entityContext,
             Type entityType,
             object inputEntity)
-            : base(entityName, userId, userName, entityContext, entityType)
+            : base(entityName, userName, entityContext, entityType)
         {
             _inputEntity = inputEntity;
         }

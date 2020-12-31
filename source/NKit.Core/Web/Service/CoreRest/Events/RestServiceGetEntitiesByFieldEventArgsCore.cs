@@ -18,14 +18,13 @@
 
         public RestServiceGetEntitiesByFieldEventArgsCore(
             string entityName,
-            Nullable<Guid> userId,
             string userName,
-            LinqEntityContextCore entityContext,
+            DbContextCrudTransactionsRepositoryCore entityContext,
             Type entityType,
             string fieldName,
             string fieldValue,
             List<object> outputEntities)
-            : base(entityName, userId, userName, entityContext, entityType)
+            : base(entityName, userName, entityContext, entityType)
         {
             _fieldName = fieldName;
             _fieldValue = fieldValue;

@@ -18,13 +18,11 @@
 
         public RestServiceEventArgsCore(
             string entityName,
-            Nullable<Guid> userId,
             string userName,
-            LinqEntityContextCore entityContext,
+            DbContextCrudTransactionsRepositoryCore entityContext,
             Type entityType)
         {
             _entityName = entityName;
-            _userId = userId;
             _userName = userName;
             _entityContext = entityContext;
             _entityType = entityType;
@@ -35,9 +33,8 @@
         #region Fields
 
         private string _entityName;
-        private Nullable<Guid> _userId;
         private string _userName;
-        private LinqEntityContextCore _entityContext;
+        private DbContextCrudTransactionsRepositoryCore _entityContext;
         private Type _entityType;
 
         #endregion //Fields
@@ -49,17 +46,12 @@
             get { return _entityName; }
         }
 
-        public Nullable<Guid> UserId
-        {
-            get { return _userId; }
-        }
-
         public string UserName
         {
             get { return _userName; }
         }
 
-        public LinqEntityContextCore EntityContext
+        public DbContextCrudTransactionsRepositoryCore EntityContext
         {
             get { return _entityContext; }
         }
