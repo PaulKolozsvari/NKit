@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.CoreRest.Models
+﻿namespace NKit.Web.Service.RestApi.Models
 {
     #region Using Directives
 
@@ -10,7 +10,7 @@
 
     #endregion //Using Directives
 
-    public class NKitLogEntryCore : NKitBaseModelCore
+    public class NKitLogEntry : NKitBaseModel
     {
         #region Properties
 

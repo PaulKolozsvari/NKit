@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.CoreRest.ContentMapping
+﻿namespace NKit.Web.Service.RestApi.ContentMapping
 {
     #region Using Directives
 
@@ -18,11 +18,25 @@
     /// Configures controllers to allow receiving of plain text or any of the media types specified in the constructor of this class.
     /// https://peterdaugaardrasmussen.com/2020/02/29/asp-net-core-how-to-make-a-controller-endpoint-that-accepts-text-plain/
     /// </summary>
-    public class WebApiControllerInputFormatterCore : InputFormatter
+    public class NKitWebApiControllerInputFormatter : InputFormatter
     {
         #region Constructors
 
-        public WebApiControllerInputFormatterCore(string[] supportedMediaTypes)
+        public NKitWebApiControllerInputFormatter() : this(new string[]
+            {
+                MimeContentType.APPLICATION_XML,
+                MimeContentType.APPLICATION_JSON,
+                MimeContentType.TEXT_XML,
+                MimeContentType.TEXT_PLAIN,
+                MimeContentType.TEXT_HTML,
+                MimeContentType.BINARY,
+                MimeContentType.FORM_DATA,
+                MimeContentType.ANY
+            })
+        {
+        }
+
+        public NKitWebApiControllerInputFormatter(string[] supportedMediaTypes)
         {
             _supportedMediaTypes = supportedMediaTypes;
             if (_supportedMediaTypes != null)

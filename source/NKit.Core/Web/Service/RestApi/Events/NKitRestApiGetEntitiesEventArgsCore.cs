@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.CoreRest.Events
+﻿namespace NKit.Web.Service.RestApi.Events
 {
     #region Using Directives
 
@@ -12,14 +12,14 @@
 
     #endregion //Using Directives
 
-    public class RestServiceGetEntitiesByFieldEventArgsCore: RestServiceEventArgsCore
+    public class NKitRestApiGetEntitiesEventArgsCore: NKitRestApiEventArgsCore
     {
         #region Constructors
 
-        public RestServiceGetEntitiesByFieldEventArgsCore(
+        public NKitRestApiGetEntitiesEventArgsCore(
             string entityName,
             string userName,
-            DbContextCrudTransactionsRepositoryCore entityContext,
+            NKitDbContextRepository entityContext,
             Type entityType,
             string fieldName,
             string fieldValue,

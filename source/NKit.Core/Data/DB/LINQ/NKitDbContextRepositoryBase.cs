@@ -14,10 +14,11 @@
     using NKit.Utilities.SettingsFile.Default;
     using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
-    using NKit.Web.Service.CoreRest.Models;
+    using NKit.Web.Service.RestApi.Models;
     using Dapper;
     using System.Data.Common;
     using Microsoft.Extensions.Options;
+    using NKit.Utilities;
 
     #endregion //Using Directives
 
@@ -27,7 +28,7 @@
     /// Managing DbContext the right way with Entity Framework 6: an in-depth guide: https://mehdi.me/ambient-dbcontext-in-ef6/
     /// </summary>
     /// <typeparam name="D">The underlying entity framework DbContext which should have been registered as service..</typeparam>
-    public class DbContextCrudRepositoryCore
+    public class NKitDbContextRepositoryBase
     {
         #region Constructors
 
@@ -36,11 +37,13 @@
         /// </summary>
         /// <param name="serviceProvider">ServiceProvider to be used to get the DbContext of type D</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public DbContextCrudRepositoryCore(IServiceProvider serviceProvider, Type dbContextType, IOptions<DatabaseSettings> databaseOptions)
+        public NKitDbContextRepositoryBase(IServiceProvider serviceProvider, Type dbContextType, IOptions<NKitDatabaseSettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions)
         {
-            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(DbContextCrudRepositoryCore));
-            DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(DbContextCrudRepositoryCore));
-            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(DbContextCrudRepositoryCore));
+            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitDbContextRepositoryBase));
+            _databaseSettings = databaseOptions.Value;
+            _loggingSettings = loggingOptions.Value;
             _serviceProvider = serviceProvider;
             _dbContextType = dbContextType;
             _databaseSettings = databaseOptions.Value;
@@ -51,11 +54,12 @@
         /// </summary>
         /// <param name="db">The DbContext to use for running operations for the underlying database.</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public DbContextCrudRepositoryCore(DbContext db, IOptions<DatabaseSettings> databaseOptions)
+        public NKitDbContextRepositoryBase(DbContext db, IOptions<NKitDatabaseSettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions)
         {
-            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(DbContextCrudRepositoryCore));
-            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(DbContextCrudRepositoryCore));
+            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitDbContextRepositoryBase));
             _databaseSettings = databaseOptions.Value;
+            _loggingSettings = loggingOptions.Value;
             _db = db;
             _db.Database.SetConnectionString(_databaseSettings.DatabaseConnectionString);
             _db.Database.SetCommandTimeout(_databaseSettings.DatabaseCommandTimeout);
@@ -68,7 +72,8 @@
         protected IServiceProvider _serviceProvider;
         protected Type _dbContextType;
         protected DbContext _db;
-        protected DatabaseSettings _databaseSettings;
+        protected NKitDatabaseSettings _databaseSettings;
+        protected NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields
 
@@ -91,7 +96,7 @@
             {
                 if (value == null)
                 {
-                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(DbContextCrudRepositoryCore)}");
+                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(NKitDbContextRepositoryBase)}");
                 }
                 _db = value;
             }
@@ -1226,38 +1231,45 @@
         /// A sql query is run against the database first to check that the table exists in the database before trying to insert a log entry to it.
         /// To ensure that the table exists the NKitLogEntry model needs to registered by underlying DbContext as a DbSet in the application using the NKit.
         /// </summary>
-        /// <param name="ex"></param>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public NKitLogEntryCore LogExceptionToNKitLogEntry(Exception ex, string source)
+        public NKitLogEntry LogExceptionToNKitLogEntry(Exception ex, string source, bool includeExceptionDetailsInErrorMessage)
         {
-            if (!SqlServerTableExists(nameof(NKitLogEntryCore)))
+            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlServerTableExists(nameof(NKitLogEntry)))
             {
                 return null;
             }
-            NKitLogEntryCore logEntry = new NKitLogEntryCore()
+            string message = ExceptionHandler.GetCompleteExceptionMessage(ex, includeExceptionDetailsInErrorMessage);
+            NKitLogEntry logEntry = new NKitLogEntry()
             {
                 NKitLogEntryId = Guid.NewGuid(),
-                Message = ex.Message,
+                Message = message,
                 Source = source,
                 ClassName = ex.TargetSite != null ? ex.TargetSite.Name : null,
                 FunctionName = ex.TargetSite != null ? ex.TargetSite.DeclaringType.FullName : null,
-                StackTrace = ex.StackTrace != null ? ex.StackTrace : null
+                StackTrace = ex.StackTrace != null ? ex.StackTrace : null,
+                DateCreated = DateTime.Now
             };
-            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntryCore>(logEntry, logEntry.NKitLogEntryId, false);
+            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId, false);
             return logEntry;
         }
 
         public bool SqlServerTableExists(string tableName)
         {
+            //string sqlQuery = $"SELECT COUNT(*) as Count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
+            //using (DbConnection conn = DB.Database.GetDbConnection())
+            //{
+            //    if (conn != null)
+            //    {
+            //        var count = conn.Query<int>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
+            //        return (count > 0);
+            //    }
+            //}
+            //return false;
             string sqlQuery = $"SELECT COUNT(*) as Count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
-            using (DbConnection conn = DB.Database.GetDbConnection())
+            DbConnection conn = DB.Database.GetDbConnection();
+            if (conn != null)
             {
-                if (conn != null)
-                {
-                    var count = conn.Query<int>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
-                    return (count > 0);
-                }
+                var count = conn.Query<int>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
+                return (count > 0);
             }
             return false;
         }

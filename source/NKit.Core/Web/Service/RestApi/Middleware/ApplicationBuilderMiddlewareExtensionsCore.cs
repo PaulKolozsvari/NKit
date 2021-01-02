@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.CoreRest.Middleware
+﻿namespace NKit.Web.Service.RestApi.Middleware
 {
     #region Using Directives
 
@@ -17,9 +17,9 @@
     /// </summary>
     public static class ApplicationBuilderMiddlewareExtensionsCore
     {
-        public static IApplicationBuilder UseHttpStatusCodeExceptionMiddleware<D>(this IApplicationBuilder applicationBuilder) where D : DbContextCrudTransactionsRepositoryCore
+        public static IApplicationBuilder UseHttpStatusCodeExceptionMiddleware<D>(this IApplicationBuilder applicationBuilder) where D : NKitDbContextRepository
         {
-            return applicationBuilder.UseMiddleware<HttpStatusCodeExceptionMiddlewareCore<D>>();
+            return applicationBuilder.UseMiddleware<NKitHttpStatusCodeExceptionMiddlewareCore<D>>();
         }
     }
 

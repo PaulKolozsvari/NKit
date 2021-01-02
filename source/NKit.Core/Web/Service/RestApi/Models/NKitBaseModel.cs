@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.CoreRest.Models
+﻿namespace NKit.Web.Service.RestApi.Models
 {
     #region Using Directives
 
@@ -8,7 +8,7 @@
 
     #endregion //Using Directives
 
-    public class NKitBaseModelCore
+    public class NKitBaseModel
     {
         /*
          ******DATABASE ANNOTATIONS (Attributes)

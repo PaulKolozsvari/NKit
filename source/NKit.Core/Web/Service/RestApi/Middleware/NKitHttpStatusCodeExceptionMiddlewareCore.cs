@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.CoreRest.Middleware
+﻿namespace NKit.Web.Service.RestApi.Middleware
 {
     #region Using Directives
 
@@ -11,29 +11,31 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using NKit.Core.Utilities.Logging;
-    using NKit.Core.Web.Service.CoreRest.Exceptions;
+    using NKit.Core.Web.Service.RestApi.Exceptions;
     using NKit.Data.DB.LINQ;
+    using NKit.Utilities;
+    using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
 
     /// <summary>
-    /// Middleeware that enables you trap exceptions and automatically log them to the ApplLogger as well as well as to the NKitLogEntry database table if it exists in the database.
+    /// Middleware that enables you trap exceptions and automatically log them to the ApplLogger as well as well as to the NKitLogEntry database table if it exists in the database.
     /// Using Middleware to trap Exceptions in Asp.Net Core: https://blogs.msdn.microsoft.com/brandonh/2017/07/31/using-middleware-to-trap-exceptions-in-asp-net-core/
     /// ASP.NET Core - Middleware Pipeline: https://www.tutorialsteacher.com/core/aspnet-core-middleware
     /// You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     /// </summary>
-    public class HttpStatusCodeExceptionMiddlewareCore<D> where D : DbContextCrudTransactionsRepositoryCore
+    public class NKitHttpStatusCodeExceptionMiddlewareCore<D> where D : NKitDbContextRepository
     {
         #region Constructors
 
-        public HttpStatusCodeExceptionMiddlewareCore(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
+        public NKitHttpStatusCodeExceptionMiddlewareCore(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
-            _logger = AppLogger.CreateLogger(nameof(HttpStatusCodeExceptionMiddlewareCore<D>));
+            _logger = AppLogger.CreateLogger(nameof(NKitHttpStatusCodeExceptionMiddlewareCore<D>));
             _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
             _serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
-            _context = _serviceProvider.GetService<D>();
         }
 
         #endregion //Constructors
@@ -50,34 +52,36 @@
         protected readonly ILogger _logger;
         protected IServiceScopeFactory _serviceScopeFactory;
         protected IServiceProvider _serviceProvider;
-        protected DbContextCrudTransactionsRepositoryCore _context;
 
         #endregion //Fields
 
         #region Methods
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(
+            HttpContext context,
+            D dbContextRepo,
+            IOptions<NKitWebApiSettings> webApiOptions, 
+            IOptions<NKitDatabaseSettings> databaseOptions,
+            IOptions<NKitLoggingSettings> loggingOptions)
         {
             try
             {
                 await _next(context);
             }
-            catch (HttpStatusCodeExceptionCore ex)
+            catch (NKitHttpStatusCodeException ex)
             {
                 if (context.Response.HasStarted)
                 {
                     _logger.LogWarning(RESPONSE_STARTED_LOG_ERROR_MESSAGE);
                     throw;
                 }
-                _logger.LogError(ex.Message);
-                if (_context != null)
-                {
-                    _context.LogExceptionToNKitLogEntry(ex, nameof(HttpStatusCodeExceptionMiddlewareCore<D>));
-                }
+                string message = ExceptionHandler.GetCompleteExceptionMessage(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+                _logger.LogError(message);
+                dbContextRepo.LogExceptionToNKitLogEntry(ex, nameof(NKitHttpStatusCodeExceptionMiddlewareCore<D>), webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
                 context.Response.Clear();
                 context.Response.StatusCode = ex.StatusCode;
                 context.Response.ContentType = ex.ContentType;
-                await context.Response.WriteAsync(ex.Message);
+                await context.Response.WriteAsync(message);
                 return;
             }
             catch (Exception ex)
@@ -87,28 +91,21 @@
                     _logger.LogWarning(RESPONSE_STARTED_LOG_ERROR_MESSAGE);
                     throw;
                 }
-                _logger.LogError(ex.Message);
-                if (_context != null)
-                {
-                    _context.LogExceptionToNKitLogEntry(ex, nameof(HttpStatusCodeExceptionMiddlewareCore<D>));
-                }
+                string message = ExceptionHandler.GetCompleteExceptionMessage(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+                _logger.LogError(message);
+                dbContextRepo.LogExceptionToNKitLogEntry(ex, nameof(NKitHttpStatusCodeExceptionMiddlewareCore<D>), webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
                 context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = @"text/plain";
-                await context.Response.WriteAsync(ex.Message);
+                await context.Response.WriteAsync(message);
                 return;
             }
             finally
             {
-                //DisposeEntityContext();
-            }
-        }
-
-        protected void DisposeEntityContext()
-        {
-            if (_context != null)
-            {
-                _context.Dispose();
+                if (dbContextRepo != null)
+                {
+                    dbContextRepo.Dispose();
+                }
             }
         }
 

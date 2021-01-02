@@ -9,11 +9,11 @@
 
     #endregion //Using Directives
 
-    public partial class SettingInfoAttribute : Attribute
+    public partial class NKitSettingInfoAttribute : Attribute
     {
         #region Constructors
 
-        public SettingInfoAttribute(string category)
+        public NKitSettingInfoAttribute(string category)
         {
             _category = category;
             _autoFormatDisplayName = false;

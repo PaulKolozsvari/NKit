@@ -1,45 +1,45 @@
-﻿namespace NKit.Web.Service.CoreRest.Events
+﻿namespace NKit.Web.Service.RestApi.Events
 {
     #region Using Directives
 
-    using NKit.Data.DB.LINQ;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives
 
-    public class RestServicePostEntityEventArgsCore : RestServiceEventArgsCore
+    public class NKitRestApiDeleteEntityEventArgsCore : NKitRestApiEventArgsCore
     {
         #region Constructors
 
-        public RestServicePostEntityEventArgsCore(
+        public NKitRestApiDeleteEntityEventArgsCore(
             string entityName,
             string userName,
-            DbContextCrudTransactionsRepositoryCore entityContext,
+            NKitDbContextRepository entityContext,
             Type entityType,
-            object inputEntity)
+            string entityId)
             : base(entityName, userName, entityContext, entityType)
         {
-            _inputEntity = inputEntity;
+            _entityId = entityId;
         }
 
         #endregion //Constructors
 
         #region Fields
 
-        private object _inputEntity;
+        private string _entityId;
 
         #endregion //Fields
 
         #region Properties
 
-        public object InputEntity
+        public string EntityId
         {
-            get { return _inputEntity; }
+            get { return _entityId; }
         }
 
         #endregion //Properties

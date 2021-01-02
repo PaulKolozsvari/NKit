@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.CoreRest
+﻿namespace NKit.Web.Service.RestApi
 {
     #region Using Directives
 
@@ -15,12 +15,15 @@
     using NKit.Utilities;
     using NKit.Utilities.Logging;
     using NKit.Web.Client;
-    using NKit.Web.Service.CoreRest.Events;
+    using NKit.Web.Service.RestApi.Events;
     using Microsoft.AspNetCore.Http.Extensions;
     using System.Security.Claims;
     using NKit.Data;
     using Microsoft.Extensions.Options;
     using NKit.Utilities.SettingsFile.Default;
+    using NKit.Web.Service.RestApi.Models;
+    using System.IO;
+    using System.Reflection;
 
     #endregion //Using Directives
 
@@ -29,23 +32,23 @@
     /// </summary>
     /// <typeparam name="D"></typeparam>
     [ApiController]
-    public class WebApiRestServiceControllerCore<D> : ControllerBase where D : DbContextCrudTransactionsRepositoryCore
+    public class NKitWebApiController<D> : ControllerBase where D : NKitDbContextRepository
     {
         #region Constructors
 
-        public WebApiRestServiceControllerCore(
+        public NKitWebApiController(
             D context,
             IHttpContextAccessor httpContextAccessor, 
-            IOptions<DatabaseSettings> databaseOptions,
-            IOptions<EmailSettings> emailOptions,
-            IOptions<LoggingSettings> loggingOptions)
+            IOptions<NKitDatabaseSettings> databaseOptions,
+            IOptions<NKitEmailSettings> emailOptions,
+            IOptions<NKitLoggingSettings> loggingOptions)
         {
-            _logger = AppLogger.CreateLogger(nameof(WebApiRestServiceControllerCore<D>));
-            DataValidator.ValidateObjectNotNull(context, nameof(context), nameof(WebApiRestServiceControllerCore<D>));
-            DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(WebApiRestServiceControllerCore<D>));
-            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(WebApiRestServiceControllerCore<D>));
-            DataValidator.ValidateObjectNotNull(emailOptions, nameof(emailOptions), nameof(WebApiRestServiceControllerCore<D>));
-            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(WebApiRestServiceControllerCore<D>));
+            _logger = AppLogger.CreateLogger(nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(context, nameof(context), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(emailOptions, nameof(emailOptions), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitWebApiController<D>));
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _databaseSettings = databaseOptions.Value;
@@ -63,8 +66,8 @@
         public event OnBeforeGetEntityByIdHandlerCore OnBeforeGetEntityById;
         public event OnAfterGetEntityByIdHandlerCore OnAfterGetEntityById;
 
-        public event OnBeforeGetEntitiesByFieldHandlerCore OnBeforeGetEntitiesByField;
-        public event OnAfterGetEntitiesByFieldHandlerCore OnAfterGetEntitiesByField;
+        public event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntitiesByField;
+        public event OnAfterGetEntitiesHandlerCore OnAfterGetEntitiesByField;
 
         public event OnBeforePutEntityHandlerCore OnBeforePut;
         public event OnAfterPutEntityHandlerCore OnAfterPut;
@@ -84,9 +87,9 @@
         protected IHttpContextAccessor _httpContextAccessor;
         protected D _context;
 
-        protected DatabaseSettings _databaseSettings;
-        protected EmailSettings _emailSettings;
-        protected LoggingSettings _loggingSettings;
+        protected NKitDatabaseSettings _databaseSettings;
+        protected NKitEmailSettings _emailSettings;
+        protected NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields
 
@@ -223,11 +226,13 @@
 
         protected virtual Type GetEntityType(string entityName)
         {
-            Type result = AssemblyReader.FindType(
-                _databaseSettings.EntityFrameworkModelsAssembly,
-                _databaseSettings.EntityFrameworkModelsNamespace,
-                entityName,
-                false);
+            Type result = AssemblyReader.FindType(_databaseSettings.EntityFrameworkModelsAssembly, _databaseSettings.EntityFrameworkModelsNamespace, entityName, false);
+            if (result == null) //If the entity type was not found in the specified models assembly and namespace, look for entity type in the current executing assembly in the default core rest models namespace.
+            {
+                string currentAssemblyName = Path.GetFileName(Assembly.GetExecutingAssembly().CodeBase);
+                string RestApiModelsNamespace = typeof(NKitBaseModel).Namespace;
+                result = AssemblyReader.FindType(currentAssemblyName, RestApiModelsNamespace, entityName, false);
+            }
             if (result == null)
             {
                 throw new NullReferenceException(string.Format("Could not find entity with name {0}.", entityName));
@@ -247,35 +252,6 @@
 
         #region Actions
 
-        [HttpGet, Route("{entityName}")]
-        public virtual IActionResult GetEntities(string entityName)
-        {
-            try
-            {
-                string requestName = $"{nameof(GetEntities)} : Entity Name = {entityName}";
-                AuditRequest(requestName, null);
-                ValidateRequestMethod(HttpVerb.GET);
-                string userName = GetCurrentUserName();
-                Type entityType = GetEntityType(entityName);
-                if (OnBeforeGetEntities != null)
-                {
-                    OnBeforeGetEntities(this, new RestServiceGetEntitiesEventArgsCore(entityName, userName, _context, entityType, null));
-                }
-                List<object> outputEntities = _context.GetAllEntities(entityType, false, userName).Contents;
-                if (OnAfterGetEntities != null)
-                {
-                    OnAfterGetEntities(this, new RestServiceGetEntitiesEventArgsCore(entityName, userName, _context, entityType, outputEntities));
-                }
-                string serializedText = GOC.Instance.JsonSerializer.SerializeToText(outputEntities);
-                AuditResponse(requestName, serializedText);
-                return Ok(serializedText);
-            }
-            finally
-            {
-                DisposeEntityContext();
-            }
-        }
-
         [HttpGet, Route("{entityName}/{entityId}")]
         public virtual IActionResult GetEntityById(string entityName, string entityId)
         {
@@ -288,12 +264,12 @@
                 Type entityType = GetEntityType(entityName);
                 if (OnBeforeGetEntityById != null)
                 {
-                    OnBeforeGetEntityById(this, new RestServiceGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, null));
+                    OnBeforeGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, null));
                 }
                 object outputEntity = _context.GetEntityBySurrogateKey(entityType, entityId, false, userName).Contents;
                 if (OnAfterGetEntityById != null)
                 {
-                    OnAfterGetEntityById(this, new RestServiceGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, outputEntity));
+                    OnAfterGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, outputEntity));
                 }
                 string serializedText = GOC.Instance.JsonSerializer.SerializeToText(outputEntity);
                 AuditResponse(requestName, serializedText);
@@ -308,24 +284,26 @@
         //[HttpGet, Route("{entityName}?searchBy={fieldName}&searchValueOf={fieldValue}")]
         //Called as such: "{entityName}?={fieldName}&searchValueOf={fieldValue}")]
         //Using Query Parameters: https://stackoverflow.com/questions/59621208/how-do-i-use-query-parameters-in-attributes
-        [HttpGet, Route("{entityName}/searchBy")]
-        public virtual IActionResult GetEntitiesByField([FromRoute] string entityName, [FromQuery] string fieldName, [FromQuery] string fieldValue)
+        [HttpGet, Route("{entityName}")]
+        public virtual IActionResult GetEntities([FromRoute] string entityName, [FromQuery] string searchBy, [FromQuery] string searchValueOf)
         {
             try
             {
-                string requestName = $"{nameof(GetEntitiesByField)} : Entity Name = {entityName} : Field Name = {fieldName} : Field Value = {fieldValue}";
+                string requestName = $"{nameof(GetEntities)} : Entity Name = {entityName} : Search by = {searchBy} : Search by value = {searchValueOf}";
                 AuditRequest(requestName, null);
                 ValidateRequestMethod(HttpVerb.GET);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
                 if (OnBeforeGetEntitiesByField != null)
                 {
-                    OnBeforeGetEntitiesByField(this, new RestServiceGetEntitiesByFieldEventArgsCore(entityName, userName, _context, entityType, fieldName, fieldValue, null));
+                    OnBeforeGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _context, entityType, searchBy, searchValueOf, null));
                 }
-                List<object> outputEntities = _context.GetEntitiesByField(entityType, fieldName, fieldValue, false, userName).Contents;
+                List<object> outputEntities = string.IsNullOrEmpty(searchBy) ?
+                    _context.GetAllEntities(entityType, false, userName).Contents :
+                    _context.GetEntitiesByField(entityType, searchBy, searchValueOf, false, userName).Contents;
                 if (OnAfterGetEntitiesByField != null)
                 {
-                    OnAfterGetEntitiesByField(this, new RestServiceGetEntitiesByFieldEventArgsCore(entityName, userName, _context, entityType, fieldName, fieldValue, outputEntities));
+                    OnAfterGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _context, entityType, searchBy, searchValueOf, outputEntities));
                 }
                 string serializedText = GOC.Instance.JsonSerializer.SerializeToText(outputEntities);
                 AuditResponse(requestName, serializedText);
@@ -351,12 +329,12 @@
                 AuditRequest(requestName, serializedText);
                 if (OnBeforePut != null)
                 {
-                    OnBeforePut(this, new RestServicePutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
+                    OnBeforePut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
                 }
                 _context.Save(entityType, new List<object>() { inputEntity }, userName, false);
                 if (OnAfterPut != null)
                 {
-                    OnAfterPut(this, new RestServicePutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
+                    OnAfterPut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
                 }
                 string responseMessage = string.Format("{0} saved successfully.", entityName);
                 AuditResponse(requestName, responseMessage);
@@ -382,12 +360,12 @@
                 AuditRequest(requestName, serializedText);
                 if (OnBeforePost != null)
                 {
-                    OnBeforePost(this, new RestServicePostEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
+                    OnBeforePost(this, new NKitRestApiPostEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
                 }
                 _context.Insert(entityType, new List<object>() { inputEntity }, userName, false);
                 if (OnAfterPost != null)
                 {
-                    OnAfterPost(this, new RestServicePostEntityEventArgsCore(
+                    OnAfterPost(this, new NKitRestApiPostEntityEventArgsCore(
                         entityName, userName, _context, entityType, inputEntity));
                 }
                 string responseMessage = string.Format("{0} saved successfully.", entityName);
@@ -412,13 +390,13 @@
                 Type entityType = GetEntityType(entityName);
                 if (OnBeforeDelete != null)
                 {
-                    OnBeforeDelete(this, new RestServiceDeleteEntityEventArgsCore(
+                    OnBeforeDelete(this, new NKitRestApiDeleteEntityEventArgsCore(
                         entityName, userName, _context, entityType, entityId));
                 }
                 _context.DeleteBySurrogateKey(entityType, new List<object>() { entityId }, userName);
                 if (OnAfterDelete != null)
                 {
-                    OnAfterDelete(this, new RestServiceDeleteEntityEventArgsCore(
+                    OnAfterDelete(this, new NKitRestApiDeleteEntityEventArgsCore(
                         entityName, userName, _context, entityType, entityId));
                 }
                 string responseMessage = string.Format("{0} deleted successfully.", entityName);

@@ -7,3 +7,9 @@
 *   Implemented NKitLogEntry model that is used by the LinqFunnelContextCore to log exceptions and info to the database NKitLogEntry which needs to be registered by underlying DbContext
     as a DbSet in the application using the NKit.
 *   Added exception handling middleware which logs to the AppLogger as well as to the database in the NKitLogEntry table.
+
+*   Changed the GetEntityType in the WebApiRestServiceControllerCore to also look for the entity type in the current assembly NKit.Core.dll in the default core Rest Models Namespace.
+    This would need to happen if the consumer is trying to read/write default models/entities to the database like the NKitLogEntry.
+*   Added logging setting LogToNKitLogEntryDatabaseTable to make it configurable as to whether or not the NKitDbContextRepository should log to the database.
+*   Implemented Logging options in the NKitDbContextRepository to check whether or logging to the database is enabled or not.
+*   Consolidated the GetEntities and GetEntitiesByField action on the NKitWebApiController to a single action that performs both functions depending on whether the searchBy query parameter is specified.

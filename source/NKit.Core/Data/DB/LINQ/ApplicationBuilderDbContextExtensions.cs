@@ -11,7 +11,7 @@
 
     #endregion //Using Directives
 
-    public static class ApplicationBuilderDbContextExtensionsCore
+    public static class ApplicationBuilderDbContextExtensions
     {
         #region Methods
 

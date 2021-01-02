@@ -21,13 +21,13 @@
     #endregion //Using Directives
 
     /// <summary>
-    /// A class extending the functionality of the DbContextCrudRepositoryCore that allows management of multiple entities at a time.
+    /// A class extending the functionality of the NKitDbContextRepositoryBase that allows management of multiple entities at a time.
     /// Methods in this class are wrapped in Transactions.
     /// Managing DbContext the right way with Entity Framework 6: an in-depth guide: https://mehdi.me/ambient-dbcontext-in-ef6/
     /// Database.BeginTransaction vs Transactions.TransactionScope: https://stackoverflow.com/questions/22382892/database-begintransaction-vs-transactions-transactionscope
     /// </summary>
     /// <typeparam name="D"></typeparam>
-    public class DbContextCrudTransactionsRepositoryCore : DbContextCrudRepositoryCore
+    public class NKitDbContextRepository : NKitDbContextRepositoryBase
     {
         #region Constructors
 
@@ -36,10 +36,11 @@
         /// </summary>
         /// <param name="serviceProvider">Service provider to be used for finding the DbContext.</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public DbContextCrudTransactionsRepositoryCore(
+        public NKitDbContextRepository(
             IServiceProvider serviceProvider,
             Type dbContextType,
-            IOptions<DatabaseSettings> databaseOptions) : base(serviceProvider, dbContextType, databaseOptions)
+            IOptions<NKitDatabaseSettings> databaseOptions,
+            IOptions<NKitLoggingSettings> loggingOptions) : base(serviceProvider, dbContextType, databaseOptions, loggingOptions)
         {
             Initialize(databaseOptions.Value);
         }
@@ -49,16 +50,16 @@
         /// </summary>
         /// <param name="db">The DbContext to use for running operations against the database.</param>
         /// <param name="databaseOptions">Database related settings.</param>
-        public DbContextCrudTransactionsRepositoryCore(DbContext db, IOptions<DatabaseSettings> databaseOptions) : base(db, databaseOptions)
+        public NKitDbContextRepository(DbContext db, IOptions<NKitDatabaseSettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions) : base(db, databaseOptions, loggingOptions)
         {
             Initialize(databaseOptions.Value);
         }
 
-        private void Initialize(DatabaseSettings databaseSettings)
+        private void Initialize(NKitDatabaseSettings databaseSettings)
         {
-            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(DbContextCrudTransactionsRepositoryCore));
-            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(DbContextCrudTransactionsRepositoryCore));
-            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(DbContextCrudTransactionsRepositoryCore));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(NKitDbContextRepository));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(NKitDbContextRepository));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(NKitDbContextRepository));
 
             _transactionScopeOption = databaseSettings.DatabaseTransactionScopeOption;
             _transactionOptions = new TransactionOptions() 
