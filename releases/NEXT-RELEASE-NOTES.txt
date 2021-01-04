@@ -13,3 +13,7 @@
 *   Added logging setting LogToNKitLogEntryDatabaseTable to make it configurable as to whether or not the NKitDbContextRepository should log to the database.
 *   Implemented Logging options in the NKitDbContextRepository to check whether or logging to the database is enabled or not.
 *   Consolidated the GetEntities and GetEntitiesByField action on the NKitWebApiController to a single action that performs both functions depending on whether the searchBy query parameter is specified.
+
+*   Upgraded some of the System. references in the NKit.Standard libraty to match the .NET references to prevent the downgrade errors when publishing a self-contained .NET Core App.
+*   Added writing of all the settings to the console in the NKitApplication.
+*   Removed the OnConfiguring method in the NKitDbContext class, to allow the consumer class specify the configuration i.e. to specify the provider when calling the UseSqlServer method.

@@ -25,14 +25,5 @@
         public virtual DbSet<NKitLogEntry> NKitLogEntry { get; set; }
 
         #endregion //Db Sets
-
-        #region Properties
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            base.OnConfiguring(optionsBuilder);
-        }
-
-        #endregion //Properties
     }
 }

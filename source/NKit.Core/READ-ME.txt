@@ -4,3 +4,33 @@
 		<ItemGroup>
 			<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		</ItemGroup>
+
+*	Hosting a .NET Core App:
+	-	https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-5.0
+
+*	.NET Generic Host in ASP.NET Core:
+	-	https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/generic-host?view=aspnetcore-5.0#set-up-a-host
+
+*	Kestrel web server implementation in ASP.NET Core:
+	-	https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-5.0
+
+*	In-Process Hosting:
+	-	https://weblog.west-wind.com/posts/2020/Jan/14/ASPNET-Core-IIS-InProcess-Hosting-Issues-in-NET-Core-31
+	-	https://weblog.west-wind.com/posts/2019/Mar/16/ASPNET-Core-Hosting-on-IIS-with-ASPNET-Core-22
+
+*	Hosting An ASP.NET Core Web App As A Windows Service In .NET Core 3:
+	-	https://dotnetcoretutorials.com/2019/12/21/hosting-an-asp-net-core-web-app-as-a-windows-service-in-net-core-3/
+
+	-	Building/Publish self-contained app i.e. with all the .NET Core dependencies etc so you don't have to install .NET on the target machine.
+		-	dotnet publish -c Release -r win-x64 --self-contained
+
+*	Downgrade errors when building self contained packages with command: dotnet publish -c Release -r win-x64 --self-contained
+	-	https://stackoverflow.com/questions/47712035/what-is-the-right-way-to-fix-error-nu1605-detected-package-downgrade-log4net
+	-	https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1605#issue-1
+	-	https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1605
+
+*	Understanding Dependency Injection in .NET Core:
+	-	https://auth0.com/blog/dependency-injection-in-dotnet-core/
+
+*	Logging in .NET Core and ASP.NET Core:
+	-	https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-5.0
