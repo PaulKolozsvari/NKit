@@ -87,9 +87,9 @@
         /// Register Configurations from the appsettings.json which will be made available as IOptions to all services.
         /// </summary>
         /// <param name="services"></param>
-        public static void RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
+        public static NKitDatabaseSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
         {
-            RegisterConfiguration<NKitDatabaseSettings>(configuration, services);
+            return RegisterConfiguration<NKitDatabaseSettings>(configuration, services);
         }
 
         #endregion //Methods

@@ -10,7 +10,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using NKit.Core.Utilities.Logging;
     using NKit.Data.DB.LINQ;
     using NKit.Utilities;
     using NKit.Utilities.Logging;
@@ -43,7 +42,6 @@
             IOptions<NKitEmailSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions)
         {
-            _logger = AppLogger.CreateLogger(nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(context, nameof(context), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitWebApiController<D>));

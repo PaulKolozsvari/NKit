@@ -17,3 +17,6 @@
 *   Upgraded some of the System. references in the NKit.Standard libraty to match the .NET references to prevent the downgrade errors when publishing a self-contained .NET Core App.
 *   Added writing of all the settings to the console in the NKitApplication.
 *   Removed the OnConfiguring method in the NKitDbContext class, to allow the consumer class specify the configuration i.e. to specify the provider when calling the UseSqlServer method.
+
+*   Implemented NKitEmailService.
+*   Implemented custom Console logging provider which changes the colors of information, error and warning messages.

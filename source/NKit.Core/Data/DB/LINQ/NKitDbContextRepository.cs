@@ -21,7 +21,8 @@
     #endregion //Using Directives
 
     /// <summary>
-    /// A class extending the functionality of the NKitDbContextRepositoryBase that allows management of multiple entities at a time.
+    /// A facade wrapper (repository) around an Entity Framework DbContext used to manage it to provide CRUD operations.
+    /// Extends the functionality of the NKitDbContextRepositoryBase that allows management of multiple entities at a time.
     /// Methods in this class are wrapped in Transactions.
     /// Managing DbContext the right way with Entity Framework 6: an in-depth guide: https://mehdi.me/ambient-dbcontext-in-ef6/
     /// Database.BeginTransaction vs Transactions.TransactionScope: https://stackoverflow.com/questions/22382892/database-begintransaction-vs-transactions-transactionscope

@@ -12,10 +12,12 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using NKit.Core.Utilities.Email;
     using NKit.Core.Utilities.Logging;
     using NKit.Core.Web.Service.RestApi.Exceptions;
     using NKit.Data.DB.LINQ;
     using NKit.Utilities;
+    using NKit.Utilities.Email;
     using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
@@ -26,14 +28,13 @@
     /// ASP.NET Core - Middleware Pipeline: https://www.tutorialsteacher.com/core/aspnet-core-middleware
     /// You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     /// </summary>
-    public class NKitHttpStatusCodeExceptionMiddlewareCore<D> where D : NKitDbContextRepository
+    public class NKitHttpExceptionHandlerMiddleware<D> where D : NKitDbContextRepository
     {
         #region Constructors
 
-        public NKitHttpStatusCodeExceptionMiddlewareCore(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
+        public NKitHttpExceptionHandlerMiddleware(RequestDelegate next, IServiceScopeFactory serviceScopeFactory)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
-            _logger = AppLogger.CreateLogger(nameof(NKitHttpStatusCodeExceptionMiddlewareCore<D>));
             _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
             _serviceProvider = serviceScopeFactory.CreateScope().ServiceProvider;
         }
@@ -49,7 +50,6 @@
         #region Fields
 
         protected readonly RequestDelegate _next;
-        protected readonly ILogger _logger;
         protected IServiceScopeFactory _serviceScopeFactory;
         protected IServiceProvider _serviceProvider;
 
@@ -62,7 +62,9 @@
             D dbContextRepo,
             IOptions<NKitWebApiSettings> webApiOptions, 
             IOptions<NKitDatabaseSettings> databaseOptions,
-            IOptions<NKitLoggingSettings> loggingOptions)
+            IOptions<NKitLoggingSettings> loggingOptions,
+            ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger,
+            NKitEmailService emailService)
         {
             try
             {
@@ -70,14 +72,7 @@
             }
             catch (NKitHttpStatusCodeException ex)
             {
-                if (context.Response.HasStarted)
-                {
-                    _logger.LogWarning(RESPONSE_STARTED_LOG_ERROR_MESSAGE);
-                    throw;
-                }
-                string message = ExceptionHandler.GetCompleteExceptionMessage(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
-                _logger.LogError(message);
-                dbContextRepo.LogExceptionToNKitLogEntry(ex, nameof(NKitHttpStatusCodeExceptionMiddlewareCore<D>), webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+                string message = HandleException(ex, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
                 context.Response.Clear();
                 context.Response.StatusCode = ex.StatusCode;
                 context.Response.ContentType = ex.ContentType;
@@ -86,14 +81,7 @@
             }
             catch (Exception ex)
             {
-                if (context.Response.HasStarted)
-                {
-                    _logger.LogWarning(RESPONSE_STARTED_LOG_ERROR_MESSAGE);
-                    throw;
-                }
-                string message = ExceptionHandler.GetCompleteExceptionMessage(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
-                _logger.LogError(message);
-                dbContextRepo.LogExceptionToNKitLogEntry(ex, nameof(NKitHttpStatusCodeExceptionMiddlewareCore<D>), webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+                string message = HandleException(ex, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
                 context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = @"text/plain";
@@ -107,6 +95,28 @@
                     dbContextRepo.Dispose();
                 }
             }
+        }
+
+        private string HandleException(
+            Exception ex,
+            HttpContext context,
+            D dbContextRepo,
+            IOptions<NKitWebApiSettings> webApiOptions,
+            IOptions<NKitDatabaseSettings> databaseOptions,
+            IOptions<NKitLoggingSettings> loggingOptions,
+            ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger,
+            NKitEmailService emailService)
+        {
+            if (context.Response.HasStarted)
+            {
+                logger.LogWarning(RESPONSE_STARTED_LOG_ERROR_MESSAGE);
+                throw ex;
+            }
+            string message = ExceptionHandler.GetCompleteExceptionMessage(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+            logger.Log(LogLevel.Error, ex, message);
+            dbContextRepo.LogExceptionToNKitLogEntry(ex, nameof(NKitHttpExceptionHandlerMiddleware<D>), webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+            emailService.EmailClient.SendExceptionEmailNotification(ex, out string errorMessage, out string emailLogMessageText, true, null);
+            return message;
         }
 
         #endregion //Methods

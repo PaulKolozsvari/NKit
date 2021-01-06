@@ -34,3 +34,11 @@
 
 *	Logging in .NET Core and ASP.NET Core:
 	-	https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-5.0
+	-	https://docs.microsoft.com/en-us/dotnet/core/extensions/logging
+
+	*	How do I write logs from within Startup.cs?
+		-	https://stackoverflow.com/questions/41287648/how-do-i-write-logs-from-within-startup-cs
+		-	https://stackoverflow.com/questions/41287648/how-do-i-write-logs-from-within-startup-cs/61488490#61488490
+
+	*	Creating a custom logger:
+		-	https://docs.microsoft.com/en-us/dotnet/core/extensions/custom-logging-provider

@@ -11,6 +11,8 @@
 
     #endregion //Using Directives
 
+    #region Application Builder - Extension Methods
+
     public static class ApplicationBuilderDbContextExtensions
     {
         #region Methods
@@ -18,8 +20,6 @@
         /// <summary>
         /// Updates database to the latest migration on the given DbContext.
         /// </summary>
-        /// <param name="applicationBuilder"></param>
-        /// <returns></returns>
         public static void UpdateDatabase<D>(this IApplicationBuilder applicationBuilder) where D : DbContext
         {
             using (var serviceScope = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
@@ -32,5 +32,7 @@
         }
 
         #endregion //Methods
+
+        #endregion Application Builder - Extension Methods
     }
 }

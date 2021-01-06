@@ -23,7 +23,7 @@
     #endregion //Using Directives
 
     /// <summary>
-    /// A facade wrapper (repository) around the Entity Framework DbContext providing CRUD operations on single entities at a time.
+    /// A facade wrapper (repository) around an Entity Framework DbContext used to manage it to provide CRUD operations.
     /// Methods in this class are NOT wrapped in Transactions.
     /// Managing DbContext the right way with Entity Framework 6: an in-depth guide: https://mehdi.me/ambient-dbcontext-in-ef6/
     /// </summary>

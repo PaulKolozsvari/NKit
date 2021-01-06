@@ -37,9 +37,9 @@
         /// <summary>
         /// Register Configurations from the appsettings.json which will be made available as IOptions to all services.
         /// </summary>
-        public static void RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
+        public static NKitWebApiSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
         {
-            RegisterConfiguration<NKitWebApiSettings>(configuration, services);
+            return RegisterConfiguration<NKitWebApiSettings>(configuration, services);
         }
 
         #endregion //Methods

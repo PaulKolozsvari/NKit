@@ -59,28 +59,15 @@
         /// <summary>
         /// Register Configurations from the appsettings.json which will be made available as IOptions to all services.
         /// </summary>
-        public static void RegisterConfiguration<S>(IConfiguration configuration, IServiceCollection services) where S : NKitSettings
+        public static S RegisterConfiguration<S>(IConfiguration configuration, IServiceCollection services) where S : NKitSettings
         {
-            services.Configure<S>(configuration.GetSection(typeof(S).Name));
-        }
-
-        /// <summary>
-        /// Register Configurations from the appsettings.json which will be made available as IOptions to all services.
-        /// </summary>
-        public static void RegisterConfigurations(
-            IConfiguration configuration, 
-            IServiceCollection services,
-            bool registerWebApiSettings,
-            bool registerWebApiClientSettings,
-            bool registerDatabaseSettings,
-            bool registerLoggingSettings,
-            bool registerEmailSettings)
-        {
-            if (registerWebApiSettings) NKitWebApiSettings.RegisterConfiguration(configuration, services);
-            if (registerWebApiClientSettings) NKitWebApiClientSettings.RegisterConfiguration(configuration, services);
-            if (registerDatabaseSettings) NKitDatabaseSettings.RegisterConfiguration(configuration, services);
-            if (registerLoggingSettings) NKitLoggingSettings.RegisterConfiguration(configuration, services);
-            if (registerEmailSettings) NKitEmailSettings.RegisterConfiguration(configuration, services);
+            IConfigurationSection section = configuration.GetSection(typeof(S).Name);
+            if (section == null)
+            {
+                return null;
+            }
+            services.Configure<S>(section);
+            return GetSettings<S>(configuration);
         }
 
         #endregion //Methods
