@@ -13,14 +13,14 @@
 
     #region Application Builder - Extension Methods
 
-    public static class ApplicationBuilderDbContextExtensions
+    public static class DbContextApplicationBuilderExtensions
     {
         #region Methods
 
         /// <summary>
         /// Updates database to the latest migration on the given DbContext.
         /// </summary>
-        public static void UpdateDatabase<D>(this IApplicationBuilder applicationBuilder) where D : DbContext
+        public static void UpdateNKitDatabase<D>(this IApplicationBuilder applicationBuilder) where D : DbContext
         {
             using (var serviceScope = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {

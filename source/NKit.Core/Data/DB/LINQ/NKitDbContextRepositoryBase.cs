@@ -14,12 +14,12 @@
     using NKit.Utilities.SettingsFile.Default;
     using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
-    using NKit.Web.Service.RestApi.Models;
     using Dapper;
     using System.Data.Common;
     using Microsoft.Extensions.Options;
     using NKit.Utilities;
     using Microsoft.Extensions.Logging;
+    using NKit.Data.DB.LINQ.Models;
 
     #endregion //Using Directives
 

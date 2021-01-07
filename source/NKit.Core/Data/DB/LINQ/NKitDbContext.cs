@@ -6,7 +6,7 @@
     using System.Collections.Generic;
     using System.Text;
     using Microsoft.EntityFrameworkCore;
-    using NKit.Web.Service.RestApi.Models;
+    using NKit.Data.DB.LINQ.Models;
 
     #endregion //Using Directives
 
@@ -23,6 +23,7 @@
         #region Db Sets
 
         public virtual DbSet<NKitLogEntry> NKitLogEntry { get; set; }
+        public virtual DbSet<NKitHttpExceptionResponse> NKitHttpExceptionResponse { get; set; }
 
         #endregion //Db Sets
     }

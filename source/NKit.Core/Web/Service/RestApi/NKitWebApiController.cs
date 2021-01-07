@@ -20,9 +20,9 @@
     using NKit.Data;
     using Microsoft.Extensions.Options;
     using NKit.Utilities.SettingsFile.Default;
-    using NKit.Web.Service.RestApi.Models;
     using System.IO;
     using System.Reflection;
+    using NKit.Data.DB.LINQ.Models;
 
     #endregion //Using Directives
 

@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.RestApi.Models
+﻿namespace NKit.Data.DB.LINQ.Models
 {
     #region Using Directives
 

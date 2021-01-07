@@ -95,6 +95,16 @@
             get { return _eventId; }
         }
 
+        public string OriginatingClassName
+        {
+            get{ return this.TargetSite != null ? this.TargetSite.DeclaringType.FullName : string.Empty; }
+        }
+
+        public string OriginatingFunctionName
+        {
+            get { return this.TargetSite != null ? this.TargetSite.Name : string.Empty; }
+        }
+
         #endregion //Properties
     }
 }

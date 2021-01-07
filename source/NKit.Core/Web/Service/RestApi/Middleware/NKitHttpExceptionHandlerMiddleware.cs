@@ -17,6 +17,7 @@
     using NKit.Data.DB.LINQ;
     using NKit.Utilities;
     using NKit.Utilities.SettingsFile.Default;
+    using NKit.Data.DB.LINQ.Models;
 
     #endregion //Using Directives
 
@@ -71,19 +72,25 @@
             catch (NKitHttpStatusCodeException ex)
             {
                 string message = HandleException(ex, ex.EventId, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
+                NKitHttpExceptionResponse exceptionResponse = new NKitHttpExceptionResponse(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+                string responseText = exceptionResponse.GetResponseText(ex.ContentType, message);
                 context.Response.Clear();
                 context.Response.StatusCode = (int)ex.StatusCode;
                 context.Response.ContentType = ex.ContentType;
-                await context.Response.WriteAsync(message);
+                await context.Response.WriteAsync(responseText);
                 return;
             }
             catch (Exception ex)
             {
                 string message = HandleException(ex, null, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
+                int httpStatusCode = (int)HttpStatusCode.InternalServerError;
+                string contentType = MimeContentType.APPLICATION_JSON;
+                NKitHttpExceptionResponse exceptionResponse = new NKitHttpExceptionResponse(ex, httpStatusCode, contentType, null, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+                string responseText = exceptionResponse.GetResponseText(contentType, message);
                 context.Response.Clear();
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.ContentType = MimeContentType.TEXT_PLAIN;
-                await context.Response.WriteAsync(message);
+                context.Response.StatusCode = httpStatusCode;
+                context.Response.ContentType = contentType;
+                await context.Response.WriteAsync(responseText);
                 return;
             }
             finally

@@ -23,3 +23,4 @@
 *   Added NKitGeneralSettings default settings class.
 *   Added EventId and EventName to NKitLogEntry model i.e. database.
 *   Added Console logging settings to make the colors used in the console logger configurable e.g. DardRed for Errors, Red for Critical, Yellow for Warnings, Green for Information, Blue for debug.
+*   Implemented NKitHttpExceptionResponse model to always return this object on exceptions handled by the NKitHttpExceptionHandlerMiddleware based on the content type specified when throwing a NKitHttpStatusCodeException.
