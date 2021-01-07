@@ -7,6 +7,7 @@
     using System.Text;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using NKit.Utilities.Serialization;
     using NKit.Utilities.SettingsFile;
 
     #endregion //Using Directives
@@ -16,9 +17,18 @@
         #region Properties
 
         /// <summary>
+        /// Sets the serializer type that is used to serialize the responses from the NKitWebApiController. 'XML' or 'JSON' is supported.
+        /// </summary>
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Sets the serializer type that is used to serialize/deserialize the requests/responses from the NKitWebApiController. 'XML' or 'JSON' is supported.", CategorySequenceId = 0)]
+        public SerializerType SerializerType { get; set; }
+
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Sets the default content type that the NKitWebApiController returns e.g. 'text/plain', 'application/json' or 'application/xml' is supported.", CategorySequenceId = 1)]
+        public string ResponseContentType { get; set; }
+
+        /// <summary>
         /// Whether or not to include the stack trace in the web response when an unhandled exception occurs.
         /// </summary>
-        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not to include the stack trace in the web response when an unhandled exception occurs.", CategorySequenceId = 0)]
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not to include the stack trace in the web response when an unhandled exception occurs.", CategorySequenceId = 2)]
         public bool IncludeExceptionStackTraceInErrorResponse { get; set; }
 
         #endregion //Properties

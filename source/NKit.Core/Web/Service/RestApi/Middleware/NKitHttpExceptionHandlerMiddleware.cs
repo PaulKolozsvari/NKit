@@ -18,6 +18,7 @@
     using NKit.Utilities;
     using NKit.Utilities.SettingsFile.Default;
     using NKit.Data.DB.LINQ.Models;
+    using NKit.Utilities.Serialization;
 
     #endregion //Using Directives
 
@@ -71,25 +72,24 @@
             }
             catch (NKitHttpStatusCodeException ex)
             {
-                string message = HandleException(ex, ex.EventId, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
-                NKitHttpExceptionResponse exceptionResponse = new NKitHttpExceptionResponse(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
-                string responseText = exceptionResponse.GetResponseText(ex.ContentType, message);
+                string plainTextResponse = HandleException(ex, ex.EventId, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
+                NKitHttpExceptionResponse response = new NKitHttpExceptionResponse(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+                string responseText = response.GetResponseText(plainTextResponse, webApiOptions.Value.SerializerType, webApiOptions.Value.ResponseContentType);
                 context.Response.Clear();
                 context.Response.StatusCode = (int)ex.StatusCode;
-                context.Response.ContentType = ex.ContentType;
+                context.Response.ContentType = response.ContentType;
                 await context.Response.WriteAsync(responseText);
                 return;
             }
             catch (Exception ex)
             {
-                string message = HandleException(ex, null, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
+                string plainTextResponse = HandleException(ex, null, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
                 int httpStatusCode = (int)HttpStatusCode.InternalServerError;
-                string contentType = MimeContentType.APPLICATION_JSON;
-                NKitHttpExceptionResponse exceptionResponse = new NKitHttpExceptionResponse(ex, httpStatusCode, contentType, null, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
-                string responseText = exceptionResponse.GetResponseText(contentType, message);
+                NKitHttpExceptionResponse response = new NKitHttpExceptionResponse(ex, httpStatusCode, null, null, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+                string responseText = response.GetResponseText(plainTextResponse, webApiOptions.Value.SerializerType, webApiOptions.Value.ResponseContentType);
                 context.Response.Clear();
                 context.Response.StatusCode = httpStatusCode;
-                context.Response.ContentType = contentType;
+                context.Response.ContentType = response.ContentType;
                 await context.Response.WriteAsync(responseText);
                 return;
             }

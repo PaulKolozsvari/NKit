@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using NKit.Utilities.Serialization;
 
     #endregion //Using Directives
 
@@ -232,5 +233,22 @@
             x-world/x-vrml	xaf
             x-world/x-vrml	xof
          */
+
+        #region Methods
+
+        public static string GetContentTypeFromSerializerType(SerializerType serializerType)
+        {
+            switch (serializerType)
+            {
+                case SerializerType.XML:
+                    return MimeContentType.APPLICATION_XML;
+                case SerializerType.JSON:
+                    return MimeContentType.APPLICATION_JSON;
+                default:
+                    return MimeContentType.TEXT_PLAIN;
+            }
+        }
+
+        #endregion //Methods
     }
 }

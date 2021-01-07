@@ -9,6 +9,7 @@
     using System.Text;
     using Microsoft.Extensions.Logging;
     using NKit.Utilities;
+    using NKit.Utilities.Serialization;
     using NKit.Web;
     using NKit.Web.Service.RestApi.Exceptions;
 
@@ -115,27 +116,25 @@
         #region Methods
 
         /// <summary>
-        /// Based on the responseContentType serializes this object using the appropriate Serializer:
-        /// JSON for content type application/json
-        /// XML for content type application/xml.
-        /// Otherwise the defaultTextResponse is returned for any other content type.
+        /// Based on the ContentType set on this object, it serializes this object using the appropriate Serializer.
+        /// Returns JSON for content type application/json
+        /// Returns XML for content type application/xml.
+        /// Returns the plainTextResponse back for content type text/plain.
+        /// Otherwise if none of the above content types have been specified, it uses the defaultSerializerType to serialize this object and sets the ContentType of this object to the defaultContentType.
         /// </summary>
-        /// <param name="contentType"></param>
-        /// <returns></returns>
-        public string GetResponseText(string contentType, string defaultTextResponse)
+        public string GetResponseText(string plainTextResponse, SerializerType defaultSerializerType, string defaultContentType)
         {
-            if (string.IsNullOrEmpty(contentType))
-            {
-                return defaultTextResponse;
-            }
-            switch (contentType)
+            switch (this.ContentType)
             {
                 case MimeContentType.APPLICATION_JSON:
-                    return GOC.Instance.JsonSerializer.SerializeToText(this);
+                    return GOC.Instance.GetSerializer(SerializerType.JSON).SerializeToText(this);
                 case MimeContentType.APPLICATION_XML:
-                    return GOC.Instance.XmlSerializer.SerializeToText(this);
+                    return GOC.Instance.GetSerializer(SerializerType.XML).SerializeToText(this);
+                case MimeContentType.TEXT_PLAIN:
+                    return plainTextResponse;
                 default:
-                    return defaultTextResponse;
+                    this.ContentType = defaultContentType;
+                    return GOC.Instance.GetSerializer(defaultSerializerType).SerializeToText(this);
             }
         }
 

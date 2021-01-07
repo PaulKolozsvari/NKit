@@ -23,6 +23,7 @@
     using System.IO;
     using System.Reflection;
     using NKit.Data.DB.LINQ.Models;
+    using NKit.Utilities.Serialization;
 
     #endregion //Using Directives
 
@@ -38,17 +39,20 @@
         public NKitWebApiController(
             D context,
             IHttpContextAccessor httpContextAccessor, 
+            IOptions<NKitWebApiSettings> webApiOptions,
             IOptions<NKitDatabaseSettings> databaseOptions,
             IOptions<NKitEmailSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions)
         {
             DataValidator.ValidateObjectNotNull(context, nameof(context), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(webApiOptions, nameof(webApiOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(emailOptions, nameof(emailOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitWebApiController<D>));
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _webApiSettings = webApiOptions.Value;
             _databaseSettings = databaseOptions.Value;
             _emailSettings = emailOptions.Value;
             _loggingSettings = loggingOptions.Value;
@@ -85,6 +89,7 @@
         protected IHttpContextAccessor _httpContextAccessor;
         protected D _context;
 
+        protected NKitWebApiSettings _webApiSettings;
         protected NKitDatabaseSettings _databaseSettings;
         protected NKitEmailSettings _emailSettings;
         protected NKitLoggingSettings _loggingSettings;
@@ -246,6 +251,20 @@
             }
         }
 
+        /// <summary>
+        /// Returns either a JSON or XML serializer based on the SerializerType set in the NKitWebApiSettings of the appsettings.json file.
+        /// </summary>
+        /// <returns></returns>
+        protected ISerializer GetSerializer()
+        {
+            return GOC.Instance.GetSerializer(_webApiSettings.SerializerType);
+        }
+
+        protected Type[] GetNKitSerializerModelTypes()
+        {
+            return new Type[] { typeof(NKitBaseModel), typeof(NKitHttpExceptionResponse), typeof(NKitLogEntry) };
+        }
+
         #endregion //Methods
 
         #region Actions
@@ -269,8 +288,9 @@
                 {
                     OnAfterGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, outputEntity));
                 }
-                string serializedText = GOC.Instance.JsonSerializer.SerializeToText(outputEntity);
+                string serializedText = GetSerializer().SerializeToText(outputEntity, GetNKitSerializerModelTypes());
                 AuditResponse(requestName, serializedText);
+                Response.ContentType = _webApiSettings.ResponseContentType;
                 return Ok(serializedText);
             }
             finally
@@ -303,8 +323,9 @@
                 {
                     OnAfterGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _context, entityType, searchBy, searchValueOf, outputEntities));
                 }
-                string serializedText = GOC.Instance.JsonSerializer.SerializeToText(outputEntities);
+                string serializedText = GetSerializer().SerializeToText(outputEntities, GetNKitSerializerModelTypes());
                 AuditResponse(requestName, serializedText);
+                Response.ContentType = _webApiSettings.ResponseContentType;
                 return Ok(serializedText);
             }
             finally
@@ -314,7 +335,7 @@
         }
 
         [HttpPut, Route("{entityName}")]
-        [Consumes(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON)]
+        [Consumes(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
         public virtual IActionResult PutEntity(string entityName, [FromBody] string serializedText)
         {
             try
@@ -323,7 +344,7 @@
                 ValidateRequestMethod(HttpVerb.PUT);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
-                object inputEntity = GOC.Instance.JsonSerializer.DeserializeFromText(entityType, serializedText);
+                object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
                 AuditRequest(requestName, serializedText);
                 if (OnBeforePut != null)
                 {
@@ -345,7 +366,7 @@
         }
 
         [HttpPost, Route("{entityName}")]
-        [Consumes(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON)]
+        [Consumes(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
         public virtual IActionResult PostEntity(string entityName, [FromBody] string serializedText)
         {
             try
@@ -354,7 +375,7 @@
                 ValidateRequestMethod(HttpVerb.POST);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
-                object inputEntity = GOC.Instance.JsonSerializer.DeserializeFromText(entityType, serializedText);
+                object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
                 AuditRequest(requestName, serializedText);
                 if (OnBeforePost != null)
                 {

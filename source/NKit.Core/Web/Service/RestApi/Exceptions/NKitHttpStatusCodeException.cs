@@ -21,7 +21,7 @@
         public NKitHttpStatusCodeException(HttpStatusCode statusCode, string message, string contentType, Nullable<EventId> eventId) : base(message)
         {
             _statusCode = statusCode;
-            _contentType = contentType ?? MimeContentType.TEXT_PLAIN;
+            _contentType = contentType;
             _eventId = eventId;
         }
 
