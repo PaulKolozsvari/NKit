@@ -37,12 +37,6 @@
             set { _name = value; }
         }
 
-        /// <summary>
-        /// The name of the application.
-        /// </summary>
-        [NKitSettingInfo("Application", AutoFormatDisplayName = true, Description = "The name of the application. This setting should be loaded in the GOC for it to be displayed relevant places.", CategorySequenceId = 0)]
-        public string ApplicationName { get; set; }
-
         #endregion Properties
 
         #region Methods

@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Utilities.Logging
+﻿namespace NKit.Utilities.Logging
 {
     #region Using Directives
 

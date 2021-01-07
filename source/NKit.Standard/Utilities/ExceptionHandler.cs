@@ -27,13 +27,22 @@
         public static string GetCompleteExceptionMessage(Exception ex, bool includeStackTrace)
         {
             StringBuilder result = new StringBuilder();
-            result.AppendLine(ex.Message);
+            result.AppendLine($"Exception: {ex.Message}");
+            if (!string.IsNullOrEmpty(ex.Source))
+            {
+                result.AppendLine($"Source: {ex.Source}");
+            }
+            string className = ex.TargetSite != null ? ex.TargetSite.DeclaringType.FullName : string.Empty;
+            string functionName = ex.TargetSite != null ? ex.TargetSite.Name : string.Empty;
+            result.AppendLine($"Class Name: {className}");
+            result.AppendLine($"Function Name: {functionName}");
             if (ex.InnerException != null)
             {
-                result.AppendLine(ex.InnerException.Message);
+                result.AppendLine($"Inner Exception: {ex.InnerException.Message}");
             }
             if (includeStackTrace)
             {
+                result.AppendLine("Stack Trace:");
                 result.AppendLine(ex.StackTrace);
             }
             return result.ToString();

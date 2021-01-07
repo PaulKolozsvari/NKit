@@ -13,11 +13,9 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NKit.Core.Utilities.Email;
-    using NKit.Core.Utilities.Logging;
-    using NKit.Core.Web.Service.RestApi.Exceptions;
+    using NKit.Web.Service.RestApi.Exceptions;
     using NKit.Data.DB.LINQ;
     using NKit.Utilities;
-    using NKit.Utilities.Email;
     using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
@@ -72,19 +70,19 @@
             }
             catch (NKitHttpStatusCodeException ex)
             {
-                string message = HandleException(ex, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
+                string message = HandleException(ex, ex.EventId, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
                 context.Response.Clear();
-                context.Response.StatusCode = ex.StatusCode;
+                context.Response.StatusCode = (int)ex.StatusCode;
                 context.Response.ContentType = ex.ContentType;
                 await context.Response.WriteAsync(message);
                 return;
             }
             catch (Exception ex)
             {
-                string message = HandleException(ex, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
+                string message = HandleException(ex, null, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
                 context.Response.Clear();
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.ContentType = @"text/plain";
+                context.Response.ContentType = MimeContentType.TEXT_PLAIN;
                 await context.Response.WriteAsync(message);
                 return;
             }
@@ -99,6 +97,7 @@
 
         private string HandleException(
             Exception ex,
+            Nullable<EventId> eventId,
             HttpContext context,
             D dbContextRepo,
             IOptions<NKitWebApiSettings> webApiOptions,
@@ -113,8 +112,15 @@
                 throw ex;
             }
             string message = ExceptionHandler.GetCompleteExceptionMessage(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
-            logger.Log(LogLevel.Error, ex, message);
-            dbContextRepo.LogExceptionToNKitLogEntry(ex, nameof(NKitHttpExceptionHandlerMiddleware<D>), webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+            if (eventId.HasValue)
+            {
+                logger.Log(LogLevel.Error, eventId.Value, ex, message);
+            }
+            else
+            {
+                logger.Log(LogLevel.Error, ex, message);
+            }
+            dbContextRepo.LogExceptionToNKitLogEntry(ex, eventId, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
             emailService.EmailClient.SendExceptionEmailNotification(ex, out string errorMessage, out string emailLogMessageText, true, null);
             return message;
         }

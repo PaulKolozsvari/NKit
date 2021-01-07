@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Utilities.Logging
+﻿namespace NKit.Extensions
 {
     #region Using Directives
 
@@ -9,11 +9,14 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.EventLog;
+    using NKit.Core.Utilities;
+    using NKit.Extensions;
+    using NKit.Utilities;
     using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
 
-    public static class IHostBuilderLoggingExtensions
+    public static class LoggingHostBuilderExtensions
     {
         #region Methods
 
@@ -32,18 +35,28 @@
                     loggingBuilder.AddConsole();
                     loggingBuilder.AddNKitLogger(configuration =>
                     {
-                        configuration.Color = ConsoleColor.Red;
-                        configuration.LogLevel = LogLevel.Error;
-                    });
-                    loggingBuilder.AddNKitLogger(configuration =>
-                    {
-                        configuration.Color = ConsoleColor.Green;
+                        configuration.Color = loggingSettings.ConsoleInformationLogEntriesColor;
                         configuration.LogLevel = LogLevel.Information;
                     });
                     loggingBuilder.AddNKitLogger(configuration =>
                     {
-                        configuration.Color = ConsoleColor.Yellow;
+                        configuration.Color = loggingSettings.ConsoleErrorLogEntriesColor;
+                        configuration.LogLevel = LogLevel.Error;
+                    });
+                    loggingBuilder.AddNKitLogger(configuration =>
+                    {
+                        configuration.Color = loggingSettings.ConsoleWarningLogEntriesColor;
                         configuration.LogLevel = LogLevel.Warning;
+                    });
+                    loggingBuilder.AddNKitLogger(configuration =>
+                    {
+                        configuration.Color = loggingSettings.ConsoleCriticalLogEntriesColor;
+                        configuration.LogLevel = LogLevel.Critical;
+                    });
+                    loggingBuilder.AddNKitLogger(configuration =>
+                    {
+                        configuration.Color = loggingSettings.ConsoleDebugEntriesLogEntriesColor;
+                        configuration.LogLevel = LogLevel.Debug;
                     });
                 }
                 if (loggingSettings.LogToWindowsEventLog)

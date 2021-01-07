@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Utilities.SettingsFile.Default
+﻿namespace NKit.Extensions
 {
     #region Using Directives
 
@@ -22,7 +22,7 @@
 
     #endregion //Using Directives
 
-    public static class IServiceCollectionExtensions
+    public static class SettingsServiceCollectionExtensions
     {
         #region Methods
 
@@ -68,11 +68,7 @@
         /// </summary>
         /// <param name="services">The IServiceCollection passed into the ConfigureServices method in the Startup class.</param>
         /// <param name="configuration">The IConfiguration passed into the ConfigureServices method in the Startup class.</param>
-        /// <param name="registerWebApiSettings">Whether or not to register the Web API settings from the appsettings.json file.</param>
-        /// <param name="registerWebApiClientSettings">Whether or not to register the Web API Client settings from the appsettings.json file.</param>
-        /// <param name="registerDatabaseSettings">Whether or not to register the Database settings from the appsettings.json file.</param>
-        /// <param name="registerLoggingSettings">Whether or not to register the Logging settings from the appsettings.json file.</param>
-        /// <param name="registerEmailSettings">Whether or not to register the Email settings from the appsettings.json file.</param>
+        /// <param name="generalSettings">Returns the General settings that have been registered.</param>
         /// <param name="webApiSettings">Returns the Web API settings that have been registered.</param>
         /// <param name="webApiClientSettings">Returns the Web API Client settings that have been registered.</param>
         /// <param name="databaseSettings">Returns the Database settings that have been registered.</param>
@@ -82,6 +78,7 @@
         public static void RegisterDefaultNKitSettings(
             this IServiceCollection services,
             IConfiguration configuration,
+            out NKitGeneralSettings generalSettings,
             out NKitWebApiSettings webApiSettings,
             out NKitWebApiClientSettings webApiClientSettings,
             out NKitDatabaseSettings databaseSettings,
@@ -91,6 +88,7 @@
         {
             ILogger logger = !string.IsNullOrEmpty(loggerCategoryName) ? CreateLogger(loggerCategoryName, NKitLoggingSettings.GetSettings(configuration)) : null;
             RegisterDefaultNKitSettings(services, configuration, 
+                out generalSettings,
                 out webApiSettings,
                 out webApiClientSettings,
                 out databaseSettings,
@@ -104,11 +102,7 @@
         /// </summary>
         /// <param name="services">The IServiceCollection passed into the ConfigureServices method in the Startup class.</param>
         /// <param name="configuration">The IConfiguration passed into the ConfigureServices method in the Startup class.</param>
-        /// <param name="registerWebApiSettings">Whether or not to register the Web API settings from the appsettings.json file.</param>
-        /// <param name="registerWebApiClientSettings">Whether or not to register the Web API Client settings from the appsettings.json file.</param>
-        /// <param name="registerDatabaseSettings">Whether or not to register the Database settings from the appsettings.json file.</param>
-        /// <param name="registerLoggingSettings">Whether or not to register the Logging settings from the appsettings.json file.</param>
-        /// <param name="registerEmailSettings">Whether or not to register the Email settings from the appsettings.json file.</param>
+        /// <param name="generalSettings">Returns the General settings that have been registered.</param>
         /// <param name="webApiSettings">Returns the Web API settings that have been registered.</param>
         /// <param name="webApiClientSettings">Returns the Web API Client settings that have been registered.</param>
         /// <param name="databaseSettings">Returns the Database settings that have been registered.</param>
@@ -118,6 +112,7 @@
         public static void RegisterDefaultNKitSettings(
             this IServiceCollection services,
             IConfiguration configuration,
+            out NKitGeneralSettings generalSettings,
             out NKitWebApiSettings webApiSettings,
             out NKitWebApiClientSettings webApiClientSettings,
             out NKitDatabaseSettings databaseSettings,
@@ -125,6 +120,7 @@
             out NKitEmailSettings emailSettings,
             ILogger logger)
         {
+            generalSettings = NKitGeneralSettings.RegisterConfiguration(configuration, services);
             webApiSettings = NKitWebApiSettings.RegisterConfiguration(configuration, services);
             webApiClientSettings = NKitWebApiClientSettings.RegisterConfiguration(configuration, services);
             databaseSettings = NKitDatabaseSettings.RegisterConfiguration(configuration, services);
@@ -134,28 +130,35 @@
             {
                 return;
             }
-            StringBuilder settingsJson = new StringBuilder();
-            settingsJson.AppendLine($"*** {nameof(NKitWebApiSettings)} ***");
-            settingsJson.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(webApiSettings));
-            settingsJson.AppendLine();
+            StringBuilder logMessage = new StringBuilder();
+            logMessage.AppendLine($"*** Default NKit Settings registered from : {NKitInformation.GetAspNetCoreEnvironmentAppSettingsFileName()} ***");
+            logMessage.AppendLine();
 
-            settingsJson.AppendLine($"*** {nameof(NKitDatabaseSettings)} ***");
-            settingsJson.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(databaseSettings));
-            settingsJson.AppendLine();
+            logMessage.AppendLine($"*** {nameof(NKitGeneralSettings)} ***");
+            logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(generalSettings));
+            logMessage.AppendLine();
 
-            settingsJson.AppendLine($"*** {nameof(NKitLoggingSettings)} ***");
-            settingsJson.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(loggingSettings));
-            settingsJson.AppendLine();
+            logMessage.AppendLine($"*** {nameof(NKitWebApiSettings)} ***");
+            logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(webApiSettings));
+            logMessage.AppendLine();
 
-            settingsJson.AppendLine($"*** {nameof(NKitEmailSettings)} ***");
-            settingsJson.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(emailSettings));
-            settingsJson.AppendLine();
+            logMessage.AppendLine($"*** {nameof(NKitDatabaseSettings)} ***");
+            logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(databaseSettings));
+            logMessage.AppendLine();
 
-            settingsJson.AppendLine($"*** {nameof(NKitWebApiClientSettings)} ***");
-            settingsJson.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(webApiClientSettings));
-            settingsJson.AppendLine();
+            logMessage.AppendLine($"*** {nameof(NKitLoggingSettings)} ***");
+            logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(loggingSettings));
+            logMessage.AppendLine();
 
-            logger.LogInformation(settingsJson.ToString());
+            logMessage.AppendLine($"*** {nameof(NKitEmailSettings)} ***");
+            logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(emailSettings));
+            logMessage.AppendLine();
+
+            logMessage.AppendLine($"*** {nameof(NKitWebApiClientSettings)} ***");
+            logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(webApiClientSettings));
+            logMessage.AppendLine();
+
+            logger.LogInformation(logMessage.ToString());
         }
 
         /// <summary>
@@ -216,8 +219,8 @@
             bool registerControllerInputFormatter,
             ILogger logger) where D : NKitDbContext where R : NKitDbContextRepository
         {
-            DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(IServiceCollectionExtensions));
-            DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(IServiceCollectionExtensions));
+            DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(SettingsServiceCollectionExtensions));
+            DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(SettingsServiceCollectionExtensions));
             NKitWebApiSettings webApiSettings = NKitWebApiSettings.GetSettings(configuration);
             NKitDatabaseSettings databaseSettings = NKitDatabaseSettings.GetSettings(configuration);
             NKitLoggingSettings loggingSettings = NKitLoggingSettings.GetSettings(configuration);

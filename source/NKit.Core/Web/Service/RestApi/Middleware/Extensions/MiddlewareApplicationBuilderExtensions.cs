@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.Service.RestApi.Middleware
+﻿namespace NKit.Extensions
 {
     #region Using Directives
 
@@ -7,6 +7,7 @@
     using System.Text;
     using Microsoft.AspNetCore.Builder;
     using NKit.Data.DB.LINQ;
+    using NKit.Web.Service.RestApi.Middleware;
 
     #endregion //Using Directives
 
@@ -15,7 +16,7 @@
     /// <summary>
     /// Extension method used to add the middleware to the HTTP request pipeline.
     /// </summary>
-    public static class ApplicationBuilderMiddlewareExtensions
+    public static class MiddlewareApplicationBuilderExtensions
     {
         #region Methods
 

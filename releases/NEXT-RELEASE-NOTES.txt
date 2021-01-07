@@ -20,3 +20,6 @@
 
 *   Implemented NKitEmailService.
 *   Implemented custom Console logging provider which changes the colors of information, error and warning messages.
+*   Added NKitGeneralSettings default settings class.
+*   Added EventId and EventName to NKitLogEntry model i.e. database.
+*   Added Console logging settings to make the colors used in the console logger configurable e.g. DardRed for Errors, Red for Critical, Yellow for Warnings, Green for Information, Blue for debug.

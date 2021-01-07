@@ -19,6 +19,7 @@
     using System.Data.Common;
     using Microsoft.Extensions.Options;
     using NKit.Utilities;
+    using Microsoft.Extensions.Logging;
 
     #endregion //Using Directives
 
@@ -1231,7 +1232,7 @@
         /// A sql query is run against the database first to check that the table exists in the database before trying to insert a log entry to it.
         /// To ensure that the table exists the NKitLogEntry model needs to registered by underlying DbContext as a DbSet in the application using the NKit.
         /// </summary>
-        public NKitLogEntry LogExceptionToNKitLogEntry(Exception ex, string source, bool includeExceptionDetailsInErrorMessage)
+        public NKitLogEntry LogExceptionToNKitLogEntry(Exception ex, Nullable<EventId> eventId, bool includeExceptionDetailsInErrorMessage)
         {
             if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlServerTableExists(nameof(NKitLogEntry)))
             {
@@ -1242,10 +1243,12 @@
             {
                 NKitLogEntryId = Guid.NewGuid(),
                 Message = message,
-                Source = source,
-                ClassName = ex.TargetSite != null ? ex.TargetSite.Name : null,
-                FunctionName = ex.TargetSite != null ? ex.TargetSite.DeclaringType.FullName : null,
+                Source = ex.Source,
+                ClassName = ex.TargetSite != null ? ex.TargetSite.DeclaringType.FullName : null,
+                FunctionName = ex.TargetSite != null ? ex.TargetSite.Name : null,
                 StackTrace = ex.StackTrace != null ? ex.StackTrace : null,
+                EventId = eventId.HasValue ? eventId.Value.Id : 0,
+                EventName = eventId.HasValue ? eventId.Value.Name : null,
                 DateCreated = DateTime.Now
             };
             List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId, false);

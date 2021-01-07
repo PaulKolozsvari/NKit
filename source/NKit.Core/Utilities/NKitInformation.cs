@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Utilities
+﻿namespace NKit.Utilities
 {
     #region Using Directives
 

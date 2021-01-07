@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Utilities.Logging
+﻿namespace NKit.Extensions
 {
     #region Using Directives
 
@@ -6,10 +6,12 @@
     using System.Collections.Generic;
     using System.Text;
     using Microsoft.Extensions.Logging;
+    using NKit.Extensions;
+    using NKit.Utilities.Logging;
 
     #endregion //Using Directives
 
-    public static class ILoggingBuilderExtensions
+    public static class LoggingBuilderLoggingExtensions
     {
         #region Methods
 

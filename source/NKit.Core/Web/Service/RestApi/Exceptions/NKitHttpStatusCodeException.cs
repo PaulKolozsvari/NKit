@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Web.Service.RestApi.Exceptions
+﻿namespace NKit.Web.Service.RestApi.Exceptions
 {
     #region Using Directives
 
@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.Net;
     using System.Text;
+    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json.Linq;
     using NKit.Web;
 
@@ -15,68 +16,71 @@
     {
         #region Constructors
 
-        public NKitHttpStatusCodeException(int statusCode, string message, string contentType) : base(message)
+        #region Constructors with plain info
+
+        public NKitHttpStatusCodeException(HttpStatusCode statusCode, string message, string contentType, Nullable<EventId> eventId) : base(message)
         {
             _statusCode = statusCode;
             _contentType = contentType ?? MimeContentType.TEXT_PLAIN;
+            _eventId = eventId;
         }
 
-        public NKitHttpStatusCodeException(int statusCode) : this(statusCode, string.Empty, null)
+        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, string message) : this(httpStatusCode, message, null, null)
         {
         }
 
-        public NKitHttpStatusCodeException(int statusCode, string contentType) : this(statusCode, string.Empty, contentType)
+        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, string message, string contentType) : this(httpStatusCode, message, contentType, null)
         {
         }
 
-        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, string message) : this((int)httpStatusCode, message, null)
+        #endregion //Constructors with plain info
+
+        #region Constructors with Exception
+
+        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, Exception exception) : this(httpStatusCode, exception.Message, null, null)
         {
         }
 
-        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, string message, string contentType) : this((int)httpStatusCode, message, contentType)
+        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, Exception exception, EventId eventId) : this(httpStatusCode, exception.Message, null, eventId)
         {
         }
 
-        public NKitHttpStatusCodeException(int statusCode, Exception exception) : this(statusCode, exception.Message, null)
+        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, Exception exception, string contentType) : this(httpStatusCode, exception.Message, contentType, null)
         {
         }
 
-        public NKitHttpStatusCodeException(int statusCode, Exception exception, string contentType) : this(statusCode, exception.Message, contentType)
+        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, Exception exception, string contentType, EventId eventId) : this(httpStatusCode, exception.Message, contentType, eventId)
         {
         }
 
-        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, Exception exception) : this((int)httpStatusCode, exception.Message, null)
+        #endregion //Constructors with Exception
+
+        #region Constructors with JObject
+
+        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, JObject errorObject) : this(httpStatusCode, errorObject.ToString(), MimeContentType.APPLICATION_JSON, null)
         {
         }
 
-        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, Exception exception, string contentType) : this((int)httpStatusCode, exception.Message, contentType)
+        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, JObject errorObject, EventId eventId) : this(httpStatusCode, errorObject.ToString(), MimeContentType.APPLICATION_JSON, eventId)
         {
         }
 
-        public NKitHttpStatusCodeException(int statusCode, JObject errorObject) : this(statusCode, errorObject.ToString(), null)
-        {
-        }
-
-        public NKitHttpStatusCodeException(int statusCode, JObject errorObject, string contentType) : this(statusCode, errorObject.ToString(), contentType)
-        {
-        }
-
-        public NKitHttpStatusCodeException(HttpStatusCode httpStatusCode, JObject errorObject) : this((int)httpStatusCode, errorObject.ToString(), MimeContentType.APPLICATION_JSON)
-        {
-        }
+        #endregion //Constructors with JObject
 
         #endregion //Constructors
 
         #region Fields
 
-        private int _statusCode;
-        public string _contentType;
+        protected HttpStatusCode _statusCode;
+        protected string _contentType;
+        protected string _source;
+        protected Nullable<EventId> _eventId;
 
         #endregion //Fields
 
         #region Properties
 
-        public int StatusCode
+        public HttpStatusCode StatusCode
         {
             get { return _statusCode; }
         }
@@ -84,6 +88,11 @@
         public string ContentType
         {
             get { return _contentType; }
+        }
+
+        public Nullable<EventId> EventId
+        {
+            get { return _eventId; }
         }
 
         #endregion //Properties

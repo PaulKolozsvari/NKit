@@ -58,10 +58,34 @@
         public string EventLogName { get; set; }
 
         /// <summary>
-        /// The extent of messages being logged: None = logging is disabled, Minimum = logs server start/stop and exceptions, Normal = logs additional information messages, Maximum = logs all requests and responses to the server.
+        /// The color to use when logging information entries to the console.
         /// </summary>
-        [NKitSettingInfo("Logging", AutoFormatDisplayName = true, Description = "The extent of messages being logged: None = logging is disabled, Minimum = logs server start/stop and exceptions, Normal = logs additional information messages, Maximum = logs all requests and responses to the server.", CategorySequenceId = 7)]
-        public LoggingLevel LoggingLevel { get; set; }
+        [NKitSettingInfo("Logging", AutoFormatDisplayName = true, Description = "The color to use when logging information entries to the console.", CategorySequenceId = 7)]
+        public ConsoleColor ConsoleInformationLogEntriesColor { get; set; }
+
+        /// <summary>
+        /// The color to use when logging error entries to the console.
+        /// </summary>
+        [NKitSettingInfo("Logging", AutoFormatDisplayName = true, Description = "The color to use when logging error entries to the console.", CategorySequenceId = 7)]
+        public ConsoleColor ConsoleErrorLogEntriesColor { get; set; }
+
+        /// <summary>
+        /// The color to use when logging warning entries to the console.
+        /// </summary>
+        [NKitSettingInfo("Logging", AutoFormatDisplayName = true, Description = "The color to use when logging warning entries to the console.", CategorySequenceId = 7)]
+        public ConsoleColor ConsoleWarningLogEntriesColor { get; set; }
+
+        /// <summary>
+        /// The color to use when logging critical entries to the console.
+        /// </summary>
+        [NKitSettingInfo("Logging", AutoFormatDisplayName = true, Description = "The color to use when logging critical entries to the console.", CategorySequenceId = 7)]
+        public ConsoleColor ConsoleCriticalLogEntriesColor { get; set; }
+
+        /// <summary>
+        /// The color to use when logging debug entries to the console.
+        /// </summary>
+        [NKitSettingInfo("Logging", AutoFormatDisplayName = true, Description = "The color to use when logging debug entries to the console.", CategorySequenceId = 7)]
+        public ConsoleColor ConsoleDebugEntriesLogEntriesColor { get; set; }
 
         #endregion //Properties
 
