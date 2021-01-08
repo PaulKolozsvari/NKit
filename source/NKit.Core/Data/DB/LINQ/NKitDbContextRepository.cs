@@ -35,25 +35,35 @@
         /// <summary>
         /// Creates an entity context with the service provider from which it will get the entity framework DbContext.
         /// </summary>
-        /// <param name="serviceProvider">Service provider to be used for finding the DbContext.</param>
-        /// <param name="databaseSettings">Database related settings.</param>
+        /// <param name="serviceProvider">ServiceProvider to be used to get the DbContext of type D</param>
+        /// <param name="dbContextType">The type of the DbContext that will be be created when using this constructor.</param>
+        /// <param name="generalOptions">General settings.</param>
+        /// <param name="dbContextOptions">DbContext related settings.</param>
+        /// <param name="loggingOptions">Logging related settings.</param>
         public NKitDbContextRepository(
             IServiceProvider serviceProvider,
             Type dbContextType,
-            IOptions<NKitDbContextRepositorySettings> databaseOptions,
-            IOptions<NKitLoggingSettings> loggingOptions) : base(serviceProvider, dbContextType, databaseOptions, loggingOptions)
+            IOptions<NKitGeneralSettings> generalOptions,
+            IOptions<NKitDbContextRepositorySettings> dbContextOptions,
+            IOptions<NKitLoggingSettings> loggingOptions) : base(serviceProvider, dbContextType, generalOptions, dbContextOptions, loggingOptions)
         {
-            Initialize(databaseOptions.Value);
+            Initialize(dbContextOptions.Value);
         }
 
         /// <summary>
         /// Creates an entity context using the specified entity framework DbContext.
         /// </summary>
-        /// <param name="db">The DbContext to use for running operations against the database.</param>
-        /// <param name="databaseOptions">Database related settings.</param>
-        public NKitDbContextRepository(DbContext db, IOptions<NKitDbContextRepositorySettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions) : base(db, databaseOptions, loggingOptions)
+        /// <param name="db">The DbContext to use for running operations for the underlying database.</param>
+        /// <param name="generalOptions">General settings.</param>
+        /// <param name="dbContextOptions">DbContext related settings.</param>
+        /// <param name="loggingOptions">Logging related settings.</param>
+        public NKitDbContextRepository(
+            DbContext db,
+            IOptions<NKitGeneralSettings> generalOptions,
+            IOptions<NKitDbContextRepositorySettings> dbContextOptions, 
+            IOptions<NKitLoggingSettings> loggingOptions) : base(db, generalOptions, dbContextOptions, loggingOptions)
         {
-            Initialize(databaseOptions.Value);
+            Initialize(dbContextOptions.Value);
         }
 
         private void Initialize(NKitDbContextRepositorySettings databaseSettings)

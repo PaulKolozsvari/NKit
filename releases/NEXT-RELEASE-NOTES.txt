@@ -33,4 +33,13 @@
 *   Renamed some of the settings classes to match the classes that they target i.e. NKitWebApiControllerSettings for the NKitWebApiController etc.
 *   Implementing configurable log requests and responses settings in the NKitWebApiControllerSettings.
 
+*   Made the NKitHttpExceptionHandlerMiddleware have configurable settings related to emails i.e. to send email on exception or not and whether or not to append the hostname to the email.
+*   Made the fields and methods in the EmailClient in the standard NKit protected instead of private to allow a custom implementation of this EmailClient to be implemented in the NKit Core
+    library by inheriting from the EmailClient in the standard NKit.
+*   Removed the NKitEmailService which created and held an instance of EmailClient. Replaced it with NKitEmailClient which inherits from EmailClient and overrides the LogEmailNotification
+    method which logs to the .NET Core logger instead of the custom GOC.Instance.Logger which does not work in .NET Core.
+*   Implemented logging of requests and responses in the NKitWebApiController to the database table NKitLogEntry.
+*   Implemented methods on all the NKitSettings classes to be able to get the settings without providing a IConfiguration instance to the GetSettings method. It then reads the configuration based on the current environment's appsettings.json file.
+*   Added validation to the UpdateNKitDatabase extension method to throw an appropriate exception if the NKitNKitDbContextRepositorySettings have been set in the appsettings.json method.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.

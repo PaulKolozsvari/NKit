@@ -12,7 +12,7 @@
 
     #endregion //Using Directives
 
-    public class NKitEmailServiceSettings : NKitSettings
+    public class NKitEmailCllientSettings : NKitSettings
     {
         #region Properties
 
@@ -107,19 +107,7 @@
         public string ExceptionEmailSubject { get; set; }
 
         /// <summary>
-        /// The subject to display on emails sent out due to exceptions handled by the Exception Handler.
-        /// </summary>
-        [NKitSettingInfo("Email", AutoFormatDisplayName = true, Description = "Whether or not to send emails on exceptions handled by the Exception Handler.", CategorySequenceId = 14)]
-        public bool SendEmailOnException { get; set; }
-
-        /// <summary>
-        /// Whether or not add a line to every exception email sent out that includes the hostname of the machine running this software and thereby initiating the email.
-        /// </summary>
-        [NKitSettingInfo("Email", AutoFormatDisplayName = true, Description = "Whether or not add a line to every exception email sent out that includes the hostname of the machine running this software and thereby initiating the email.", CategorySequenceId = 15)]
-        public bool AppendHostNameToExceptionEmails { get; set; }
-
-        /// <summary>
-        /// Whether or not activity related to the sending of emails.
+        /// Whether or not the sending of emails is logged.
         /// </summary>
         [NKitSettingInfo("Email", AutoFormatDisplayName = true, Description = "Whether or not to log activity related to the sending of emails.", CategorySequenceId = 16)]
         public bool EmailLoggingEnabled { get; set; }
@@ -141,21 +129,31 @@
         #region Methods
 
         /// <summary>
+        /// Reads the configuration section from the appsettings.json file and deserializes it to the specified Settings type.
+        /// The Configuration object is created read from based on the appsettings.json. The appsettings.json file name is determined by reading the ASPNETCORE_ENVIRONMENT variable i.e. appsettings.{environment}.json or appsettings.json when the environment variable is not set.
+        /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
+        /// </summary>
+        public static NKitEmailCllientSettings GetSettings()
+        {
+            return GetSettings<NKitEmailCllientSettings>();
+        }
+
+        /// <summary>
         /// Reads the NKitEmailSettings configuration section from the appsettings.json file and deserializes to an instance of NKitEmailSettings.
         /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>
-        public static NKitEmailServiceSettings GetSettings(IConfiguration configuration)
+        public static NKitEmailCllientSettings GetSettings(IConfiguration configuration)
         {
-            return GetSettings<NKitEmailServiceSettings>(configuration);
+            return GetSettings<NKitEmailCllientSettings>(configuration);
         }
 
         /// <summary>
         /// Register Configuration from the appsettings.json which will be made available as IOptions to all services.
         /// </summary>
         /// <param name="services"></param>
-        public static NKitEmailServiceSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
+        public static NKitEmailCllientSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
         {
-            return RegisterConfiguration<NKitEmailServiceSettings>(configuration, services);
+            return RegisterConfiguration<NKitEmailCllientSettings>(configuration, services);
         }
 
         #endregion //Methods

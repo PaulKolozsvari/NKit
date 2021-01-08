@@ -41,7 +41,7 @@
             IHttpContextAccessor httpContextAccessor, 
             IOptions<NKitWebApiControllerSettings> webApiOptions,
             IOptions<NKitDbContextRepositorySettings> databaseOptions,
-            IOptions<NKitEmailServiceSettings> emailOptions,
+            IOptions<NKitEmailCllientSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
             ILogger logger)
         {
@@ -92,50 +92,60 @@
 
         protected NKitWebApiControllerSettings _webApiSettings;
         protected NKitDbContextRepositorySettings _databaseSettings;
-        protected NKitEmailServiceSettings _emailSettings;
+        protected NKitEmailCllientSettings _emailSettings;
         protected NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields
 
         #region Methods
 
-        protected void LogRequest(string requestName, string requestMessage)
+        protected void LogRequest(string actionName, string requestMessage)
         {
-            if (!_webApiSettings.LogRequests)
+            if (!_webApiSettings.LogRequests && !_webApiSettings.LogRequestsInDatabaseNKitLogEntry)
             {
                 return;
             }
-            StringBuilder logMessage = new StringBuilder();
-            logMessage.AppendLine($"Request Name: {requestName}");
+            StringBuilder logMessageBuilder = new StringBuilder();
+            logMessageBuilder.AppendLine($"Request Name: {actionName}");
             if (!string.IsNullOrEmpty(requestMessage))
             {
-                logMessage.AppendLine($"Request Message:");
-                logMessage.AppendLine(requestMessage);
+                logMessageBuilder.AppendLine($"Request Message:");
+                logMessageBuilder.AppendLine(requestMessage);
             }
-            AppendStatsToLogMessage(logMessage);
-            if (_logger != null)
+            AppendStatsToLogMessage(logMessageBuilder);
+            string logMessage = logMessageBuilder.ToString();
+            if (_logger != null && _webApiSettings.LogRequests)
             {
-                _logger.LogInformation(logMessage.ToString());
+                _logger.LogInformation(logMessage);
+            }
+            if (_context != null && _webApiSettings.LogRequestsInDatabaseNKitLogEntry)
+            {
+                _context.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(27, "Request"));
             }
         }
 
-        protected void LogResponse(string requestName, string responseMessage)
+        protected void LogResponse(string actionName, string responseMessage)
         {
-            if (!_webApiSettings.LogResponses)
+            if (!_webApiSettings.LogResponses && !_webApiSettings.LogResponsesInDatabaseNKitLogEntry)
             {
                 return;
             }
-            StringBuilder logMessage = new StringBuilder();
-            logMessage.AppendLine($"Response Message: {requestName}");
+            StringBuilder logMessageBuilder = new StringBuilder();
+            logMessageBuilder.AppendLine($"Response Message: {actionName}");
             if (!string.IsNullOrEmpty(responseMessage))
             {
-                logMessage.AppendLine($"Request Message:");
-                logMessage.AppendLine(responseMessage);
+                logMessageBuilder.AppendLine($"Request Message:");
+                logMessageBuilder.AppendLine(responseMessage);
             }
-            AppendStatsToLogMessage(logMessage);
-            if (_logger != null)
+            AppendStatsToLogMessage(logMessageBuilder);
+            string logMessage = logMessageBuilder.ToString();
+            if (_logger != null && _webApiSettings.LogResponses)
             {
-                _logger.LogInformation(logMessage.ToString());
+                _logger.LogInformation(logMessage);
+            }
+            if (_context != null && _webApiSettings.LogResponsesInDatabaseNKitLogEntry)
+            {
+                _context.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(28, "Response"));
             }
         }
 

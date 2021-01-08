@@ -9,7 +9,6 @@
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.EventLog;
-    using NKit.Core.Utilities;
     using NKit.Extensions;
     using NKit.Utilities;
     using NKit.Utilities.SettingsFile.Default;
@@ -20,16 +19,22 @@
     {
         #region Methods
 
+        /// <summary>
+        /// Configures the logging providers based on the NKitLoggingSettings in the appsettings.xml file.
+        /// For more information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-5.0
+        /// Logging Levels: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.loglevel?view=dotnet-plat-ext-5.0
+        /// </summary>
+        /// <param name="hostBuilder"></param>
+        /// <returns></returns>
         public static IHostBuilder ConfigureNKitLogging(this IHostBuilder hostBuilder)
         {
-            string appSettingsFileName = NKitInformation.GetAspNetCoreEnvironmentAppSettingsFileName();
-            IConfigurationRoot configurationBuilder = new ConfigurationBuilder().AddJsonFile(appSettingsFileName).Build();
-            NKitLoggingSettings loggingSettings = NKitLoggingSettings.GetSettings(configurationBuilder);
+            NKitLoggingSettings loggingSettings = NKitLoggingSettings.GetSettings();
             hostBuilder.ConfigureLogging(loggingBuilder =>
             {
                 loggingBuilder.ClearProviders();
                 loggingBuilder.AddDebug();
                 loggingBuilder.AddEventSourceLogger();
+                loggingBuilder.SetMinimumLevel(loggingSettings.MinimumLogLevel); //https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.loglevel?view=dotnet-plat-ext-5.0
                 if (loggingSettings.LogToConsole)
                 {
                     loggingBuilder.AddConsole();

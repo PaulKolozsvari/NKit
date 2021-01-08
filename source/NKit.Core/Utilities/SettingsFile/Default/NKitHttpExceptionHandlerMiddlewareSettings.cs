@@ -46,9 +46,31 @@
         [NKitSettingInfo("HTTP Exception Handler Middleware", AutoFormatDisplayName = true, Description = "Whether or to to include the stack trace in the NKitLogEntry table when an exception is logged to the database.", CategorySequenceId = 4)]
         public bool IncludeExceptionStackTraceInDatabaseNKitLogEntry { get; set; }
 
+        /// <summary>
+        /// Whether or not to exception in an email to the default email recipients list specified in the NKitEmailServiceSettings.
+        /// </summary>
+        [NKitSettingInfo("Email", AutoFormatDisplayName = true, Description = "Whether or not to send emails on exceptions handled by the Exception Handler.", CategorySequenceId = 5)]
+        public bool SendEmailOnException { get; set; }
+
+        /// <summary>
+        /// Whether or not add a line to every exception email sent out that includes the hostname of the machine running this software and thereby initiating the email.
+        /// </summary>
+        [NKitSettingInfo("Email", AutoFormatDisplayName = true, Description = "Whether or not add a line to every exception email sent out that includes the hostname of the machine running this software and thereby initiating the email.", CategorySequenceId = 6)]
+        public bool AppendHostNameToExceptionEmails { get; set; }
+
         #endregion //Properties
 
         #region Methods
+
+        /// <summary>
+        /// Reads the configuration section from the appsettings.json file and deserializes it to the specified Settings type.
+        /// The Configuration object is created read from based on the appsettings.json. The appsettings.json file name is determined by reading the ASPNETCORE_ENVIRONMENT variable i.e. appsettings.{environment}.json or appsettings.json when the environment variable is not set.
+        /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
+        /// </summary>
+        public static NKitHttpExceptionHandlerMiddlewareSettings GetSettings()
+        {
+            return GetSettings<NKitHttpExceptionHandlerMiddlewareSettings>();
+        }
 
         /// <summary>
         /// Reads the NKitHttpExceptionHandlerMiddlewareSettings configuration section from the appsettings.json file and deserializes to an instance of NKitHttpExceptionHandlerMiddlewareSettings.

@@ -40,9 +40,31 @@
         [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log reponses from the NKitWebApiController in the logger.", CategorySequenceId = 3)]
         public bool LogResponses { get; set; }
 
+        /// <summary>
+        /// Whether or not the log requests to the database table NKitLogEntry.
+        /// </summary>
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log requests to the database table NKitLogEntry.", CategorySequenceId = 4)]
+        public bool LogRequestsInDatabaseNKitLogEntry { get; set; }
+
+        /// <summary>
+        /// Whether or not the log responses to the database table NKitLogEntry.
+        /// </summary>
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log responses from to the database table NKitLogEntry.", CategorySequenceId = 5)]
+        public bool LogResponsesInDatabaseNKitLogEntry { get; set; }
+
         #endregion //Properties
 
         #region Methods
+
+        /// <summary>
+        /// Reads the configuration section from the appsettings.json file and deserializes it to the specified Settings type.
+        /// The Configuration object is created read from based on the appsettings.json. The appsettings.json file name is determined by reading the ASPNETCORE_ENVIRONMENT variable i.e. appsettings.{environment}.json or appsettings.json when the environment variable is not set.
+        /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
+        /// </summary>
+        public static NKitWebApiControllerSettings GetSettings()
+        {
+            return GetSettings<NKitWebApiControllerSettings>();
+        }
 
         /// <summary>
         /// Reads the NKitWebApiSettings configuration section from the appsettings.json file and deserializes to an instance of NKitWebApiSettings.

@@ -22,12 +22,8 @@
 
         public static string GetAspNetCoreEnvironmentAppSettingsFileName()
         {
-            if (IsApNetCoreProductionEnvironment())
-            {
-                return $"appsettings.json";
-            }
             string environment = GetAspNetCoreCurrentEnvironmentName();
-            return $"appsettings.{environment}.json";
+            return string.IsNullOrEmpty(environment) ? $"appsettings.json" : $"appsettings.{environment}.json";
         }
 
         public static string GetAspNetCoreCurrentEnvironmentName()

@@ -37,33 +37,53 @@
         /// Creates a funnel context using the specified servicce provider from which it will get the entity framework DbContext.
         /// </summary>
         /// <param name="serviceProvider">ServiceProvider to be used to get the DbContext of type D</param>
-        /// <param name="databaseSettings">Database related settings.</param>
-        public NKitDbContextRepositoryBase(IServiceProvider serviceProvider, Type dbContextType, IOptions<NKitDbContextRepositorySettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions)
+        /// <param name="dbContextType">The type of the DbContext that will be be created when using this constructor.</param>
+        /// <param name="generalOptions">General settings.</param>
+        /// <param name="dbContextOptions">DbContext related settings.</param>
+        /// <param name="loggingOptions">Logging related settings.</param>
+        public NKitDbContextRepositoryBase(
+            IServiceProvider serviceProvider, 
+            Type dbContextType,
+            IOptions<NKitGeneralSettings> generalOptions,
+            IOptions<NKitDbContextRepositorySettings> dbContextOptions, 
+            IOptions<NKitLoggingSettings> loggingOptions)
         {
             DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(NKitDbContextRepositoryBase));
             DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitDbContextRepositoryBase));
-            _databaseSettings = databaseOptions.Value;
+            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitDbContextRepositoryBase));
+            _generalSettings = generalOptions.Value;
+            _dbContextSettings = dbContextOptions.Value;
             _loggingSettings = loggingOptions.Value;
             _serviceProvider = serviceProvider;
             _dbContextType = dbContextType;
-            _databaseSettings = databaseOptions.Value;
+            _dbContextSettings = dbContextOptions.Value;
         }
 
         /// <summary>
         /// Creates a funnel context using the specified entity framework DbContext.
         /// </summary>
         /// <param name="db">The DbContext to use for running operations for the underlying database.</param>
-        /// <param name="databaseSettings">Database related settings.</param>
-        public NKitDbContextRepositoryBase(DbContext db, IOptions<NKitDbContextRepositorySettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions)
+        /// <param name="generalOptions">General settings.</param>
+        /// <param name="dbContextOptions">DbContext related settings.</param>
+        /// <param name="loggingOptions">Logging related settings.</param>
+        public NKitDbContextRepositoryBase(
+            DbContext db,
+            IOptions<NKitGeneralSettings> generalOptions,
+            IOptions<NKitDbContextRepositorySettings> dbContextOptions, 
+            IOptions<NKitLoggingSettings> loggingOptions)
         {
             DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitDbContextRepositoryBase));
-            _databaseSettings = databaseOptions.Value;
+            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitDbContextRepositoryBase));
+            _generalSettings = generalOptions.Value;
+            _dbContextSettings = dbContextOptions.Value;
             _loggingSettings = loggingOptions.Value;
             _db = db;
-            _db.Database.SetConnectionString(_databaseSettings.DatabaseConnectionString);
-            _db.Database.SetCommandTimeout(_databaseSettings.DatabaseCommandTimeout);
+            _db.Database.SetConnectionString(_dbContextSettings.DatabaseConnectionString);
+            _db.Database.SetCommandTimeout(_dbContextSettings.DatabaseCommandTimeout);
         }
 
         #endregion //Constructors
@@ -73,7 +93,8 @@
         protected IServiceProvider _serviceProvider;
         protected Type _dbContextType;
         protected DbContext _db;
-        protected NKitDbContextRepositorySettings _databaseSettings;
+        protected NKitGeneralSettings _generalSettings;
+        protected NKitDbContextRepositorySettings _dbContextSettings;
         protected NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields
@@ -1232,7 +1253,7 @@
         /// A sql query is run against the database first to check that the table exists in the database before trying to insert a log entry to it.
         /// To ensure that the table exists the NKitLogEntry model needs to registered by underlying DbContext as a DbSet in the application using the NKit.
         /// </summary>
-        public NKitLogEntry LogExceptionToNKitLogEntry(Exception ex, Nullable<EventId> eventId, bool includeExceptionDetailsInErrorMessage)
+        public virtual NKitLogEntry LogExceptionToNKitLogEntry(Exception ex, Nullable<EventId> eventId, bool includeExceptionDetailsInErrorMessage)
         {
             if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlServerTableExists(nameof(NKitLogEntry)))
             {
@@ -1255,7 +1276,29 @@
             return logEntry;
         }
 
-        public bool SqlServerTableExists(string tableName)
+        public virtual NKitLogEntry LogWebActionActivityToNKitLogEntry(string className, string actionName, string message, Nullable<EventId> eventId)
+        {
+            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlServerTableExists(nameof(NKitLogEntry)))
+            {
+                return null;
+            }
+            NKitLogEntry logEntry = new NKitLogEntry()
+            {
+                NKitLogEntryId = Guid.NewGuid(),
+                Message = message,
+                Source = _generalSettings.ApplicationName,
+                ClassName = className,
+                FunctionName = "Request",
+                StackTrace = null,
+                EventId = eventId.HasValue ? eventId.Value.Id : 0,
+                EventName = eventId.HasValue ? eventId.Value.Name : null,
+                DateCreated = DateTime.Now
+            };
+            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId, false);
+            return logEntry;
+        }
+
+        public virtual bool SqlServerTableExists(string tableName)
         {
             //string sqlQuery = $"SELECT COUNT(*) as Count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
             //using (DbConnection conn = DB.Database.GetDbConnection())

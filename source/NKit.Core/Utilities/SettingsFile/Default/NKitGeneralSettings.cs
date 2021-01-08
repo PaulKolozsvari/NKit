@@ -26,6 +26,16 @@
         #region Methods
 
         /// <summary>
+        /// Reads the configuration section from the appsettings.json file and deserializes it to the specified Settings type.
+        /// The Configuration object is created read from based on the appsettings.json. The appsettings.json file name is determined by reading the ASPNETCORE_ENVIRONMENT variable i.e. appsettings.{environment}.json or appsettings.json when the environment variable is not set.
+        /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
+        /// </summary>
+        public static NKitGeneralSettings GetSettings()
+        {
+            return GetSettings<NKitGeneralSettings>();
+        }
+
+        /// <summary>
         /// Reads the NKitDatabaseSettings configuration section from the appsettings.json file and deserializes to an instance of NKitDatabaseSettings.
         /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>

@@ -87,25 +87,25 @@
 
         #region Fields
 
-        private bool _emailNotificationsEnabled;
-        private bool _throwEmailFailExceptions;
+        protected bool _emailNotificationsEnabled;
+        protected bool _throwEmailFailExceptions;
 
-        private EmailProvider _emailProvider;
-        private string _exchangeSmtpServer;
-        private string _exchangeSmtpUserName;
-        private string _exchangeSmtpPassword;
-        private int _exchangeSmtpPort;
-        private bool _exchangeSmtpEnableSsl;
-        private string _gmailSmtpServer;
-        private string _gmailSmtpUserName;
-        private string _gmailSmtpPassword;
-        private int _gmailSmtpPort;
-        private string _senderEmailAddress;
-        private string _senderDisplayName;
-        private string _exceptionEmailSubject;
-        private bool _emailLoggingEnabled;
-        private bool _includeDefaultEmailRecipients;
-        private List<EmailNotificationRecipient> _defaultEmailRecipients;
+        protected EmailProvider _emailProvider;
+        protected string _exchangeSmtpServer;
+        protected string _exchangeSmtpUserName;
+        protected string _exchangeSmtpPassword;
+        protected int _exchangeSmtpPort;
+        protected bool _exchangeSmtpEnableSsl;
+        protected string _gmailSmtpServer;
+        protected string _gmailSmtpUserName;
+        protected string _gmailSmtpPassword;
+        protected int _gmailSmtpPort;
+        protected string _senderEmailAddress;
+        protected string _senderDisplayName;
+        protected string _exceptionEmailSubject;
+        protected bool _emailLoggingEnabled;
+        protected bool _includeDefaultEmailRecipients;
+        protected List<EmailNotificationRecipient> _defaultEmailRecipients;
 
         #endregion //Fields
 
@@ -449,13 +449,8 @@
             return SendEmail(EmailCategory.Error, _exceptionEmailSubject, exceptionMessage, null, false, emailNotificationRecipients, null, out errorMessage, out emailLogMessageText, appendHostNameToEmailBody);
         }
 
-        private bool LogEmailNotification(MailMessage email, string subject, out string logMessageText)
+        protected virtual string GetEmailNotificationLogMessage(MailMessage email, string subject)
         {
-            if (!_emailLoggingEnabled)
-            {
-                logMessageText = null;
-                return false;
-            }
             StringBuilder logMessage = new StringBuilder();
             logMessage.AppendLine("Email notification Sent");
             logMessage.AppendLine();
@@ -473,12 +468,22 @@
             logMessage.AppendLine();
             logMessage.AppendLine("BCC:");
             email.Bcc.ToList().ForEach(p => logMessage.AppendLine(p.Address));
-            logMessageText = logMessage.ToString();
-            GOC.Instance.Logger.LogMessage(new LogMessage(logMessageText, LogMessageType.Information, LoggingLevel.Maximum));
+            return logMessage.ToString();
+        }
+
+        protected virtual bool LogEmailNotification(MailMessage email, string subject, out string logMessage)
+        {
+            if (!_emailLoggingEnabled)
+            {
+                logMessage = null;
+                return false;
+            }
+            logMessage = GetEmailNotificationLogMessage(email, subject);
+            GOC.Instance.Logger.LogMessage(new LogMessage(logMessage, LogMessageType.Information, LoggingLevel.Maximum));
             return true;
         }
 
-        private string GetEmailRecipientsCsv(MailMessage email)
+        protected virtual string GetEmailRecipientsCsv(MailMessage email)
         {
             StringBuilder result = new StringBuilder();
             foreach (MailAddress a in email.To.ToList())
