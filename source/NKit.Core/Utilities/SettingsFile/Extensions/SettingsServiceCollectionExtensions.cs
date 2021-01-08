@@ -70,6 +70,7 @@
         /// <param name="configuration">The IConfiguration passed into the ConfigureServices method in the Startup class.</param>
         /// <param name="generalSettings">Returns the General settings that have been registered.</param>
         /// <param name="webApiSettings">Returns the Web API settings that have been registered.</param>
+        /// <param name="httpExceptionHandlerMiddlewareSettings">Returns the HTTP Exception Handler Middler settings that have been registered.</param>
         /// <param name="webApiClientSettings">Returns the Web API Client settings that have been registered.</param>
         /// <param name="databaseSettings">Returns the Database settings that have been registered.</param>
         /// <param name="loggingSettings">Returns the Logging settings that have been registered.</param>
@@ -79,17 +80,19 @@
             this IServiceCollection services,
             IConfiguration configuration,
             out NKitGeneralSettings generalSettings,
-            out NKitWebApiSettings webApiSettings,
+            out NKitWebApiControllerSettings webApiSettings,
+            out NKitHttpExceptionHandlerMiddlewareSettings httpExceptionHandlerMiddlewareSettings,
             out NKitWebApiClientSettings webApiClientSettings,
-            out NKitDatabaseSettings databaseSettings,
+            out NKitDbContextRepositorySettings databaseSettings,
             out NKitLoggingSettings loggingSettings,
-            out NKitEmailSettings emailSettings,
+            out NKitEmailServiceSettings emailSettings,
             string loggerCategoryName)
         {
             ILogger logger = !string.IsNullOrEmpty(loggerCategoryName) ? CreateLogger(loggerCategoryName, NKitLoggingSettings.GetSettings(configuration)) : null;
             RegisterDefaultNKitSettings(services, configuration, 
                 out generalSettings,
                 out webApiSettings,
+                out httpExceptionHandlerMiddlewareSettings,
                 out webApiClientSettings,
                 out databaseSettings,
                 out loggingSettings,
@@ -104,6 +107,7 @@
         /// <param name="configuration">The IConfiguration passed into the ConfigureServices method in the Startup class.</param>
         /// <param name="generalSettings">Returns the General settings that have been registered.</param>
         /// <param name="webApiSettings">Returns the Web API settings that have been registered.</param>
+        /// <param name="httpExceptionHandlerMiddlewareSettings">Returns the HTTP Exception Handler Middler settings that have been registered.</param>
         /// <param name="webApiClientSettings">Returns the Web API Client settings that have been registered.</param>
         /// <param name="databaseSettings">Returns the Database settings that have been registered.</param>
         /// <param name="loggingSettings">Returns the Logging settings that have been registered.</param>
@@ -113,19 +117,21 @@
             this IServiceCollection services,
             IConfiguration configuration,
             out NKitGeneralSettings generalSettings,
-            out NKitWebApiSettings webApiSettings,
+            out NKitWebApiControllerSettings webApiSettings,
+            out NKitHttpExceptionHandlerMiddlewareSettings httpExceptionHandlerMiddlewareSettings,
             out NKitWebApiClientSettings webApiClientSettings,
-            out NKitDatabaseSettings databaseSettings,
+            out NKitDbContextRepositorySettings databaseSettings,
             out NKitLoggingSettings loggingSettings,
-            out NKitEmailSettings emailSettings,
+            out NKitEmailServiceSettings emailSettings,
             ILogger logger)
         {
             generalSettings = NKitGeneralSettings.RegisterConfiguration(configuration, services);
-            webApiSettings = NKitWebApiSettings.RegisterConfiguration(configuration, services);
+            webApiSettings = NKitWebApiControllerSettings.RegisterConfiguration(configuration, services);
+            httpExceptionHandlerMiddlewareSettings = NKitHttpExceptionHandlerMiddlewareSettings.RegisterConfiguration(configuration, services);
             webApiClientSettings = NKitWebApiClientSettings.RegisterConfiguration(configuration, services);
-            databaseSettings = NKitDatabaseSettings.RegisterConfiguration(configuration, services);
+            databaseSettings = NKitDbContextRepositorySettings.RegisterConfiguration(configuration, services);
             loggingSettings = NKitLoggingSettings.RegisterConfiguration(configuration, services);
-            emailSettings = NKitEmailSettings.RegisterConfiguration(configuration, services);
+            emailSettings = NKitEmailServiceSettings.RegisterConfiguration(configuration, services);
             if (logger == null)
             {
                 return;
@@ -138,11 +144,15 @@
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(generalSettings));
             logMessage.AppendLine();
 
-            logMessage.AppendLine($"*** {nameof(NKitWebApiSettings)} ***");
+            logMessage.AppendLine($"*** {nameof(NKitWebApiControllerSettings)} ***");
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(webApiSettings));
             logMessage.AppendLine();
 
-            logMessage.AppendLine($"*** {nameof(NKitDatabaseSettings)} ***");
+            logMessage.AppendLine($"*** {nameof(NKitHttpExceptionHandlerMiddlewareSettings)} ***");
+            logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(httpExceptionHandlerMiddlewareSettings));
+            logMessage.AppendLine();
+
+            logMessage.AppendLine($"*** {nameof(NKitDbContextRepositorySettings)} ***");
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(databaseSettings));
             logMessage.AppendLine();
 
@@ -150,7 +160,7 @@
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(loggingSettings));
             logMessage.AppendLine();
 
-            logMessage.AppendLine($"*** {nameof(NKitEmailSettings)} ***");
+            logMessage.AppendLine($"*** {nameof(NKitEmailServiceSettings)} ***");
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(emailSettings));
             logMessage.AppendLine();
 
@@ -221,10 +231,10 @@
         {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(SettingsServiceCollectionExtensions));
             DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(SettingsServiceCollectionExtensions));
-            NKitWebApiSettings webApiSettings = NKitWebApiSettings.GetSettings(configuration);
-            NKitDatabaseSettings databaseSettings = NKitDatabaseSettings.GetSettings(configuration);
+            NKitWebApiControllerSettings webApiSettings = NKitWebApiControllerSettings.GetSettings(configuration);
+            NKitDbContextRepositorySettings databaseSettings = NKitDbContextRepositorySettings.GetSettings(configuration);
             NKitLoggingSettings loggingSettings = NKitLoggingSettings.GetSettings(configuration);
-            NKitEmailSettings emailSettings = NKitEmailSettings.GetSettings(configuration);
+            NKitEmailServiceSettings emailSettings = NKitEmailServiceSettings.GetSettings(configuration);
             NKitWebApiClientSettings webApiClientSettings = NKitWebApiClientSettings.GetSettings(configuration);
             if (registerEmailService)
             {

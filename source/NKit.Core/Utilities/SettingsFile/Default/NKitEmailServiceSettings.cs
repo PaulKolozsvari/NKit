@@ -12,7 +12,7 @@
 
     #endregion //Using Directives
 
-    public class NKitEmailSettings : NKitSettings
+    public class NKitEmailServiceSettings : NKitSettings
     {
         #region Properties
 
@@ -144,18 +144,18 @@
         /// Reads the NKitEmailSettings configuration section from the appsettings.json file and deserializes to an instance of NKitEmailSettings.
         /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>
-        public static NKitEmailSettings GetSettings(IConfiguration configuration)
+        public static NKitEmailServiceSettings GetSettings(IConfiguration configuration)
         {
-            return GetSettings<NKitEmailSettings>(configuration);
+            return GetSettings<NKitEmailServiceSettings>(configuration);
         }
 
         /// <summary>
         /// Register Configuration from the appsettings.json which will be made available as IOptions to all services.
         /// </summary>
         /// <param name="services"></param>
-        public static NKitEmailSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
+        public static NKitEmailServiceSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
         {
-            return RegisterConfiguration<NKitEmailSettings>(configuration, services);
+            return RegisterConfiguration<NKitEmailServiceSettings>(configuration, services);
         }
 
         #endregion //Methods

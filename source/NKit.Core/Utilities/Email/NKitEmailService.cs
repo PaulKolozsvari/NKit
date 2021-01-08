@@ -16,7 +16,7 @@
     {
         #region Constructors
 
-        public NKitEmailService(IOptions<NKitEmailSettings> emailOptions)
+        public NKitEmailService(IOptions<NKitEmailServiceSettings> emailOptions)
         {
             DataValidator.ValidateObjectNotNull(emailOptions, nameof(emailOptions), nameof(NKitEmailService));
             _emailClient = GetEmailClient(emailOptions.Value);
@@ -41,7 +41,7 @@
 
         #region Methods
 
-        protected EmailClient GetEmailClient(NKitEmailSettings emailSettings)
+        protected EmailClient GetEmailClient(NKitEmailServiceSettings emailSettings)
         {
             return new EmailClient(
                 emailSettings.EmailNotificationsEnabled,

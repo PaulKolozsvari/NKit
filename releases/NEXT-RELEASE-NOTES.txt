@@ -24,8 +24,13 @@
 *   Added EventId and EventName to NKitLogEntry model i.e. database.
 *   Added Console logging settings to make the colors used in the console logger configurable e.g. DardRed for Errors, Red for Critical, Yellow for Warnings, Green for Information, Blue for debug.
 *   Implemented NKitHttpExceptionResponse model to always return this object on exceptions handled by the NKitHttpExceptionHandlerMiddleware based on the content type specified when throwing a NKitHttpStatusCodeException.
+
 *   Implemented serializer type to be configurable for the NKitWebApiController which it will use to serialize and deserialize requests and responses. This is set in the NKitWebApiSettings.
 *   Implemented configurable ResponseContentType for the NKitWebApiController which it sets on responses. This is set in the NKitWebApiSettings.
 *   Implemented method in the MimeContentType to get the content type from the SerializerType.
+
+*   Implemented separate content types and serializer type on the http exception handler middleware and separate middleware settings.
+*   Renamed some of the settings classes to match the classes that they target i.e. NKitWebApiControllerSettings for the NKitWebApiController etc.
+*   Implementing configurable log requests and responses settings in the NKitWebApiControllerSettings.
 
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.

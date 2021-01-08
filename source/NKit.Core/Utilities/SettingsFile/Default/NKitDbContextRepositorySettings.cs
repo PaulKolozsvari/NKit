@@ -12,7 +12,7 @@
 
     #endregion //Using Directives
 
-    public class NKitDatabaseSettings : NKitSettings
+    public class NKitDbContextRepositorySettings : NKitSettings
     {
         #region Properties
 
@@ -78,18 +78,18 @@
         /// Reads the NKitDatabaseSettings configuration section from the appsettings.json file and deserializes to an instance of NKitDatabaseSettings.
         /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>
-        public static NKitDatabaseSettings GetSettings(IConfiguration configuration)
+        public static NKitDbContextRepositorySettings GetSettings(IConfiguration configuration)
         {
-            return GetSettings<NKitDatabaseSettings>(configuration);
+            return GetSettings<NKitDbContextRepositorySettings>(configuration);
         }
 
         /// <summary>
         /// Register Configurations from the appsettings.json which will be made available as IOptions to all services.
         /// </summary>
         /// <param name="services"></param>
-        public static NKitDatabaseSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
+        public static NKitDbContextRepositorySettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
         {
-            return RegisterConfiguration<NKitDatabaseSettings>(configuration, services);
+            return RegisterConfiguration<NKitDbContextRepositorySettings>(configuration, services);
         }
 
         #endregion //Methods

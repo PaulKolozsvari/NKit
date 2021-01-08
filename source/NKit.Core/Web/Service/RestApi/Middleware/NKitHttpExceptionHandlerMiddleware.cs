@@ -60,8 +60,8 @@
         public async Task Invoke(
             HttpContext context,
             D dbContextRepo,
-            IOptions<NKitWebApiSettings> webApiOptions, 
-            IOptions<NKitDatabaseSettings> databaseOptions,
+            IOptions<NKitHttpExceptionHandlerMiddlewareSettings> middlewareSettings, 
+            IOptions<NKitDbContextRepositorySettings> databaseOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
             ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger,
             NKitEmailService emailService)
@@ -72,9 +72,9 @@
             }
             catch (NKitHttpStatusCodeException ex)
             {
-                string plainTextResponse = HandleException(ex, ex.EventId, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
-                NKitHttpExceptionResponse response = new NKitHttpExceptionResponse(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
-                string responseText = response.GetResponseText(plainTextResponse, webApiOptions.Value.SerializerType, webApiOptions.Value.ResponseContentType);
+                HandleException(ex, ex.EventId, context, dbContextRepo, middlewareSettings, databaseOptions, loggingOptions, logger, emailService);
+                NKitHttpExceptionResponse response = new NKitHttpExceptionResponse(ex, middlewareSettings.Value.IncludeStackTraceInExceptionResponse);
+                string responseText = response.GetResponseText(middlewareSettings.Value.SerializerType, middlewareSettings.Value.ResponseContentType);
                 context.Response.Clear();
                 context.Response.StatusCode = (int)ex.StatusCode;
                 context.Response.ContentType = response.ContentType;
@@ -83,10 +83,10 @@
             }
             catch (Exception ex)
             {
-                string plainTextResponse = HandleException(ex, null, context, dbContextRepo, webApiOptions, databaseOptions, loggingOptions, logger, emailService);
+                HandleException(ex, null, context, dbContextRepo, middlewareSettings, databaseOptions, loggingOptions, logger, emailService);
                 int httpStatusCode = (int)HttpStatusCode.InternalServerError;
-                NKitHttpExceptionResponse response = new NKitHttpExceptionResponse(ex, httpStatusCode, null, null, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
-                string responseText = response.GetResponseText(plainTextResponse, webApiOptions.Value.SerializerType, webApiOptions.Value.ResponseContentType);
+                NKitHttpExceptionResponse response = new NKitHttpExceptionResponse(ex, httpStatusCode, null, null, middlewareSettings.Value.IncludeStackTraceInExceptionResponse);
+                string responseText = response.GetResponseText(middlewareSettings.Value.SerializerType, middlewareSettings.Value.ResponseContentType);
                 context.Response.Clear();
                 context.Response.StatusCode = httpStatusCode;
                 context.Response.ContentType = response.ContentType;
@@ -102,13 +102,13 @@
             }
         }
 
-        private string HandleException(
+        private void HandleException(
             Exception ex,
             Nullable<EventId> eventId,
             HttpContext context,
             D dbContextRepo,
-            IOptions<NKitWebApiSettings> webApiOptions,
-            IOptions<NKitDatabaseSettings> databaseOptions,
+            IOptions<NKitHttpExceptionHandlerMiddlewareSettings> middlewareSettings,
+            IOptions<NKitDbContextRepositorySettings> databaseOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
             ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger,
             NKitEmailService emailService)
@@ -118,7 +118,7 @@
                 logger.LogWarning(RESPONSE_STARTED_LOG_ERROR_MESSAGE);
                 throw ex;
             }
-            string message = ExceptionHandler.GetCompleteExceptionMessage(ex, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+            string message = ExceptionHandler.GetCompleteExceptionMessage(ex, middlewareSettings.Value.IncludeExceptionStackTraceInLoggerEntry);
             if (eventId.HasValue)
             {
                 logger.Log(LogLevel.Error, eventId.Value, ex, message);
@@ -127,9 +127,8 @@
             {
                 logger.Log(LogLevel.Error, ex, message);
             }
-            dbContextRepo.LogExceptionToNKitLogEntry(ex, eventId, webApiOptions.Value.IncludeExceptionStackTraceInErrorResponse);
+            dbContextRepo.LogExceptionToNKitLogEntry(ex, eventId, middlewareSettings.Value.IncludeExceptionStackTraceInDatabaseNKitLogEntry);
             emailService.EmailClient.SendExceptionEmailNotification(ex, out string errorMessage, out string emailLogMessageText, true, null);
-            return message;
         }
 
         #endregion //Methods

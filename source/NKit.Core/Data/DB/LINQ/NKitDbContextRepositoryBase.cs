@@ -38,7 +38,7 @@
         /// </summary>
         /// <param name="serviceProvider">ServiceProvider to be used to get the DbContext of type D</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public NKitDbContextRepositoryBase(IServiceProvider serviceProvider, Type dbContextType, IOptions<NKitDatabaseSettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions)
+        public NKitDbContextRepositoryBase(IServiceProvider serviceProvider, Type dbContextType, IOptions<NKitDbContextRepositorySettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions)
         {
             DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(NKitDbContextRepositoryBase));
             DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(NKitDbContextRepositoryBase));
@@ -55,7 +55,7 @@
         /// </summary>
         /// <param name="db">The DbContext to use for running operations for the underlying database.</param>
         /// <param name="databaseSettings">Database related settings.</param>
-        public NKitDbContextRepositoryBase(DbContext db, IOptions<NKitDatabaseSettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions)
+        public NKitDbContextRepositoryBase(DbContext db, IOptions<NKitDbContextRepositorySettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions)
         {
             DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(NKitDbContextRepositoryBase));
             DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitDbContextRepositoryBase));
@@ -73,7 +73,7 @@
         protected IServiceProvider _serviceProvider;
         protected Type _dbContextType;
         protected DbContext _db;
-        protected NKitDatabaseSettings _databaseSettings;
+        protected NKitDbContextRepositorySettings _databaseSettings;
         protected NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields

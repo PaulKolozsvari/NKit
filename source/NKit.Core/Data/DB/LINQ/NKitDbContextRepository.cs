@@ -40,7 +40,7 @@
         public NKitDbContextRepository(
             IServiceProvider serviceProvider,
             Type dbContextType,
-            IOptions<NKitDatabaseSettings> databaseOptions,
+            IOptions<NKitDbContextRepositorySettings> databaseOptions,
             IOptions<NKitLoggingSettings> loggingOptions) : base(serviceProvider, dbContextType, databaseOptions, loggingOptions)
         {
             Initialize(databaseOptions.Value);
@@ -51,12 +51,12 @@
         /// </summary>
         /// <param name="db">The DbContext to use for running operations against the database.</param>
         /// <param name="databaseOptions">Database related settings.</param>
-        public NKitDbContextRepository(DbContext db, IOptions<NKitDatabaseSettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions) : base(db, databaseOptions, loggingOptions)
+        public NKitDbContextRepository(DbContext db, IOptions<NKitDbContextRepositorySettings> databaseOptions, IOptions<NKitLoggingSettings> loggingOptions) : base(db, databaseOptions, loggingOptions)
         {
             Initialize(databaseOptions.Value);
         }
 
-        private void Initialize(NKitDatabaseSettings databaseSettings)
+        private void Initialize(NKitDbContextRepositorySettings databaseSettings)
         {
             DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(NKitDbContextRepository));
             DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(NKitDbContextRepository));

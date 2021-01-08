@@ -89,9 +89,6 @@
         public string InnerExceptionMessage { get; set; }
 
         [Column(TypeName = VARCHAR_MAX)]
-        public string ExceptionStackTrace { get; set; }
-
-        [Column(TypeName = VARCHAR_MAX)]
         public string ExceptionOriginatingClassName { get; set; }
 
         [Column(TypeName = VARCHAR_MAX)]
@@ -111,6 +108,9 @@
         [Column(TypeName = DATE_TIME)]
         public DateTime DateCreated { get; set; }
 
+        [Column(TypeName = VARCHAR_MAX)]
+        public string ExceptionStackTrace { get; set; }
+
         #endregion //Properties
 
         #region Methods
@@ -119,10 +119,9 @@
         /// Based on the ContentType set on this object, it serializes this object using the appropriate Serializer.
         /// Returns JSON for content type application/json
         /// Returns XML for content type application/xml.
-        /// Returns the plainTextResponse back for content type text/plain.
         /// Otherwise if none of the above content types have been specified, it uses the defaultSerializerType to serialize this object and sets the ContentType of this object to the defaultContentType.
         /// </summary>
-        public string GetResponseText(string plainTextResponse, SerializerType defaultSerializerType, string defaultContentType)
+        public string GetResponseText(SerializerType defaultSerializerType, string defaultContentType)
         {
             switch (this.ContentType)
             {
@@ -130,8 +129,6 @@
                     return GOC.Instance.GetSerializer(SerializerType.JSON).SerializeToText(this);
                 case MimeContentType.APPLICATION_XML:
                     return GOC.Instance.GetSerializer(SerializerType.XML).SerializeToText(this);
-                case MimeContentType.TEXT_PLAIN:
-                    return plainTextResponse;
                 default:
                     this.ContentType = defaultContentType;
                     return GOC.Instance.GetSerializer(defaultSerializerType).SerializeToText(this);

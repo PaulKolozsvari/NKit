@@ -39,10 +39,11 @@
         public NKitWebApiController(
             D context,
             IHttpContextAccessor httpContextAccessor, 
-            IOptions<NKitWebApiSettings> webApiOptions,
-            IOptions<NKitDatabaseSettings> databaseOptions,
-            IOptions<NKitEmailSettings> emailOptions,
-            IOptions<NKitLoggingSettings> loggingOptions)
+            IOptions<NKitWebApiControllerSettings> webApiOptions,
+            IOptions<NKitDbContextRepositorySettings> databaseOptions,
+            IOptions<NKitEmailServiceSettings> emailOptions,
+            IOptions<NKitLoggingSettings> loggingOptions,
+            ILogger logger)
         {
             DataValidator.ValidateObjectNotNull(context, nameof(context), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitWebApiController<D>));
@@ -56,31 +57,31 @@
             _databaseSettings = databaseOptions.Value;
             _emailSettings = emailOptions.Value;
             _loggingSettings = loggingOptions.Value;
+            _logger = logger;
         }
 
         #endregion //Constructors
 
         #region Fields
 
-        public event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntities;
-        public event OnAfterGetEntitiesHandlerCore OnAfterGetEntities;
+        protected event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntities;
+        protected event OnAfterGetEntitiesHandlerCore OnAfterGetEntities;
 
-        public event OnBeforeGetEntityByIdHandlerCore OnBeforeGetEntityById;
-        public event OnAfterGetEntityByIdHandlerCore OnAfterGetEntityById;
+        protected event OnBeforeGetEntityByIdHandlerCore OnBeforeGetEntityById;
+        protected event OnAfterGetEntityByIdHandlerCore OnAfterGetEntityById;
 
-        public event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntitiesByField;
-        public event OnAfterGetEntitiesHandlerCore OnAfterGetEntitiesByField;
+        protected event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntitiesByField;
+        protected event OnAfterGetEntitiesHandlerCore OnAfterGetEntitiesByField;
 
-        public event OnBeforePutEntityHandlerCore OnBeforePut;
-        public event OnAfterPutEntityHandlerCore OnAfterPut;
+        protected event OnBeforePutEntityHandlerCore OnBeforePut;
+        protected event OnAfterPutEntityHandlerCore OnAfterPut;
 
-        public event OnBeforePostEntityHandlerCore OnBeforePost;
-        public event OnAfterPostEntityHandlerCore OnAfterPost;
+        protected event OnBeforePostEntityHandlerCore OnBeforePost;
+        protected event OnAfterPostEntityHandlerCore OnAfterPost;
 
-        public event OnBeforeDeleteEntityHandlerCore OnBeforeDelete;
-        public event OnAfterDeleteEntityHandlerCore OnAfterDelete;
+        protected event OnBeforeDeleteEntityHandlerCore OnBeforeDelete;
+        protected event OnAfterDeleteEntityHandlerCore OnAfterDelete;
 
-        protected bool _auditServiceCalls;
         protected Nullable<Guid> _serviceInstanceId;
 
         protected readonly ILogger _logger;
@@ -89,18 +90,18 @@
         protected IHttpContextAccessor _httpContextAccessor;
         protected D _context;
 
-        protected NKitWebApiSettings _webApiSettings;
-        protected NKitDatabaseSettings _databaseSettings;
-        protected NKitEmailSettings _emailSettings;
+        protected NKitWebApiControllerSettings _webApiSettings;
+        protected NKitDbContextRepositorySettings _databaseSettings;
+        protected NKitEmailServiceSettings _emailSettings;
         protected NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields
 
         #region Methods
 
-        protected void AuditRequest(string requestName, string requestMessage)
+        protected void LogRequest(string requestName, string requestMessage)
         {
-            if (!_auditServiceCalls)
+            if (!_webApiSettings.LogRequests)
             {
                 return;
             }
@@ -112,12 +113,15 @@
                 logMessage.AppendLine(requestMessage);
             }
             AppendStatsToLogMessage(logMessage);
-            _logger.LogInformation(logMessage.ToString());
+            if (_logger != null)
+            {
+                _logger.LogInformation(logMessage.ToString());
+            }
         }
 
-        protected void AuditResponse(string requestName, string responseMessage)
+        protected void LogResponse(string requestName, string responseMessage)
         {
-            if (!_auditServiceCalls)
+            if (!_webApiSettings.LogResponses)
             {
                 return;
             }
@@ -129,7 +133,10 @@
                 logMessage.AppendLine(responseMessage);
             }
             AppendStatsToLogMessage(logMessage);
-            _logger.LogInformation(logMessage.ToString());
+            if (_logger != null)
+            {
+                _logger.LogInformation(logMessage.ToString());
+            }
         }
 
         private void AppendStatsToLogMessage(StringBuilder logMessage)
@@ -145,12 +152,12 @@
             logMessage.AppendLine($"Current Thread ID: {Thread.CurrentThread.ManagedThreadId}");
         }
 
-        public string GetServerHostName()
+        protected string GetServerHostName()
         {
             return _httpContextAccessor.HttpContext.Request.Host.Value;
         }
 
-        public string GetCurrentRequestUri()
+        protected string GetCurrentRequestUri()
         {
             //var request = _httpContextAccessor.HttpContext.Request;
             //UriBuilder uriBuilder = new UriBuilder();
@@ -162,17 +169,17 @@
             return _httpContextAccessor.HttpContext.Request.GetDisplayUrl(); //You need to have a using statement to include the GetDisplayUrl extendion method in your file: using Microsoft.AspNetCore.Http.Extensions
         }
 
-        public string GetCurrentRequestMethod()
+        protected string GetCurrentRequestMethod()
         {
             return _httpContextAccessor.HttpContext.Request.Method;
         }
 
-        public string GetAllHeadersFullString()
+        protected string GetAllHeadersFullString()
         {
             return _httpContextAccessor.HttpContext.Request.Headers.ToString();
         }
 
-        public string GetAllHeadersFormatted()
+        protected string GetAllHeadersFormatted()
         {
             StringBuilder result = new StringBuilder();
             foreach (var key in _httpContextAccessor.HttpContext.Request.Headers.Keys)
@@ -182,7 +189,7 @@
             return result.ToString();
         }
 
-        public string GetHeader(string key, bool throwExceptionOnNotFound)
+        protected string GetHeader(string key, bool throwExceptionOnNotFound)
         {
             string result = string.Empty;
             if (_httpContextAccessor.HttpContext.Request != null && _httpContextAccessor.HttpContext.Request.Headers.ContainsKey(key))
@@ -275,7 +282,7 @@
             try
             {
                 string requestName = $"{nameof(GetEntityById)} : Entity Name = {entityName} : Entity ID = {entityId}";
-                AuditRequest(requestName, null);
+                LogRequest(requestName, null);
                 ValidateRequestMethod(HttpVerb.GET);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
@@ -289,7 +296,7 @@
                     OnAfterGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, outputEntity));
                 }
                 string serializedText = GetSerializer().SerializeToText(outputEntity, GetNKitSerializerModelTypes());
-                AuditResponse(requestName, serializedText);
+                LogResponse(requestName, serializedText);
                 Response.ContentType = _webApiSettings.ResponseContentType;
                 return Ok(serializedText);
             }
@@ -308,7 +315,7 @@
             try
             {
                 string requestName = $"{nameof(GetEntities)} : Entity Name = {entityName} : Search by = {searchBy} : Search by value = {searchValueOf}";
-                AuditRequest(requestName, null);
+                LogRequest(requestName, null);
                 ValidateRequestMethod(HttpVerb.GET);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
@@ -324,7 +331,7 @@
                     OnAfterGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _context, entityType, searchBy, searchValueOf, outputEntities));
                 }
                 string serializedText = GetSerializer().SerializeToText(outputEntities, GetNKitSerializerModelTypes());
-                AuditResponse(requestName, serializedText);
+                LogResponse(requestName, serializedText);
                 Response.ContentType = _webApiSettings.ResponseContentType;
                 return Ok(serializedText);
             }
@@ -345,7 +352,7 @@
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
                 object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
-                AuditRequest(requestName, serializedText);
+                LogRequest(requestName, serializedText);
                 if (OnBeforePut != null)
                 {
                     OnBeforePut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
@@ -356,7 +363,7 @@
                     OnAfterPut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
                 }
                 string responseMessage = string.Format("{0} saved successfully.", entityName);
-                AuditResponse(requestName, responseMessage);
+                LogResponse(requestName, responseMessage);
                 return Ok(responseMessage);
             }
             finally
@@ -376,7 +383,7 @@
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
                 object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
-                AuditRequest(requestName, serializedText);
+                LogRequest(requestName, serializedText);
                 if (OnBeforePost != null)
                 {
                     OnBeforePost(this, new NKitRestApiPostEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
@@ -388,7 +395,7 @@
                         entityName, userName, _context, entityType, inputEntity));
                 }
                 string responseMessage = string.Format("{0} saved successfully.", entityName);
-                AuditResponse(requestName, responseMessage);
+                LogResponse(requestName, responseMessage);
                 return Ok(responseMessage);
             }
             finally
@@ -403,7 +410,7 @@
             try
             {
                 string requestName = $"{nameof(DeleteEntity)} : Entity Name = {entityName} : Entity ID = {entityId}";
-                AuditRequest(requestName, null);
+                LogRequest(requestName, null);
                 ValidateRequestMethod(HttpVerb.DELETE);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
@@ -419,7 +426,7 @@
                         entityName, userName, _context, entityType, entityId));
                 }
                 string responseMessage = string.Format("{0} deleted successfully.", entityName);
-                AuditResponse(requestName, responseMessage);
+                LogResponse(requestName, responseMessage);
                 return Ok(responseMessage);
             }
             finally
