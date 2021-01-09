@@ -20,6 +20,11 @@
 
 *	Hosting An ASP.NET Core Web App As A Windows Service In .NET Core 3:
 	-	https://dotnetcoretutorials.com/2019/12/21/hosting-an-asp-net-core-web-app-as-a-windows-service-in-net-core-3/
+	
+	-	Difference between "dotnet build" and "dotnet publish":
+		-	dotnet build: only builds the project files but does not include any referenced packages.
+		-	dotnet publish: builds the project files and includes all of the references packages in the output publish folder.
+		-	https://stackoverflow.com/questions/52336878/dotnet-build-vs-publish-on-azure-devops
 
 	-	Publish app (not self containted i.e. .NET Core will need to be preinstalled on the target machine where the app is installed on):
 		-	dotnet publish -c Release
