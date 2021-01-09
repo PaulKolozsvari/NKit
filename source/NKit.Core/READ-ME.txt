@@ -21,8 +21,23 @@
 *	Hosting An ASP.NET Core Web App As A Windows Service In .NET Core 3:
 	-	https://dotnetcoretutorials.com/2019/12/21/hosting-an-asp-net-core-web-app-as-a-windows-service-in-net-core-3/
 
-	-	Building/Publish self-contained app i.e. with all the .NET Core dependencies etc so you don't have to install .NET on the target machine.
+	-	Publish app (not self containted i.e. .NET Core will need to be preinstalled on the target machine where the app is installed on):
+		-	dotnet publish -c Release
+	
+	-	Publish self-contained app i.e. with all the .NET Core dependencies etc so you don't have to install .NET on the target machine.
 		-	dotnet publish -c Release -r win-x64 --self-contained
+
+	-	Register the Windows Service (from the publlish folder where the app was published):
+		-	sc create MyApplicationWindowsService binPath= myapplication.exe
+
+	-	Start the Windows Service:
+		-	sc start MyApplicationWindowsService
+
+	-	Stop the Windows Service:
+		-	sc stop MyApplicationWindowsService
+
+    -   Uninstall the Windows Service:
+        -   sc delete MyApplicationWindowsService
 
 *	Downgrade errors when building self contained packages with command: dotnet publish -c Release -r win-x64 --self-contained
 	-	https://stackoverflow.com/questions/47712035/what-is-the-right-way-to-fix-error-nu1605-detected-package-downgrade-log4net

@@ -42,4 +42,6 @@
 *   Implemented methods on all the NKitSettings classes to be able to get the settings without providing a IConfiguration instance to the GetSettings method. It then reads the configuration based on the current environment's appsettings.json file.
 *   Added validation to the UpdateNKitDatabase extension method to throw an appropriate exception if the NKitNKitDbContextRepositorySettings have been set in the appsettings.json method.
 
+*   Added template batch files for installing and uninstalling an exe as a windows service.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.
