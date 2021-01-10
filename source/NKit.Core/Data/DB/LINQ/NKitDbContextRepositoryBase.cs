@@ -135,11 +135,10 @@
         /// <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
         /// <param name="entity">The the entity to save.</param>
         /// <param name="entityIdentifier">The value unique identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results i.e. what entities where updated</returns>
-        public virtual List<LinqFunnelChangeResult> Save<E>(E entity, object entityIdentifier, bool saveChildren) where E : class
+        public virtual List<LinqFunnelChangeResult> Save<E>(E entity, object entityIdentifier) where E : class
         {
-            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(typeof(E), entity, entityIdentifier, saveChildren);
+            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(typeof(E), entity, entityIdentifier);
             DB.SaveChanges();
             return result;
         }
@@ -151,11 +150,10 @@
         /// <typeparam name="E">The type of the entity i.e. which table it will be saved to.</typeparam>
         /// <param name="entity">The the entity to save.</param>
         /// <param name="entityIdentifier">The value unique identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results i.e. what entities where updated</returns>
-        public async virtual Task<List<LinqFunnelChangeResult>> SaveAsync<E>(E entity, object entityIdentifier, bool saveChildren) where E : class
+        public async virtual Task<List<LinqFunnelChangeResult>> SaveAsync<E>(E entity, object entityIdentifier) where E : class
         {
-            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(typeof(E), entity, entityIdentifier, saveChildren);
+            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(typeof(E), entity, entityIdentifier);
             await DB.SaveChangesAsync();
             return result;
         }
@@ -168,15 +166,14 @@
         /// <param name="entityType">The Type of entity being inserted.</param>
         /// <param name="entity">The the entity to save.</param>
         /// <param name="entityIdentifier">The value unique identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results i.e. what entities where updated</returns>
-        protected virtual List<LinqFunnelChangeResult> SaveWithoutSavingToDb(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        protected virtual List<LinqFunnelChangeResult> SaveWithoutSavingToDb(Type entityType, object entity, object entityIdentifier)
         {
             PropertyInfo surrogateKey = GetEntitySurrogateKey(entityType);
             bool containsIdentityColumn = IsIdentityColumn(surrogateKey);
             object original = null;
             object surrogateKeyValue = surrogateKey.GetValue(entity, null);
-            original = GetEntityBySurrogateKey(entityType, surrogateKeyValue, saveChildren);
+            original = GetEntityBySurrogateKey(entityType, surrogateKeyValue);
             List<LinqFunnelChangeResult> result = null;
             if (original == null)
             {
@@ -195,7 +192,7 @@
             }
             else
             {
-                result = UpdateOriginalEntity(entityType, original, entity, surrogateKeyValue, entityIdentifier, saveChildren);
+                result = UpdateOriginalEntity(entityType, original, entity, surrogateKeyValue, entityIdentifier);
             }
             return result;
         }
@@ -208,11 +205,10 @@
         /// <param name="entityType">The Type of entity being inserted.</param>
         /// <param name="entity">The the entity to save.</param>
         /// <param name="entityIdentifier">The value unique identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results i.e. what entities where updated</returns>
-        public virtual List<LinqFunnelChangeResult> Save(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        public virtual List<LinqFunnelChangeResult> Save(Type entityType, object entity, object entityIdentifier)
         {
-            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(entityType, entity, entityIdentifier, saveChildren);
+            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(entityType, entity, entityIdentifier);
             DB.SaveChanges();
             return result;
         }
@@ -225,11 +221,10 @@
         /// <param name="entityType">The Type of entity being inserted.</param>
         /// <param name="entity">The the entity to save.</param>
         /// <param name="entityIdentifier">The value unique identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results i.e. what entities where updated</returns>
-        public async virtual Task<List<LinqFunnelChangeResult>> SaveAsync(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        public async virtual Task<List<LinqFunnelChangeResult>> SaveAsync(Type entityType, object entity, object entityIdentifier)
         {
-            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(entityType, entity, entityIdentifier, saveChildren);
+            List<LinqFunnelChangeResult> result = SaveWithoutSavingToDb(entityType, entity, entityIdentifier);
             await DB.SaveChangesAsync();
             return result;
         }
@@ -239,11 +234,10 @@
         /// </summary>
         /// <param name="entity">The entity being inserted.</param>
         /// <param name="entityIdentifier">The value unique identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>A list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> Insert<E>(E entity, object entityIdentifier, bool saveChildren) where E : class
+        public virtual List<LinqFunnelChangeResult> Insert<E>(E entity, object entityIdentifier) where E : class
         {
-            return Insert(typeof(E), entity, entityIdentifier, saveChildren);
+            return Insert(typeof(E), entity, entityIdentifier);
         }
 
         /// <summary>
@@ -251,11 +245,10 @@
         /// </summary>
         /// <param name="entity">The entity being inserted.</param>
         /// <param name="entityIdentifier">The value uniquely identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>A list of change results.</returns>
-        public async virtual Task<List<LinqFunnelChangeResult>> InsertAsync<E>(E entity, object entityIdentifier, bool saveChildren) where E : class
+        public async virtual Task<List<LinqFunnelChangeResult>> InsertAsync<E>(E entity, object entityIdentifier) where E : class
         {
-            Task<List<LinqFunnelChangeResult>> taskResult = InsertAsync(typeof(E), entity, entityIdentifier, saveChildren);
+            Task<List<LinqFunnelChangeResult>> taskResult = InsertAsync(typeof(E), entity, entityIdentifier);
             await taskResult;
             return taskResult.Result;
         }
@@ -266,9 +259,8 @@
         /// <param name="entityType">The Type of entity being inserted.</param>
         /// <param name="entity">The entity being inserted.</param>
         /// <param name="entityIdentifier">The value uniquely identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>A list of change results.</returns>
-        protected virtual List<LinqFunnelChangeResult> InsertWithoutSaveToDb(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        protected virtual List<LinqFunnelChangeResult> InsertWithoutSaveToDb(Type entityType, object entity, object entityIdentifier)
         {
             PropertyInfo surrogateKey = GetEntitySurrogateKey(entityType);
             bool containsIdentityColumn = IsIdentityColumn(surrogateKey);
@@ -295,11 +287,10 @@
         /// <param name="entityType">The Type of entity being inserted.</param>
         /// <param name="entity">The entity being inserted.</param>
         /// <param name="entityIdentifier">The value uniquely identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>A list of change results.</returns>
-        public virtual List<LinqFunnelChangeResult> Insert(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        public virtual List<LinqFunnelChangeResult> Insert(Type entityType, object entity, object entityIdentifier)
         {
-            List<LinqFunnelChangeResult> result = InsertWithoutSaveToDb(entityType, entity, entityIdentifier, saveChildren);
+            List<LinqFunnelChangeResult> result = InsertWithoutSaveToDb(entityType, entity, entityIdentifier);
             DB.SaveChanges();
             return result;
         }
@@ -310,11 +301,10 @@
         /// <param name="entityType">The Type of entity being inserted.</param>
         /// <param name="entity">The entity being inserted.</param>
         /// <param name="entityIdentifier">The value uniquely identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>A list of change results.</returns>
-        public async Task<List<LinqFunnelChangeResult>> InsertAsync(Type entityType, object entity, object entityIdentifier, bool saveChildren)
+        public async Task<List<LinqFunnelChangeResult>> InsertAsync(Type entityType, object entity, object entityIdentifier)
         {
-            List<LinqFunnelChangeResult> result = InsertWithoutSaveToDb(entityType, entity, entityIdentifier, saveChildren);
+            List<LinqFunnelChangeResult> result = InsertWithoutSaveToDb(entityType, entity, entityIdentifier);
             await DB.SaveChangesAsync();
             return result;
         }
@@ -360,11 +350,10 @@
         /// <param name="latest">The latest entity received from the client.</param>
         /// <param name="surrogateKeyValue">The value of the entity's surrogate key uniquely identifying the entity.</param>
         /// <param name="entityIdentifier">The value unique identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results containing all the fields that were changed and their original and new values.</returns>
-        protected virtual List<LinqFunnelChangeResult> UpdateOriginalEntity<E>(E original, E latest, object surrogateKeyValue, object entityIdentifier, bool saveChildren) where E : class
+        protected virtual List<LinqFunnelChangeResult> UpdateOriginalEntity<E>(E original, E latest, object surrogateKeyValue, object entityIdentifier) where E : class
         {
-            return UpdateOriginalEntity(typeof(E), original, latest, surrogateKeyValue, entityIdentifier, saveChildren);
+            return UpdateOriginalEntity(typeof(E), original, latest, surrogateKeyValue, entityIdentifier);
         }
 
         /// <summary>
@@ -377,15 +366,13 @@
         /// <param name="latest">The latest entity received from the client.</param>
         /// <param name="surrogateKeyValue">The value of the entity's surrogate key uniquely identifying the entity.</param>
         /// <param name="entityIdentifier">The value unique identifiying the entity</param>
-        /// <param name="saveChildren">Whether or not to save the children of the given entity</param>
         /// <returns>Returns a list of change results containing all the fields that were changed and their original and new values.</returns>
         protected virtual List<LinqFunnelChangeResult> UpdateOriginalEntity(
             Type entityType,
             object original,
             object latest,
             object surrogateKeyValue,
-            object entityIdentifier,
-            bool saveChildren)
+            object entityIdentifier)
         {
             if (entityType != original.GetType())
             {
@@ -407,13 +394,9 @@
             {
                 KeyAttribute keyAttribute = p.GetCustomAttribute<KeyAttribute>();
                 ForeignKeyAttribute foreignKeyAttribute = p.GetCustomAttribute<ForeignKeyAttribute>();
-                if (!saveChildren && foreignKeyAttribute != null)
-                {
-                    continue;//Children should not be saved and this is a property holding the children.
-                }
                 if (keyAttribute != null || foreignKeyAttribute != null)
                 {
-                    continue; //Property is either a key, or foreign key and therefore should be saved/updated.
+                    continue; //Property is either a key, or foreign key and therefore should not be saved/updated.
                 }
                 object originalValue = p.GetValue(original, null);
                 object latestValue = p.GetValue(latest, null);
@@ -661,8 +644,6 @@
         /// a tombstone in the table correspoging to the tombstone entity type (T) if the 
         /// createTombstone flag is set to true.
         /// </summary>
-        /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
-        /// <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
         /// <param name="surrogateKeyValue">The surrogate key of the entity to be deleted</param>
         /// <param name="entityIdentifier">Unique value identifying the entity.</param>
         /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
@@ -1036,42 +1017,16 @@
             return DB.Set<E>().Where(expression.Compile()).ToList();
         }
 
-        //public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue, bool loadChildren, bool throwExceptionOnNotFound)
-        //{
-        //    SetDeferredLoadingEnabled(loadChildren);
-        //    PropertyInfo surrogateKey = GetEntitySurrogateKey(entityType);
-        //    List<object> results = new List<object>();
-        //    _contextIsFresh = false;
-        //    string keyValueString = keyValue.ToString();
-        //    foreach (object t in DB.GetTable(entityType))
-        //    {
-        //        object surrogateKeyValue = surrogateKey.GetValue(t, null);
-        //        if (object.Equals(surrogateKeyValue, keyValue) || (surrogateKeyValue.ToString() == keyValueString))
-        //        {
-        //            return t;
-        //        }
-        //    }
-        //    if (throwExceptionOnNotFound)
-        //    {
-        //        throw new Exception(string.Format("Could not find {0} with {1} of '{2}'.",
-        //            entityType.Name,
-        //            surrogateKey.Name,
-        //            keyValue));
-        //    }
-        //    return null;
-        //}
-
         /// <summary>
         /// Queries for and returns an entity from the table corresponding to the entity type. The query is performed
         /// on the surrogate key of the entity.
         /// </summary>
         /// <param name="entityType">The entity type i.e. which table the entity will be queried from.</param>
         /// <param name="keyValue">The value of the surrogate to search by.</param>
-        /// <param name="loadChildren">Whether or not to load the children entities onto this entity.</param>
         /// <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
-        public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue, bool loadChildren)
+        public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue)
         {
-            return GetEntityBySurrogateKey(entityType, keyValue, loadChildren, false);
+            return GetEntityBySurrogateKey(entityType, keyValue, false);
         }
 
         /// <summary>
@@ -1080,14 +1035,13 @@
         /// </summary>
         /// <param name="entityType">The entity type i.e. which table the entity will be queried from.</param>
         /// <param name="keyValue">The value of the surrogate to search by.</param>
-        /// <param name="loadChildren">Whether or not to load the children entities onto this entity.</param>
         /// <param name="throwExceptionOnNotFound">Whether or not to throw an exception if the result is null.</param>
         /// <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
-        public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue, bool loadChildren, bool throwExceptionOnNotFound)
+        public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue, bool throwExceptionOnNotFound)
         {
             MethodInfo methodDefinition = GetType().GetMethod("GetEntityBySurrogateKey", new Type[] { typeof(object), typeof(bool), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
             MethodInfo method = methodDefinition.MakeGenericMethod(entityType);
-            return method.Invoke(this, new object[] { keyValue, loadChildren, throwExceptionOnNotFound });
+            return method.Invoke(this, new object[] { keyValue, throwExceptionOnNotFound });
         }
 
         /// <summary>
@@ -1096,11 +1050,10 @@
         /// </summary>
         /// <typeparam name="E">The entity type i.e. which table the entity will be queried from.</typeparam>
         /// <param name="keyValue">The value of the surrogate to search by.</param>
-        /// <param name="loadChildren">Whether or not to load the children entities onto this entity.</param>
         /// <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
-        public virtual E GetEntityBySurrogateKey<E>(object keyValue, bool loadChildren) where E : class
+        public virtual E GetEntityBySurrogateKey<E>(object keyValue) where E : class
         {
-            return GetEntityBySurrogateKey<E>(keyValue, loadChildren, false);
+            return GetEntityBySurrogateKey<E>(keyValue, false);
         }
 
         /// <summary>
@@ -1109,10 +1062,9 @@
         /// </summary>
         /// <typeparam name="E">The entity type i.e. which table the entity will be queried from.</typeparam>
         /// <param name="keyValue">The value of the surrogate to search by.</param>
-        /// <param name="loadChildren">Whether or not to load the children entities onto this entity.</param>
         /// <param name="throwExceptionOnNotFound">Whether or not to throw an exception if the result is null.</param>
         /// <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
-        public virtual E GetEntityBySurrogateKey<E>(object keyValue, bool loadChildren, bool throwExceptionOnNotFound) where E : class
+        public virtual E GetEntityBySurrogateKey<E>(object keyValue, bool throwExceptionOnNotFound) where E : class
         {
             Type entityType = typeof(E);
             PropertyInfo surrogateKey = GetEntitySurrogateKey(entityType);
@@ -1129,48 +1081,15 @@
         /// Queries for entities in a table corresponding to entity type. The query is performed on the column/field
         /// specified with the specified field value.
         /// </summary>
-        /// <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
+        /// <param name="entityType">The entity type i.e. the table from which the entities will be returned.</param>
         /// <param name="fieldName">The name of the field/column on which the query will be performed.</param>
         /// <param name="fieldValue">The value of the field which will be used for the query.</param>
         /// <returns>Returns a list of entities of the specified type with the specified field/column and field value.</returns>
-        //public virtual List<object> GetEntitiesByField(Type entityType, string fieldName, object fieldValue, bool loadChildren)
-        //{
-        //    SetDeferredLoadingEnabled(loadChildren);
-        //    PropertyInfo field = entityType.GetProperty(fieldName);
-        //    if (field == null)
-        //    {
-        //        throw new NullReferenceException(
-        //            string.Format("Entity {0} does not contain a field with the name {1}.",
-        //            entityType.Name,
-        //            fieldName));
-        //    }
-        //    List<object> results = new List<object>();
-        //    foreach (object t in DB.GetTable(entityType))
-        //    {
-        //        object eFieldValue = field.GetValue(t, null);
-        //        if (eFieldValue.Equals(fieldValue) || eFieldValue.ToString().Equals(fieldValue.ToString()))
-        //        {
-        //            results.Add(t);
-        //        }
-        //    }
-        //    _contextIsFresh = false;
-        //    return results;
-        //}
-
-        /// <summary>
-        /// Queries for entities in a table corresponding to entity type. The query is performed on the column/field
-        /// specified with the specified field value.
-        /// </summary>
-        /// <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
-        /// <param name="fieldName">The name of the field/column on which the query will be performed.</param>
-        /// <param name="fieldValue">The value of the field which will be used for the query.</param>
-        /// <param name="loadChildren">Whether or not to load the children of the entities as well.</param>
-        /// <returns>Returns a list of entities of the specified type with the specified field/column and field value.</returns>
-        public virtual List<object> GetEntitiesByField(Type entityType, string fieldName, object fieldValue, bool loadChildren)
+        public virtual List<object> GetEntitiesByField(Type entityType, string fieldName, object fieldValue)
         {
             MethodInfo methodDefinition = GetType().GetMethod("GetEntitiesByField", new Type[] { typeof(string), typeof(object), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
             MethodInfo method = methodDefinition.MakeGenericMethod(entityType);
-            object queryResult = method.Invoke(this, new object[] { fieldName, fieldValue, loadChildren });
+            object queryResult = method.Invoke(this, new object[] { fieldName, fieldValue });
             System.Collections.IList genericList = (System.Collections.IList)queryResult;
             List<object> result = new List<object>();
             foreach (var e in genericList)
@@ -1187,9 +1106,8 @@
         /// <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
         /// <param name="fieldName">The name of the field/column on which the query will be performed.</param>
         /// <param name="fieldValue">The value of the field which will be used for the query.</param>
-        /// <param name="loadChildren">Whether or not to load the children of the entities as well.</param>
         /// <returns>Returns a list of entities of the specified type with the specified field/column and field value.</returns>
-        public virtual List<E> GetEntitiesByField<E>(string fieldName, object fieldValue, bool loadChildren) where E : class
+        public virtual List<E> GetEntitiesByField<E>(string fieldName, object fieldValue) where E : class
         {
             Type entityType = typeof(E);
             PropertyInfo field = entityType.GetProperty(fieldName);
@@ -1207,7 +1125,7 @@
         /// </summary>
         /// <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
         /// <returns>Returns all the entities of the specified type.</returns>
-        public virtual List<E> GetAllEntities<E>(bool loadChildren) where E : class
+        public virtual List<E> GetAllEntities<E>() where E : class
         {
             return DB.Set<E>().ToList<E>();
         }
@@ -1217,7 +1135,7 @@
         /// </summary>
         /// <typeparam name="E">The entity type i.e. the table from which the entities will be returned.</typeparam>
         /// <returns>Returns all the entities of the specified type.</returns>
-        public virtual List<object> GetAllEntities(Type entityType, bool loadChildren)
+        public virtual List<object> GetAllEntities(Type entityType)
         {
             List<object> result = new List<object>();
             IQueryable table = DB.Set(entityType);
@@ -1272,7 +1190,7 @@
                 EventName = eventId.HasValue ? eventId.Value.Name : null,
                 DateCreated = DateTime.Now
             };
-            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId, false);
+            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId);
             return logEntry;
         }
 
@@ -1294,7 +1212,7 @@
                 EventName = eventId.HasValue ? eventId.Value.Name : null,
                 DateCreated = DateTime.Now
             };
-            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId, false);
+            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId);
             return logEntry;
         }
 

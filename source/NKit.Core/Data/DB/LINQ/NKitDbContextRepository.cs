@@ -144,8 +144,7 @@
 
         public ServiceProcedureResult Save<E>(
             List<E> entities,
-            string userName,
-            bool saveChildren) where E : class
+            string userName) where E : class
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -156,7 +155,7 @@
                     {
                         foreach (E e in entities)
                         {
-                            base.Save<E>(e, null, saveChildren);
+                            base.Save<E>(e, null);
                         }
                         t.Complete();
                     }
@@ -179,8 +178,7 @@
         public ServiceProcedureResult Save(
             Type entityType,
             List<object> entities,
-            string userName,
-            bool saveChildren)
+            string userName)
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -191,7 +189,7 @@
                     {
                         foreach (object e in entities)
                         {
-                            base.Save(entityType, e, null, false);
+                            base.Save(entityType, e, null);
                         }
                         t.Complete();
                     }
@@ -213,8 +211,7 @@
 
         public ServiceProcedureResult Insert<E>(
             List<E> entities,
-            string userName,
-            bool saveChildren) where E : class
+            string userName) where E : class
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -225,7 +222,7 @@
                     {
                         foreach (E e in entities)
                         {
-                            base.Insert<E>(e, null, false);
+                            base.Insert<E>(e, null);
                         }
                         t.Complete();
                     }
@@ -248,8 +245,7 @@
         public ServiceProcedureResult Insert(
             Type entityType,
             List<object> entities,
-            string userName,
-            bool saveChildren)
+            string userName)
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -260,7 +256,7 @@
                     {
                         foreach (object e in entities)
                         {
-                            base.Insert(entityType, e, null, false);
+                            base.Insert(entityType, e, null);
                         }
                         t.Complete();
                     }
@@ -475,53 +471,47 @@
 
         public ServiceFunctionResult<E> GetEntityBySurrogateKey<E>(
             object keyValue,
-            bool loadChildren,
             string userName) where E : class
         {
-            return new ServiceFunctionResult<E> { Contents = base.GetEntityBySurrogateKey<E>(keyValue, loadChildren) };
+            return new ServiceFunctionResult<E> { Contents = base.GetEntityBySurrogateKey<E>(keyValue) };
         }
 
         public ServiceFunctionResult<object> GetEntityBySurrogateKey(
             Type entityType,
             object keyValue,
-            bool loadChildren,
             string userName)
         {
-            return new ServiceFunctionResult<object>() { Contents = base.GetEntityBySurrogateKey(entityType, keyValue, loadChildren) };
+            return new ServiceFunctionResult<object>() { Contents = base.GetEntityBySurrogateKey(entityType, keyValue) };
         }
 
         public ServiceFunctionResult<List<E>> GetEntitiesByField<E>(
             string fieldName,
             object fieldValue,
-            bool loadChildren,
             string userName) where E : class
         {
-            return new ServiceFunctionResult<List<E>>() { Contents = base.GetEntitiesByField<E>(fieldName, fieldValue, loadChildren) };
+            return new ServiceFunctionResult<List<E>>() { Contents = base.GetEntitiesByField<E>(fieldName, fieldValue) };
         }
 
         public ServiceFunctionResult<List<object>> GetEntitiesByField(
             Type entityType,
             string fieldName,
             object fieldValue,
-            bool loadChildren,
             string userName)
         {
-            return new ServiceFunctionResult<List<object>>() { Contents = base.GetEntitiesByField(entityType, fieldName, fieldValue, loadChildren) };
+            return new ServiceFunctionResult<List<object>>() { Contents = base.GetEntitiesByField(entityType, fieldName, fieldValue) };
         }
 
         public ServiceFunctionResult<List<E>> GetAllEntities<E>(
-            bool loadChildren,
             string userName) where E : class
         {
-            return new ServiceFunctionResult<List<E>>() { Contents = base.GetAllEntities<E>(loadChildren) };
+            return new ServiceFunctionResult<List<E>>() { Contents = base.GetAllEntities<E>() };
         }
 
         public ServiceFunctionResult<List<object>> GetAllEntities(
             Type entityType,
-            bool loadChildren,
             string userName)
         {
-            return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType, loadChildren) };
+            return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType) };
         }
 
         public ServiceFunctionResult<int> GetTotalCount<E>(

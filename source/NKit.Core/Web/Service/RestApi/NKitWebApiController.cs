@@ -311,7 +311,7 @@
                 {
                     OnBeforeGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, null));
                 }
-                object outputEntity = _context.GetEntityBySurrogateKey(entityType, entityId, false, userName).Contents;
+                object outputEntity = _context.GetEntityBySurrogateKey(entityType, entityId, userName).Contents;
                 if (OnAfterGetEntityById != null)
                 {
                     OnAfterGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, outputEntity));
@@ -356,8 +356,8 @@
                     OnBeforeGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _context, entityType, searchBy, searchValueOf, null));
                 }
                 List<object> outputEntities = string.IsNullOrEmpty(searchBy) ?
-                    _context.GetAllEntities(entityType, false, userName).Contents :
-                    _context.GetEntitiesByField(entityType, searchBy, searchValueOf, false, userName).Contents;
+                    _context.GetAllEntities(entityType, userName).Contents :
+                    _context.GetEntitiesByField(entityType, searchBy, searchValueOf, userName).Contents;
                 if (OnAfterGetEntitiesByField != null)
                 {
                     OnAfterGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _context, entityType, searchBy, searchValueOf, outputEntities));
@@ -402,7 +402,7 @@
                 {
                     OnBeforePut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
                 }
-                _context.Save(entityType, new List<object>() { inputEntity }, userName, false);
+                _context.Save(entityType, new List<object>() { inputEntity }, userName);
                 if (OnAfterPut != null)
                 {
                     OnAfterPut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
@@ -446,7 +446,7 @@
                 {
                     OnBeforePost(this, new NKitRestApiPostEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
                 }
-                _context.Insert(entityType, new List<object>() { inputEntity }, userName, false);
+                _context.Insert(entityType, new List<object>() { inputEntity }, userName);
                 if (OnAfterPost != null)
                 {
                     OnAfterPost(this, new NKitRestApiPostEntityEventArgsCore(

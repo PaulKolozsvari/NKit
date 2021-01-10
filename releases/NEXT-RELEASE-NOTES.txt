@@ -44,4 +44,7 @@
 
 *   Added template batch files for installing and uninstalling an exe as a windows service.
 
+*   Added XML documentation to all the NKitWebApiController actions.
+*   Removed all the children related fields in the NKitDbContextRepository methods i.e. loadChildren and saveChildren.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.
