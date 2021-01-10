@@ -62,3 +62,6 @@
 
 	*	Creating a custom logger:
 		-	https://docs.microsoft.com/en-us/dotnet/core/extensions/custom-logging-provider
+
+*   Including all referenced assemblies XML documentation to Swagger:
+    -   https://dejanstojanovic.net/aspnet/2019/march/dto-comments-from-external-assembly-in-swagger-documentation-in-aspnet-core/

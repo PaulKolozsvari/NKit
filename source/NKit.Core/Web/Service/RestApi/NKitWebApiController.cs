@@ -286,7 +286,18 @@
 
         #region Actions
 
+        /// <summary>
+        /// Get a single entity (table record) of the the specified entity name (table name) by searching for its surrogate key (single table key) supplied in the entityId parameter.
+        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
+        /// Returns a single record in JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
+        /// The Content-Type of the response is based on the configured ResponseContentType property in the NKitWebApiControllerSettings section of the appsettings.json file.
+        /// Called as such: "/{entityName}/{entityId}"
+        /// </summary>
+        /// <param name="entityName">The name of the database table to query from.</param>
+        /// <param name="entityId">The surrogate key (single table key) of the database record.</param>
+        /// <returns>Returns a single record in JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.</returns>
         [HttpGet, Route("{entityName}/{entityId}")]
+        [Produces(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
         public virtual IActionResult GetEntityById(string entityName, string entityId)
         {
             try
@@ -316,10 +327,21 @@
             }
         }
 
-        //[HttpGet, Route("{entityName}?searchBy={fieldName}&searchValueOf={fieldValue}")]
-        //Called as such: "{entityName}?={fieldName}&searchValueOf={fieldValue}")]
         //Using Query Parameters: https://stackoverflow.com/questions/59621208/how-do-i-use-query-parameters-in-attributes
+        /// <summary>
+        /// Gets entities (table records) of the the specified entity name (table name). 
+        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
+        /// Optional search by field and search value of can be applied to apply a filter based on a specific field and its value i.e. searching by a specific column in the database table.
+        /// Returns as a list of the specified entity type in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
+        /// The Content-Type of the response is based on the configured ResponseContentType property in the NKitWebApiControllerSettings section of the appsettings.json file.
+        /// Called as such: "/{entityName}?={fieldName}&amp;searchValueOf={fieldValue}"
+        /// </summary>
+        /// <param name="entityName">The name of the database table to query from.</param>
+        /// <param name="searchBy">Optional name of a column to filter by.</param>
+        /// <param name="searchValueOf">Optional value of the column that is being filtered by.</param>
+        /// <returns>Returns as a list of the specified entity type in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.</returns>
         [HttpGet, Route("{entityName}")]
+        [Produces(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
         public virtual IActionResult GetEntities([FromRoute] string entityName, [FromQuery] string searchBy, [FromQuery] string searchValueOf)
         {
             try
@@ -351,8 +373,21 @@
             }
         }
 
+        /// <summary>
+        /// Saves (updates or inserts) a single entity to a database table matching the entity name. 
+        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
+        /// The request body can be in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
+        /// The request body can be text/plain, application/json or application/xml.
+        /// Returns a text message simple message indicating that the entity has been saved. 
+        /// The Content-Type of the is always text/plain.
+        /// Called as such: "/{entityName}" with the JSON or XML contents as part of the request body.
+        /// </summary>
+        /// <param name="entityName">The name of the database table to save to.</param>
+        /// <param name="serializedText">The JSON or XML representation of the entity (record) being saved.</param>
+        /// <returns>Returns a text message simple message indicating that the entity has been saved. </returns>
         [HttpPut, Route("{entityName}")]
         [Consumes(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
+        [Produces(MimeContentType.TEXT_PLAIN)]
         public virtual IActionResult PutEntity(string entityName, [FromBody] string serializedText)
         {
             try
@@ -382,8 +417,21 @@
             }
         }
 
+        /// <summary>
+        /// Inserts a single entity to a database table matching the entity name.
+        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
+        /// The request body can be in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
+        /// The request body can be text/plain, application/json or application/xml.
+        /// Returns a text message simple message indicating that the entity has been saved. 
+        /// The Content-Type of the is always text/plain.
+        /// Called as such: "/{entityName}" with the JSON or XML contents as part of the request body.
+        /// </summary>
+        /// <param name="entityName">The name of the database table to save to.</param>
+        /// <param name="serializedText">The JSON or XML representation of the entity (record) being inserted.</param>
+        /// <returns>Returns a text message simple message indicating that the entity has been inserted. </returns>
         [HttpPost, Route("{entityName}")]
         [Consumes(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
+        [Produces(MimeContentType.TEXT_PLAIN)]
         public virtual IActionResult PostEntity(string entityName, [FromBody] string serializedText)
         {
             try
@@ -404,7 +452,7 @@
                     OnAfterPost(this, new NKitRestApiPostEntityEventArgsCore(
                         entityName, userName, _context, entityType, inputEntity));
                 }
-                string responseMessage = string.Format("{0} saved successfully.", entityName);
+                string responseMessage = string.Format("{0} inserted successfully.", entityName);
                 LogResponse(requestName, responseMessage);
                 return Ok(responseMessage);
             }
@@ -414,7 +462,18 @@
             }
         }
 
+        /// <summary>
+        /// Deletes a single entity (table record) of the the specified entity name (table name) by searching for its surrogate key (single table key) supplied in the entityId parameter.
+        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
+        /// Returns a text message simple message indicating that the entity has been deleted. 
+        /// The Content-Type of the is always text/plain.
+        /// Called as such: "/{entityName}/{entityId}"
+        /// </summary>
+        /// <param name="entityName">The name of the database table to delete from.</param>
+        /// <param name="entityId">The surrogate key (single table key) of the database record to be deleted.</param>
+        /// <returns>Returns a text message simple message indicating that the entity has been deleted. </returns>
         [HttpDelete, Route("{entityName}/{entityId}")]
+        [Produces(MimeContentType.TEXT_PLAIN)]
         public virtual IActionResult DeleteEntity(string entityName, string entityId)
         {
             try
