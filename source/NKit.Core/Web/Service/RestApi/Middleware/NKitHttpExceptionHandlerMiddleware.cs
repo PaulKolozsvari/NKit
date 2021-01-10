@@ -28,7 +28,7 @@
     /// ASP.NET Core - Middleware Pipeline: https://www.tutorialsteacher.com/core/aspnet-core-middleware
     /// You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     /// </summary>
-    public class NKitHttpExceptionHandlerMiddleware<D> where D : NKitDbContextRepository
+    public class NKitHttpExceptionHandlerMiddleware<D> where D : NKitDbRepository
     {
         #region Constructors
 

@@ -24,7 +24,7 @@
         /// Registers the NKitHttpExceptionHandlerMiddleware
         /// </summary>
         /// <typeparam name="D">The NKitDbContextRepository type being used in the application.</typeparam>
-        public static IApplicationBuilder UseNKitHttpExceptionHandlerMiddleware<D>(this IApplicationBuilder applicationBuilder) where D : NKitDbContextRepository
+        public static IApplicationBuilder UseNKitHttpExceptionHandlerMiddleware<D>(this IApplicationBuilder applicationBuilder) where D : NKitDbRepository
         {
             return applicationBuilder.UseMiddleware<NKitHttpExceptionHandlerMiddleware<D>>();
         }

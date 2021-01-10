@@ -83,7 +83,7 @@
             out NKitWebApiControllerSettings webApiSettings,
             out NKitHttpExceptionHandlerMiddlewareSettings httpExceptionHandlerMiddlewareSettings,
             out NKitWebApiClientSettings webApiClientSettings,
-            out NKitDbContextRepositorySettings databaseSettings,
+            out NKitDbRepositorySettings databaseSettings,
             out NKitLoggingSettings loggingSettings,
             out NKitEmailCllientSettings emailSettings,
             string loggerCategoryName)
@@ -120,7 +120,7 @@
             out NKitWebApiControllerSettings webApiSettings,
             out NKitHttpExceptionHandlerMiddlewareSettings httpExceptionHandlerMiddlewareSettings,
             out NKitWebApiClientSettings webApiClientSettings,
-            out NKitDbContextRepositorySettings databaseSettings,
+            out NKitDbRepositorySettings databaseSettings,
             out NKitLoggingSettings loggingSettings,
             out NKitEmailCllientSettings emailSettings,
             ILogger logger)
@@ -129,7 +129,7 @@
             webApiSettings = NKitWebApiControllerSettings.RegisterConfiguration(configuration, services);
             httpExceptionHandlerMiddlewareSettings = NKitHttpExceptionHandlerMiddlewareSettings.RegisterConfiguration(configuration, services);
             webApiClientSettings = NKitWebApiClientSettings.RegisterConfiguration(configuration, services);
-            databaseSettings = NKitDbContextRepositorySettings.RegisterConfiguration(configuration, services);
+            databaseSettings = NKitDbRepositorySettings.RegisterConfiguration(configuration, services);
             loggingSettings = NKitLoggingSettings.RegisterConfiguration(configuration, services);
             emailSettings = NKitEmailCllientSettings.RegisterConfiguration(configuration, services);
             if (logger == null)
@@ -152,7 +152,7 @@
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(httpExceptionHandlerMiddlewareSettings));
             logMessage.AppendLine();
 
-            logMessage.AppendLine($"*** {nameof(NKitDbContextRepositorySettings)} ***");
+            logMessage.AppendLine($"*** {nameof(NKitDbRepositorySettings)} ***");
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(databaseSettings));
             logMessage.AppendLine();
 
@@ -202,7 +202,7 @@
             IConfiguration configuration,
             bool registerEntityFrameworkSqlServerProvider,
             bool registerControllerInputFormatter,
-            string loggerCategoryName) where D : NKitDbContext where R : NKitDbContextRepository
+            string loggerCategoryName) where D : NKitDbContext where R : NKitDbRepository
         {
             ILogger logger = !string.IsNullOrEmpty(loggerCategoryName) ? CreateLogger(loggerCategoryName, NKitLoggingSettings.GetSettings(configuration)) : null;
             RegisterDefaultNKitServices<D, R>(services, configuration, registerEntityFrameworkSqlServerProvider, registerControllerInputFormatter, logger);
@@ -223,12 +223,12 @@
             IConfiguration configuration,
             bool registerEntityFrameworkSqlServerProvider,
             bool registerControllerInputFormatter,
-            ILogger logger) where D : NKitDbContext where R : NKitDbContextRepository
+            ILogger logger) where D : NKitDbContext where R : NKitDbRepository
         {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(SettingsServiceCollectionExtensions));
             DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(SettingsServiceCollectionExtensions));
             NKitWebApiControllerSettings webApiSettings = NKitWebApiControllerSettings.GetSettings(configuration);
-            NKitDbContextRepositorySettings dbContextSettings = NKitDbContextRepositorySettings.GetSettings(configuration);
+            NKitDbRepositorySettings dbContextSettings = NKitDbRepositorySettings.GetSettings(configuration);
             NKitLoggingSettings loggingSettings = NKitLoggingSettings.GetSettings(configuration);
             NKitEmailCllientSettings emailSettings = NKitEmailCllientSettings.GetSettings(configuration);
             NKitWebApiClientSettings webApiClientSettings = NKitWebApiClientSettings.GetSettings(configuration);

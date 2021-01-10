@@ -12,7 +12,7 @@
 
     #endregion //Using Directives
 
-    public class NKitDbContextRepositorySettings : NKitSettings
+    public class NKitDbRepositorySettings : NKitSettings
     {
         #region Properties
 
@@ -79,27 +79,27 @@
         /// The Configuration object is created read from based on the appsettings.json. The appsettings.json file name is determined by reading the ASPNETCORE_ENVIRONMENT variable i.e. appsettings.{environment}.json or appsettings.json when the environment variable is not set.
         /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>
-        public static NKitDbContextRepositorySettings GetSettings()
+        public static NKitDbRepositorySettings GetSettings()
         {
-            return GetSettings<NKitDbContextRepositorySettings>();
+            return GetSettings<NKitDbRepositorySettings>();
         }
 
         /// <summary>
         /// Reads the NKitDatabaseSettings configuration section from the appsettings.json file and deserializes to an instance of NKitDatabaseSettings.
         /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>
-        public static NKitDbContextRepositorySettings GetSettings(IConfiguration configuration)
+        public static NKitDbRepositorySettings GetSettings(IConfiguration configuration)
         {
-            return GetSettings<NKitDbContextRepositorySettings>(configuration);
+            return GetSettings<NKitDbRepositorySettings>(configuration);
         }
 
         /// <summary>
         /// Register Configurations from the appsettings.json which will be made available as IOptions to all services.
         /// </summary>
         /// <param name="services"></param>
-        public static NKitDbContextRepositorySettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
+        public static NKitDbRepositorySettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
         {
-            return RegisterConfiguration<NKitDbContextRepositorySettings>(configuration, services);
+            return RegisterConfiguration<NKitDbRepositorySettings>(configuration, services);
         }
 
         #endregion //Methods

@@ -32,29 +32,32 @@
     /// </summary>
     /// <typeparam name="D"></typeparam>
     [ApiController]
-    public class NKitWebApiController<D> : ControllerBase where D : NKitDbContextRepository
+    public class NKitWebApiController<D> : ControllerBase where D : NKitDbRepository
     {
         #region Constructors
 
         public NKitWebApiController(
-            D context,
+            D dbRespository,
             IHttpContextAccessor httpContextAccessor, 
             IOptions<NKitWebApiControllerSettings> webApiOptions,
-            IOptions<NKitDbContextRepositorySettings> databaseOptions,
+            IOptions<NKitDbRepositorySettings> databaseOptions,
             IOptions<NKitEmailCllientSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
             ILogger logger)
         {
-            DataValidator.ValidateObjectNotNull(context, nameof(context), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(dbRespository, nameof(dbRespository), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(webApiOptions, nameof(webApiOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(emailOptions, nameof(emailOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitWebApiController<D>));
-            _context = context;
+
+            _serviceInstanceId = Guid.NewGuid();
+
+            _dbRepository = dbRespository;
             _httpContextAccessor = httpContextAccessor;
             _webApiSettings = webApiOptions.Value;
-            _databaseSettings = databaseOptions.Value;
+            _dbRepositorySettings = databaseOptions.Value;
             _emailSettings = emailOptions.Value;
             _loggingSettings = loggingOptions.Value;
             _logger = logger;
@@ -62,7 +65,7 @@
 
         #endregion //Constructors
 
-        #region Fields
+        #region Events
 
         protected event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntities;
         protected event OnAfterGetEntitiesHandlerCore OnAfterGetEntities;
@@ -82,20 +85,41 @@
         protected event OnBeforeDeleteEntityHandlerCore OnBeforeDelete;
         protected event OnAfterDeleteEntityHandlerCore OnAfterDelete;
 
-        protected Nullable<Guid> _serviceInstanceId;
+        #endregion //Events
 
-        protected readonly ILogger _logger;
-        protected IServiceScopeFactory _serviceScopeFactory;
-        protected IServiceProvider _serviceProvider;
-        protected IHttpContextAccessor _httpContextAccessor;
-        protected D _context;
+        #region Fields
 
-        protected NKitWebApiControllerSettings _webApiSettings;
-        protected NKitDbContextRepositorySettings _databaseSettings;
-        protected NKitEmailCllientSettings _emailSettings;
-        protected NKitLoggingSettings _loggingSettings;
+        private readonly Nullable<Guid> _serviceInstanceId;
+
+        private readonly ILogger _logger;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly D _dbRepository;
+
+        private readonly NKitWebApiControllerSettings _webApiSettings;
+        private readonly NKitDbRepositorySettings _dbRepositorySettings;
+        private readonly NKitEmailCllientSettings _emailSettings;
+        private readonly NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields
+
+        #region Properties
+
+        protected Nullable<Guid> ServiceInstanceId { get { return _serviceInstanceId; } }
+
+        protected ILogger Logger { get { return _logger; } }
+        protected IServiceScopeFactory ServiceScopeFactory { get { return _serviceScopeFactory; } }
+        protected IServiceProvider ServiceProvider { get { return _serviceProvider; } }
+        protected IHttpContextAccessor HttpContextAccessor { get { return _httpContextAccessor; } }
+        protected D DbRepository { get { return _dbRepository; } }
+
+        protected NKitWebApiControllerSettings WebApiSettings { get { return _webApiSettings; } }
+        protected NKitDbRepositorySettings DbRepositorySettings { get { return _dbRepositorySettings; } }
+        protected NKitEmailCllientSettings EmailSettings { get { return _emailSettings; } }
+        protected NKitLoggingSettings LoggingSettings { get { return _loggingSettings; } }
+
+        #endregion //Properties
 
         #region Methods
 
@@ -118,9 +142,9 @@
             {
                 _logger.LogInformation(logMessage);
             }
-            if (_context != null && _webApiSettings.LogRequestsInDatabaseNKitLogEntry)
+            if (_dbRepository != null && _webApiSettings.LogRequestsInDatabaseNKitLogEntry)
             {
-                _context.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(27, "Request"));
+                _dbRepository.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(27, "Request"));
             }
         }
 
@@ -143,9 +167,9 @@
             {
                 _logger.LogInformation(logMessage);
             }
-            if (_context != null && _webApiSettings.LogResponsesInDatabaseNKitLogEntry)
+            if (_dbRepository != null && _webApiSettings.LogResponsesInDatabaseNKitLogEntry)
             {
-                _context.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(28, "Response"));
+                _dbRepository.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(28, "Response"));
             }
         }
 
@@ -246,7 +270,7 @@
 
         protected virtual Type GetEntityType(string entityName)
         {
-            Type result = AssemblyReader.FindType(_databaseSettings.EntityFrameworkModelsAssembly, _databaseSettings.EntityFrameworkModelsNamespace, entityName, false);
+            Type result = AssemblyReader.FindType(_dbRepositorySettings.EntityFrameworkModelsAssembly, _dbRepositorySettings.EntityFrameworkModelsNamespace, entityName, false);
             if (result == null) //If the entity type was not found in the specified models assembly and namespace, look for entity type in the current executing assembly in the default core rest models namespace.
             {
                 string currentAssemblyName = Path.GetFileName(Assembly.GetExecutingAssembly().CodeBase);
@@ -262,9 +286,9 @@
 
         protected void DisposeEntityContext()
         {
-            if (_context != null)
+            if (_dbRepository != null)
             {
-                _context.Dispose();
+                _dbRepository.Dispose();
             }
         }
 
@@ -309,12 +333,12 @@
                 Type entityType = GetEntityType(entityName);
                 if (OnBeforeGetEntityById != null)
                 {
-                    OnBeforeGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, null));
+                    OnBeforeGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _dbRepository, entityType, entityId, null));
                 }
-                object outputEntity = _context.GetEntityBySurrogateKey(entityType, entityId, userName).Contents;
+                object outputEntity = _dbRepository.GetEntityBySurrogateKey(entityType, entityId, userName).Contents;
                 if (OnAfterGetEntityById != null)
                 {
-                    OnAfterGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _context, entityType, entityId, outputEntity));
+                    OnAfterGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _dbRepository, entityType, entityId, outputEntity));
                 }
                 string serializedText = GetSerializer().SerializeToText(outputEntity, GetNKitSerializerModelTypes());
                 LogResponse(requestName, serializedText);
@@ -353,14 +377,14 @@
                 Type entityType = GetEntityType(entityName);
                 if (OnBeforeGetEntitiesByField != null)
                 {
-                    OnBeforeGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _context, entityType, searchBy, searchValueOf, null));
+                    OnBeforeGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _dbRepository, entityType, searchBy, searchValueOf, null));
                 }
                 List<object> outputEntities = string.IsNullOrEmpty(searchBy) ?
-                    _context.GetAllEntities(entityType, userName).Contents :
-                    _context.GetEntitiesByField(entityType, searchBy, searchValueOf, userName).Contents;
+                    _dbRepository.GetAllEntities(entityType, userName).Contents :
+                    _dbRepository.GetEntitiesByField(entityType, searchBy, searchValueOf, userName).Contents;
                 if (OnAfterGetEntitiesByField != null)
                 {
-                    OnAfterGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _context, entityType, searchBy, searchValueOf, outputEntities));
+                    OnAfterGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _dbRepository, entityType, searchBy, searchValueOf, outputEntities));
                 }
                 string serializedText = GetSerializer().SerializeToText(outputEntities, GetNKitSerializerModelTypes());
                 LogResponse(requestName, serializedText);
@@ -400,12 +424,12 @@
                 LogRequest(requestName, serializedText);
                 if (OnBeforePut != null)
                 {
-                    OnBeforePut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
+                    OnBeforePut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _dbRepository, entityType, inputEntity));
                 }
-                _context.Save(entityType, new List<object>() { inputEntity }, userName);
+                _dbRepository.Save(entityType, new List<object>() { inputEntity }, userName);
                 if (OnAfterPut != null)
                 {
-                    OnAfterPut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
+                    OnAfterPut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _dbRepository, entityType, inputEntity));
                 }
                 string responseMessage = string.Format("{0} saved successfully.", entityName);
                 LogResponse(requestName, responseMessage);
@@ -444,13 +468,13 @@
                 LogRequest(requestName, serializedText);
                 if (OnBeforePost != null)
                 {
-                    OnBeforePost(this, new NKitRestApiPostEntityEventArgsCore(entityName, userName, _context, entityType, inputEntity));
+                    OnBeforePost(this, new NKitRestApiPostEntityEventArgsCore(entityName, userName, _dbRepository, entityType, inputEntity));
                 }
-                _context.Insert(entityType, new List<object>() { inputEntity }, userName);
+                _dbRepository.Insert(entityType, new List<object>() { inputEntity }, userName);
                 if (OnAfterPost != null)
                 {
                     OnAfterPost(this, new NKitRestApiPostEntityEventArgsCore(
-                        entityName, userName, _context, entityType, inputEntity));
+                        entityName, userName, _dbRepository, entityType, inputEntity));
                 }
                 string responseMessage = string.Format("{0} inserted successfully.", entityName);
                 LogResponse(requestName, responseMessage);
@@ -486,13 +510,13 @@
                 if (OnBeforeDelete != null)
                 {
                     OnBeforeDelete(this, new NKitRestApiDeleteEntityEventArgsCore(
-                        entityName, userName, _context, entityType, entityId));
+                        entityName, userName, _dbRepository, entityType, entityId));
                 }
-                _context.DeleteBySurrogateKey(entityType, new List<object>() { entityId }, userName);
+                _dbRepository.DeleteBySurrogateKey(entityType, new List<object>() { entityId }, userName);
                 if (OnAfterDelete != null)
                 {
                     OnAfterDelete(this, new NKitRestApiDeleteEntityEventArgsCore(
-                        entityName, userName, _context, entityType, entityId));
+                        entityName, userName, _dbRepository, entityType, entityId));
                 }
                 string responseMessage = string.Format("{0} deleted successfully.", entityName);
                 LogResponse(requestName, responseMessage);

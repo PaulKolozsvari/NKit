@@ -19,7 +19,7 @@
         public NKitRestApiDeleteEntityEventArgsCore(
             string entityName,
             string userName,
-            NKitDbContextRepository entityContext,
+            NKitDbRepository entityContext,
             Type entityType,
             string entityId)
             : base(entityName, userName, entityContext, entityType)

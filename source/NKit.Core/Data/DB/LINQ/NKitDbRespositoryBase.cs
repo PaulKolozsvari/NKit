@@ -29,7 +29,7 @@
     /// Managing DbContext the right way with Entity Framework 6: an in-depth guide: https://mehdi.me/ambient-dbcontext-in-ef6/
     /// </summary>
     /// <typeparam name="D">The underlying entity framework DbContext which should have been registered as service..</typeparam>
-    public class NKitDbContextRepositoryBase
+    public class NKitDbRespositoryBase
     {
         #region Constructors
 
@@ -41,18 +41,18 @@
         /// <param name="generalOptions">General settings.</param>
         /// <param name="dbContextOptions">DbContext related settings.</param>
         /// <param name="loggingOptions">Logging related settings.</param>
-        public NKitDbContextRepositoryBase(
+        public NKitDbRespositoryBase(
             IServiceProvider serviceProvider, 
             Type dbContextType,
             IOptions<NKitGeneralSettings> generalOptions,
-            IOptions<NKitDbContextRepositorySettings> dbContextOptions, 
+            IOptions<NKitDbRepositorySettings> dbContextOptions, 
             IOptions<NKitLoggingSettings> loggingOptions)
         {
-            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(NKitDbRespositoryBase));
+            DataValidator.ValidateObjectNotNull(dbContextType, nameof(dbContextType), nameof(NKitDbRespositoryBase));
+            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitDbRespositoryBase));
+            DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbRespositoryBase));
+            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitDbRespositoryBase));
             _generalSettings = generalOptions.Value;
             _dbContextSettings = dbContextOptions.Value;
             _loggingSettings = loggingOptions.Value;
@@ -68,16 +68,16 @@
         /// <param name="generalOptions">General settings.</param>
         /// <param name="dbContextOptions">DbContext related settings.</param>
         /// <param name="loggingOptions">Logging related settings.</param>
-        public NKitDbContextRepositoryBase(
+        public NKitDbRespositoryBase(
             DbContext db,
             IOptions<NKitGeneralSettings> generalOptions,
-            IOptions<NKitDbContextRepositorySettings> dbContextOptions, 
+            IOptions<NKitDbRepositorySettings> dbContextOptions, 
             IOptions<NKitLoggingSettings> loggingOptions)
         {
-            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbContextRepositoryBase));
-            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitDbContextRepositoryBase));
+            DataValidator.ValidateObjectNotNull(db, nameof(db), nameof(NKitDbRespositoryBase));
+            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitDbRespositoryBase));
+            DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbRespositoryBase));
+            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitDbRespositoryBase));
             _generalSettings = generalOptions.Value;
             _dbContextSettings = dbContextOptions.Value;
             _loggingSettings = loggingOptions.Value;
@@ -94,7 +94,7 @@
         protected Type _dbContextType;
         protected DbContext _db;
         protected NKitGeneralSettings _generalSettings;
-        protected NKitDbContextRepositorySettings _dbContextSettings;
+        protected NKitDbRepositorySettings _dbContextSettings;
         protected NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields
@@ -118,7 +118,7 @@
             {
                 if (value == null)
                 {
-                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(NKitDbContextRepositoryBase)}");
+                    throw new NullReferenceException($"{nameof(DbContext)} may not be null when setting it on the {nameof(NKitDbRespositoryBase)}");
                 }
                 _db = value;
             }

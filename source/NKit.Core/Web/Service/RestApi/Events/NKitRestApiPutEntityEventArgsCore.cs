@@ -19,7 +19,7 @@
         public NKitRestApiPutEntityEventArgsCore(
             string entityName,
             string userName,
-            NKitDbContextRepository entityContext,
+            NKitDbRepository entityContext,
             Type entityType,
             object inputEntity)
             : base(entityName, userName, entityContext, entityType)

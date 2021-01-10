@@ -19,7 +19,7 @@
         public NKitRestApiGetEntityByIdEventArgsCore(
             string entityName,
             string userName,
-            NKitDbContextRepository entityContext,
+            NKitDbRepository entityContext,
             Type entityType,
             string entityId,
             object outputEntity)

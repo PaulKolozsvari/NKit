@@ -28,7 +28,7 @@
     /// Database.BeginTransaction vs Transactions.TransactionScope: https://stackoverflow.com/questions/22382892/database-begintransaction-vs-transactions-transactionscope
     /// </summary>
     /// <typeparam name="D"></typeparam>
-    public class NKitDbContextRepository : NKitDbContextRepositoryBase
+    public class NKitDbRepository : NKitDbRespositoryBase
     {
         #region Constructors
 
@@ -40,11 +40,11 @@
         /// <param name="generalOptions">General settings.</param>
         /// <param name="dbContextOptions">DbContext related settings.</param>
         /// <param name="loggingOptions">Logging related settings.</param>
-        public NKitDbContextRepository(
+        public NKitDbRepository(
             IServiceProvider serviceProvider,
             Type dbContextType,
             IOptions<NKitGeneralSettings> generalOptions,
-            IOptions<NKitDbContextRepositorySettings> dbContextOptions,
+            IOptions<NKitDbRepositorySettings> dbContextOptions,
             IOptions<NKitLoggingSettings> loggingOptions) : base(serviceProvider, dbContextType, generalOptions, dbContextOptions, loggingOptions)
         {
             Initialize(dbContextOptions.Value);
@@ -57,20 +57,20 @@
         /// <param name="generalOptions">General settings.</param>
         /// <param name="dbContextOptions">DbContext related settings.</param>
         /// <param name="loggingOptions">Logging related settings.</param>
-        public NKitDbContextRepository(
+        public NKitDbRepository(
             DbContext db,
             IOptions<NKitGeneralSettings> generalOptions,
-            IOptions<NKitDbContextRepositorySettings> dbContextOptions, 
+            IOptions<NKitDbRepositorySettings> dbContextOptions, 
             IOptions<NKitLoggingSettings> loggingOptions) : base(db, generalOptions, dbContextOptions, loggingOptions)
         {
             Initialize(dbContextOptions.Value);
         }
 
-        private void Initialize(NKitDbContextRepositorySettings databaseSettings)
+        private void Initialize(NKitDbRepositorySettings databaseSettings)
         {
-            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(NKitDbContextRepository));
-            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(NKitDbContextRepository));
-            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(NKitDbContextRepository));
+            DataValidator.ValidateObjectNotNull(databaseSettings, nameof(databaseSettings), nameof(NKitDbRepository));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryAttempts, nameof(databaseSettings.DatabaseTransactionDeadlockRetryAttempts), nameof(NKitDbRepository));
+            DataValidator.ValidateIntegerNotNegative(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod, nameof(databaseSettings.DatabaseTransactionDeadlockRetryWaitPeriod), nameof(NKitDbRepository));
 
             _transactionScopeOption = databaseSettings.DatabaseTransactionScopeOption;
             _transactionOptions = new TransactionOptions() 

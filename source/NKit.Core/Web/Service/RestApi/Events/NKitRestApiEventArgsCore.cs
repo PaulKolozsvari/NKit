@@ -19,7 +19,7 @@
         public NKitRestApiEventArgsCore(
             string entityName,
             string userName,
-            NKitDbContextRepository entityContext,
+            NKitDbRepository entityContext,
             Type entityType)
         {
             _entityName = entityName;
@@ -34,7 +34,7 @@
 
         private string _entityName;
         private string _userName;
-        private NKitDbContextRepository _entityContext;
+        private NKitDbRepository _entityContext;
         private Type _entityType;
 
         #endregion //Fields
@@ -51,7 +51,7 @@
             get { return _userName; }
         }
 
-        public NKitDbContextRepository EntityContext
+        public NKitDbRepository EntityContext
         {
             get { return _entityContext; }
         }

@@ -26,10 +26,10 @@
         /// </summary>
         public static void UpdateNKitDatabase<D>(this IApplicationBuilder applicationBuilder) where D : DbContext
         {
-            NKitDbContextRepositorySettings dbContextSettings = NKitDbContextRepositorySettings.GetSettings();
+            NKitDbRepositorySettings dbContextSettings = NKitDbRepositorySettings.GetSettings();
             if (dbContextSettings == null)
             {
-                throw new Exception($"Cannot update NKitDatabase when {nameof(NKitDbContextRepositorySettings)} have not been specified in the {NKitInformation.GetAspNetCoreEnvironmentAppSettingsFileName()} file.");
+                throw new Exception($"Cannot update NKitDatabase when {nameof(NKitDbRepositorySettings)} have not been specified in the {NKitInformation.GetAspNetCoreEnvironmentAppSettingsFileName()} file.");
             }
             using (var serviceScope = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
