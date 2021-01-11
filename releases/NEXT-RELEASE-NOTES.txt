@@ -47,4 +47,10 @@
 *   Added XML documentation to all the NKitWebApiController actions.
 *   Removed all the children related fields in the NKitDbContextRepository methods i.e. loadChildren and saveChildren.
 
+*   Added XML comments to the all the NKitDbRepository methods and properties.
+*   Added XML comments to the all the NKitWebApiController methods and properties.
+*   Implementing action GetEntityCount and GetEntityCountLong in NKitWebApiControllerCrud to return the number of records in a specified database table.
+*   Created separate NKitWebApiControllerCrud controler that only contains the action method and inherits from NKitWebApiController which has all the base utility methods i.e. no CRUD action methods.
+    This might be useful for users that want to implement an NKit controller without exposing the database's CRUD methods.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.

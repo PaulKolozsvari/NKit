@@ -20,6 +20,7 @@
     using NKit.Utilities;
     using Microsoft.Extensions.Logging;
     using NKit.Data.DB.LINQ.Models;
+    using System.Data;
 
     #endregion //Using Directives
 
@@ -127,6 +128,35 @@
         #endregion //Properties
 
         #region Methods
+
+        /// <summary>
+        /// Executes raw SQL queries on the underlying DbContext.
+        /// https://stackoverflow.com/questions/35631903/raw-sql-query-without-dbset-entity-framework-core
+        /// </summary>
+        /// <typeparam name="T">The entity type to convert the data to.</typeparam>
+        /// <param name="query">The raw SQL query.</param>
+        /// <param name="map">Mappings between the data received from the DbDataReader and the specified entity type.</param>
+        /// <returns></returns>
+        public List<T> RawSqlQuery<T>(string query, Func<DbDataReader, T> map)
+        {
+            using (var command = DB.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                DB.Database.OpenConnection();
+
+                using (DbDataReader dbDataReader = command.ExecuteReader())
+                {
+                    var entities = new List<T>();
+                    while (dbDataReader.Read())
+                    {
+                        entities.Add(map(dbDataReader));
+                    }
+                    return entities;
+                }
+            }
+        }
 
         /// <summary>
         /// Saves (updates/inserts) an entity to the table corrseponding to the entity type.
@@ -1157,6 +1187,30 @@
         }
 
         /// <summary>
+        /// Runs a raw SQL query to the database to count the number of records in a specified database table.
+        /// </summary>
+        /// <param name="entityType">The entity type i.e. the table from which the entities will be counted.</param>
+        /// <returns>Returns the total count of an entity type.</returns>
+        public virtual int GetTotalCount(Type entityType)
+        {
+            int result = 0;
+            using (var command = DB.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = $"SELECT COUNT(*) FROM {entityType.Name}";
+                command.CommandType = CommandType.Text;
+                DB.Database.OpenConnection();
+                using (DbDataReader dbDataReader = command.ExecuteReader())
+                {
+                    while (dbDataReader.Read())
+                    {
+                        result = Convert.ToInt32(dbDataReader[0]);
+                    }
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Returns the total count of an entity type.
         /// </summary>
         /// <typeparam name="E">The entity type i.e. the table from which the entities will be counted.</typeparam>
@@ -1164,6 +1218,30 @@
         public virtual long GetTotalCountLong<E>() where E : class
         {
             return DB.Set<E>().LongCount();
+        }
+
+        /// <summary>
+        /// Runs a raw SQL query to the database to count the number of records in a specified database table.
+        /// </summary>
+        /// <param name="entityType">The entity type i.e. the table from which the entities will be counted.</param>
+        /// <returns>Returns the total count of an entity type.</returns>
+        public virtual long GetTotalCountLong(Type entityType)
+        {
+            long result = 0;
+            using (var command = DB.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = $"SELECT COUNT(*) FROM {entityType.Name}";
+                command.CommandType = CommandType.Text;
+                DB.Database.OpenConnection();
+                using (DbDataReader dbDataReader = command.ExecuteReader())
+                {
+                    while (dbDataReader.Read())
+                    {
+                        result = Convert.ToInt64(dbDataReader[0]);
+                    }
+                }
+            }
+            return result;
         }
 
         /// <summary>

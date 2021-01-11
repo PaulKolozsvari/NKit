@@ -28,9 +28,13 @@
     #endregion //Using Directives
 
     /// <summary>
-    /// Must register HttpContextAccessor as a service in Startup.ConfigureServices of your app: services.AddHttpContextAccessor();
+    /// Base controller that contains all the utility methods that may be required by any controller implementing the NKit framework e.g. logging of requests, accessing the NKitDbRepository
+    /// that manages an underlying DbContext etc. 
+    /// However this base controller does not contain any CRUD (Create, Read, Update, Delete) actions.
+    /// It can be useful when your controller would prefer to not expose the underlying database's data through CRUD actions.
+    /// N.B. Must register HttpContextAccessor as a service in Startup.ConfigureServices of your app: services.AddHttpContextAccessor();
     /// </summary>
-    /// <typeparam name="D"></typeparam>
+    /// <typeparam name="D">The NKitDbRepository that manages an underlying DbContext.</typeparam>
     [ApiController]
     public class NKitWebApiController<D> : ControllerBase where D : NKitDbRepository
     {
@@ -38,94 +42,124 @@
 
         public NKitWebApiController(
             D dbRespository,
-            IHttpContextAccessor httpContextAccessor, 
-            IOptions<NKitWebApiControllerSettings> webApiOptions,
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<NKitGeneralSettings> generalOptions,
+            IOptions<NKitWebApiControllerSettings> webApiControllerOptions,
             IOptions<NKitDbRepositorySettings> databaseOptions,
             IOptions<NKitEmailCllientSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
+            IOptions<NKitWebApiClientSettings> webApiClientOptions,
             ILogger logger)
         {
             DataValidator.ValidateObjectNotNull(dbRespository, nameof(dbRespository), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitWebApiController<D>));
-            DataValidator.ValidateObjectNotNull(webApiOptions, nameof(webApiOptions), nameof(NKitWebApiController<D>));
+
+            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(webApiControllerOptions, nameof(webApiControllerOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(emailOptions, nameof(emailOptions), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(webApiClientOptions, nameof(webApiClientOptions), nameof(NKitWebApiController<D>));
 
             _serviceInstanceId = Guid.NewGuid();
 
             _dbRepository = dbRespository;
             _httpContextAccessor = httpContextAccessor;
-            _webApiSettings = webApiOptions.Value;
+
+            _generalSettings = generalOptions.Value;
+            _webApiControllerSettings = webApiControllerOptions.Value;
             _dbRepositorySettings = databaseOptions.Value;
             _emailSettings = emailOptions.Value;
             _loggingSettings = loggingOptions.Value;
+            _webApiClientSettings = webApiClientOptions.Value;
+
             _logger = logger;
         }
 
         #endregion //Constructors
-
-        #region Events
-
-        protected event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntities;
-        protected event OnAfterGetEntitiesHandlerCore OnAfterGetEntities;
-
-        protected event OnBeforeGetEntityByIdHandlerCore OnBeforeGetEntityById;
-        protected event OnAfterGetEntityByIdHandlerCore OnAfterGetEntityById;
-
-        protected event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntitiesByField;
-        protected event OnAfterGetEntitiesHandlerCore OnAfterGetEntitiesByField;
-
-        protected event OnBeforePutEntityHandlerCore OnBeforePut;
-        protected event OnAfterPutEntityHandlerCore OnAfterPut;
-
-        protected event OnBeforePostEntityHandlerCore OnBeforePost;
-        protected event OnAfterPostEntityHandlerCore OnAfterPost;
-
-        protected event OnBeforeDeleteEntityHandlerCore OnBeforeDelete;
-        protected event OnAfterDeleteEntityHandlerCore OnAfterDelete;
-
-        #endregion //Events
 
         #region Fields
 
         private readonly Nullable<Guid> _serviceInstanceId;
 
         private readonly ILogger _logger;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly D _dbRepository;
 
-        private readonly NKitWebApiControllerSettings _webApiSettings;
+        private readonly NKitGeneralSettings _generalSettings;
+        private readonly NKitWebApiControllerSettings _webApiControllerSettings;
         private readonly NKitDbRepositorySettings _dbRepositorySettings;
         private readonly NKitEmailCllientSettings _emailSettings;
         private readonly NKitLoggingSettings _loggingSettings;
+        private readonly NKitWebApiClientSettings _webApiClientSettings;
 
         #endregion //Fields
 
         #region Properties
 
+        /// <summary>
+        /// A unique GUID of the current instance of this controller. A new instance of this controller is created per request.
+        /// </summary>
         protected Nullable<Guid> ServiceInstanceId { get { return _serviceInstanceId; } }
 
+        /// <summary>
+        /// Logger being supplied to the controller through dependency injection.
+        /// </summary>
         protected ILogger Logger { get { return _logger; } }
-        protected IServiceScopeFactory ServiceScopeFactory { get { return _serviceScopeFactory; } }
-        protected IServiceProvider ServiceProvider { get { return _serviceProvider; } }
+
+        /// <summary>
+        /// HTTP Context Accessor which can be used to access the HTTP context providing information about the web request.
+        /// </summary>
         protected IHttpContextAccessor HttpContextAccessor { get { return _httpContextAccessor; } }
+
+        /// <summary>
+        /// The NKitDbRepository which can be used to access data in the database.
+        /// </summary>
         protected D DbRepository { get { return _dbRepository; } }
 
-        protected NKitWebApiControllerSettings WebApiSettings { get { return _webApiSettings; } }
+        /// <summary>
+        /// The NKitGeneralSettings settings that were configured in the appsettings.json file.
+        /// </summary>
+        protected NKitGeneralSettings GeneralSettings { get { return _generalSettings; } }
+
+        /// <summary>
+        /// The NKitWebApiController settings that were configured in the appsettings.json file.
+        /// </summary>
+        protected NKitWebApiControllerSettings WebApiControllerSettings { get { return _webApiControllerSettings; } }
+
+        /// <summary>
+        /// The NKitDbRepository settings that were configured in the appsettings.json file.
+        /// </summary>
         protected NKitDbRepositorySettings DbRepositorySettings { get { return _dbRepositorySettings; } }
+
+        /// <summary>
+        /// The NKitEmailCllient settings that were configured in the appsettings.json file.
+        /// </summary>
         protected NKitEmailCllientSettings EmailSettings { get { return _emailSettings; } }
+
+        /// <summary>
+        /// The NKitEmailCllient settings that were configured in the appsettings.json file.
+        /// </summary>
         protected NKitLoggingSettings LoggingSettings { get { return _loggingSettings; } }
+
+        /// <summary>
+        /// The NKitWebApiClientSettings settings that were configured in the appsettings.json file.
+        /// </summary>
+        protected NKitWebApiClientSettings WebApiClientSettings { get { return _webApiClientSettings; } }
 
         #endregion //Properties
 
         #region Methods
 
-        protected void LogRequest(string actionName, string requestMessage)
+        /// <summary>
+        /// Logs a web request to the Logger as well as to the NKitLogEntry database table, including all parameters of the current web request
+        /// e.g. server hostname, request URI, number of threads running etc.
+        /// </summary>
+        /// <param name="actionName">The name of the action handing the current web request/response.</param>
+        /// <param name="requestMessage">The message payload/contents of the web request (if any).</param>
+        protected void LogWebRequest(string actionName, string requestMessage)
         {
-            if (!_webApiSettings.LogRequests && !_webApiSettings.LogRequestsInDatabaseNKitLogEntry)
+            if (!_webApiControllerSettings.LogRequests && !_webApiControllerSettings.LogRequestsInDatabaseNKitLogEntry)
             {
                 return;
             }
@@ -136,21 +170,27 @@
                 logMessageBuilder.AppendLine($"Request Message:");
                 logMessageBuilder.AppendLine(requestMessage);
             }
-            AppendStatsToLogMessage(logMessageBuilder);
+            logMessageBuilder.AppendLine(GetFullWebRequestInfoMessage());
             string logMessage = logMessageBuilder.ToString();
-            if (_logger != null && _webApiSettings.LogRequests)
+            if (_logger != null && _webApiControllerSettings.LogRequests)
             {
                 _logger.LogInformation(logMessage);
             }
-            if (_dbRepository != null && _webApiSettings.LogRequestsInDatabaseNKitLogEntry)
+            if (_dbRepository != null && _webApiControllerSettings.LogRequestsInDatabaseNKitLogEntry)
             {
                 _dbRepository.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(27, "Request"));
             }
         }
 
-        protected void LogResponse(string actionName, string responseMessage)
+        /// <summary>
+        /// Logs a web response to the Logger as well as to the NKitLogEntry database table, including all parameters of the current web request
+        /// e.g. server hostname, request URI, number of threads running etc.
+        /// </summary>
+        /// <param name="actionName">The name of the action handing the current web request/response.</param>
+        /// <param name="responseMessage">The message payload/contents of the web response (if any).</param>
+        protected void LogWebResponse(string actionName, string responseMessage)
         {
-            if (!_webApiSettings.LogResponses && !_webApiSettings.LogResponsesInDatabaseNKitLogEntry)
+            if (!_webApiControllerSettings.LogResponses && !_webApiControllerSettings.LogResponsesInDatabaseNKitLogEntry)
             {
                 return;
             }
@@ -161,37 +201,77 @@
                 logMessageBuilder.AppendLine($"Request Message:");
                 logMessageBuilder.AppendLine(responseMessage);
             }
-            AppendStatsToLogMessage(logMessageBuilder);
+            logMessageBuilder.AppendLine(GetFullWebRequestInfoMessage());
             string logMessage = logMessageBuilder.ToString();
-            if (_logger != null && _webApiSettings.LogResponses)
+            if (_logger != null && _webApiControllerSettings.LogResponses)
             {
                 _logger.LogInformation(logMessage);
             }
-            if (_dbRepository != null && _webApiSettings.LogResponsesInDatabaseNKitLogEntry)
+            if (_dbRepository != null && _webApiControllerSettings.LogResponsesInDatabaseNKitLogEntry)
             {
                 _dbRepository.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(28, "Response"));
             }
         }
 
-        private void AppendStatsToLogMessage(StringBuilder logMessage)
+        /// <summary>
+        /// Gets a full message of all the details about the running web request.
+        /// e.g. server hostname, request URI, number of threads running etc.
+        /// </summary>
+        private string GetFullWebRequestInfoMessage()
         {
+            StringBuilder result = new StringBuilder();
             ThreadHelper.GetCurrentThreadCount(out int workerThreadsRunning, out int completionPortThreadsRunning);
-            int totalThreadsRunning = ThreadHelper.GetTotalThreadsRunningCountInCurrentProcess();
-            logMessage.AppendLine($"Request URI: {GetCurrentRequestUri()}");
-            logMessage.AppendLine($"Request Verb: {_httpContextAccessor.HttpContext.Request.Method}");
-            logMessage.AppendLine($"Service Instance ID: {_serviceInstanceId}");
-            logMessage.AppendLine($"Worker Threads Running: {workerThreadsRunning}");
-            logMessage.AppendLine($"Completion Port Threads Running: {completionPortThreadsRunning}");
-            logMessage.AppendLine($"Total Threads Running: {totalThreadsRunning}");
-            logMessage.AppendLine($"Current Thread ID: {Thread.CurrentThread.ManagedThreadId}");
+            result.AppendLine($"Server: {GetCurrentServerHostName()}");
+            result.AppendLine($"Request URI: {GetCurrentWebRequestUri()}");
+            result.AppendLine($"Request Method: {GetCurrentWebRequestMethod()}");
+            result.AppendLine($"Service Instance ID: {_serviceInstanceId}");
+            result.AppendLine($"Worker Threads Running: {workerThreadsRunning}");
+            result.AppendLine($"Completion Port Threads Running: {completionPortThreadsRunning}");
+            result.AppendLine($"Total Threads Running: {GetTotalThreadsRunningCountInCurrentProcess()}");
+            result.AppendLine($"Current Thread ID: {Thread.CurrentThread.ManagedThreadId}");
+            return result.ToString();
         }
 
-        protected string GetServerHostName()
+        /// <summary>
+        /// Gets the current server hostname which the application is running on.
+        /// </summary>
+        protected string GetCurrentServerHostName()
         {
             return _httpContextAccessor.HttpContext.Request.Host.Value;
         }
 
-        protected string GetCurrentRequestUri()
+        /// <summary>
+        /// Gets the total number of threads currently running in the current process.
+        /// </summary>
+        /// <returns></returns>
+        protected int GetTotalThreadsRunningCountInCurrentProcess()
+        {
+            return ThreadHelper.GetTotalThreadsRunningCountInCurrentProcess();
+        }
+
+        /// <summary>
+        /// Gets the number of worker threads and completion port threads currently running.
+        /// </summary>
+        /// <param name="workerThreadsRunning">Number of work threads currently running.</param>
+        /// <param name="completionPortThreadsRunning">Number of completion port threads currently running.</param>
+        protected void GetCurrentThreadCount(out int workerThreadsRunning, out int completionPortThreadsRunning)
+        {
+            ThreadHelper.GetCurrentThreadCount(out workerThreadsRunning, out completionPortThreadsRunning);
+        }
+
+        /// <summary>
+        /// Gets the current managed thread's ID.
+        /// </summary>
+        protected int GetCurrentManagedThreadId()
+        {
+            return Thread.CurrentThread.ManagedThreadId;
+        }
+
+
+        /// <summary>
+        /// Gets the current web request's URI.
+        /// </summary>
+        protected string GetCurrentWebRequestUri()
         {
             //var request = _httpContextAccessor.HttpContext.Request;
             //UriBuilder uriBuilder = new UriBuilder();
@@ -203,16 +283,26 @@
             return _httpContextAccessor.HttpContext.Request.GetDisplayUrl(); //You need to have a using statement to include the GetDisplayUrl extendion method in your file: using Microsoft.AspNetCore.Http.Extensions
         }
 
-        protected string GetCurrentRequestMethod()
+        /// <summary>
+        /// Gets the current web request's method (verb) e.g. GET, PUT, POST, DELETE.
+        /// </summary>
+        protected string GetCurrentWebRequestMethod()
         {
             return _httpContextAccessor.HttpContext.Request.Method;
         }
 
+        /// <summary>
+        /// Gets all the current web request's HTTP headers in raw format.
+        /// </summary>
+        /// <returns></returns>
         protected string GetAllHeadersFullString()
         {
             return _httpContextAccessor.HttpContext.Request.Headers.ToString();
         }
 
+        /// <summary>
+        /// Gets all the current web request's HTTP headers formatted which each header her line of text with {HEADER}={VALUE}.
+        /// </summary>
         protected string GetAllHeadersFormatted()
         {
             StringBuilder result = new StringBuilder();
@@ -223,6 +313,12 @@
             return result.ToString();
         }
 
+        /// <summary>
+        /// Gets the value of a specific HTTP header in the current web request.
+        /// </summary>
+        /// <param name="key">The specific HTTP header to be retrieved.</param>
+        /// <param name="throwExceptionOnNotFound">Whether or not an exception need to be thrown if the header does nto exist. Otherwise it returns an empty string.</param>
+        /// <returns></returns>
         protected string GetHeader(string key, bool throwExceptionOnNotFound)
         {
             string result = string.Empty;
@@ -237,24 +333,33 @@
             return result;
         }
 
+        /// <summary>
+        /// Validates that the current web request's method of a specific method (verb).
+        /// Throws an exception if the current web request's method (verb) does not match the specified one.
+        /// </summary>
+        /// <param name="verb">The HTTP method (verb) to check for.</param>
         protected virtual void ValidateRequestMethod(HttpVerb verb)
         {
             ValidateRequestMethod(verb.ToString());
         }
 
+        /// <summary>
+        /// Validates that the current web request's method of a specific method (verb).
+        /// Throws an exception if the current web request's method (verb) does not match the specified one.
+        /// </summary>
+        /// <param name="verb">The HTTP method (verb) to check for.</param>
         protected virtual void ValidateRequestMethod(string verb)
         {
-            if (GetCurrentRequestMethod() != verb)
+            if (GetCurrentWebRequestMethod() != verb)
             {
-                throw new UserThrownException(
-                    string.Format(
-                    "Unexpected Method of {0} on incoming POST Request {1}.",
-                    GetCurrentRequestMethod(),
-                    GetCurrentRequestUri()),
-                    LoggingLevel.Normal);
+                throw new Exception($"Unexpected Method of {GetCurrentWebRequestMethod()} on incoming POST Request {GetCurrentWebRequestUri()}.");
             }
         }
 
+        /// <summary>
+        /// Gets the identify (user name) of the current user making the web request i.e. based on the credentials passed in the web request.
+        /// </summary>
+        /// <returns></returns>
         protected virtual string GetCurrentUserName()
         {
             if (_httpContextAccessor.HttpContext.User != null)
@@ -268,6 +373,12 @@
             return null;
         }
 
+        /// <summary>
+        /// Uses reflection to look for and return a .NET type in the DbContext that is managed by the NKitDbRepository.
+        /// The search is done by looking in the assembly and namespace configured in EntityFrameworkModelsAssembly and EntityFrameworkModelsNamespace settings of the NKitDbRepositorySettings section of the appsettings.json file.
+        /// Returns the .NET entity type from the DbContext. Throws an exception if it is not found.
+        /// </summary>
+        /// <param name="entityName">The name of the entity type to look for.</param>
         protected virtual Type GetEntityType(string entityName)
         {
             Type result = AssemblyReader.FindType(_dbRepositorySettings.EntityFrameworkModelsAssembly, _dbRepositorySettings.EntityFrameworkModelsNamespace, entityName, false);
@@ -284,6 +395,9 @@
             return result;
         }
 
+        /// <summary>
+        /// Disposes the NKitDbRepository which in turn disposes the DbContext which it manages.
+        /// </summary>
         protected void DisposeEntityContext()
         {
             if (_dbRepository != null)
@@ -293,241 +407,25 @@
         }
 
         /// <summary>
-        /// Returns either a JSON or XML serializer based on the SerializerType set in the NKitWebApiSettings of the appsettings.json file.
+        /// Returns either a JSON or XML serializer based on the SerializerType set in the NKitWebApiSettings section of the appsettings.json file.
         /// </summary>
         /// <returns></returns>
         protected ISerializer GetSerializer()
         {
-            return GOC.Instance.GetSerializer(_webApiSettings.SerializerType);
+            return GOC.Instance.GetSerializer(_webApiControllerSettings.SerializerType);
         }
 
+        /// <summary>
+        /// Gets the NKit .NET model types used by this NKitWebApiController. 
+        /// This is usefull to pass into the XML serializer as extra types which the deserializer needs to be made aware of in order to serialize or deserialize
+        /// other objects that derive from these types.
+        /// </summary>
+        /// <returns></returns>
         protected Type[] GetNKitSerializerModelTypes()
         {
             return new Type[] { typeof(NKitBaseModel), typeof(NKitHttpExceptionResponse), typeof(NKitLogEntry) };
         }
 
         #endregion //Methods
-
-        #region Actions
-
-        /// <summary>
-        /// Get a single entity (table record) of the the specified entity name (table name) by searching for its surrogate key (single table key) supplied in the entityId parameter.
-        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
-        /// Returns a single record in JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
-        /// The Content-Type of the response is based on the configured ResponseContentType property in the NKitWebApiControllerSettings section of the appsettings.json file.
-        /// Called as such: "/{entityName}/{entityId}"
-        /// </summary>
-        /// <param name="entityName">The name of the database table to query from.</param>
-        /// <param name="entityId">The surrogate key (single table key) of the database record.</param>
-        /// <returns>Returns a single record in JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.</returns>
-        [HttpGet, Route("{entityName}/{entityId}")]
-        [Produces(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
-        public virtual IActionResult GetEntityById(string entityName, string entityId)
-        {
-            try
-            {
-                string requestName = $"{nameof(GetEntityById)} : Entity Name = {entityName} : Entity ID = {entityId}";
-                LogRequest(requestName, null);
-                ValidateRequestMethod(HttpVerb.GET);
-                string userName = GetCurrentUserName();
-                Type entityType = GetEntityType(entityName);
-                if (OnBeforeGetEntityById != null)
-                {
-                    OnBeforeGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _dbRepository, entityType, entityId, null));
-                }
-                object outputEntity = _dbRepository.GetEntityBySurrogateKey(entityType, entityId, userName).Contents;
-                if (OnAfterGetEntityById != null)
-                {
-                    OnAfterGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, _dbRepository, entityType, entityId, outputEntity));
-                }
-                string serializedText = GetSerializer().SerializeToText(outputEntity, GetNKitSerializerModelTypes());
-                LogResponse(requestName, serializedText);
-                Response.ContentType = _webApiSettings.ResponseContentType;
-                return Ok(serializedText);
-            }
-            finally
-            {
-                DisposeEntityContext();
-            }
-        }
-
-        //Using Query Parameters: https://stackoverflow.com/questions/59621208/how-do-i-use-query-parameters-in-attributes
-        /// <summary>
-        /// Gets entities (table records) of the the specified entity name (table name). 
-        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
-        /// Optional search by field and search value of can be applied to apply a filter based on a specific field and its value i.e. searching by a specific column in the database table.
-        /// Returns as a list of the specified entity type in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
-        /// The Content-Type of the response is based on the configured ResponseContentType property in the NKitWebApiControllerSettings section of the appsettings.json file.
-        /// Called as such: "/{entityName}?={fieldName}&amp;searchValueOf={fieldValue}"
-        /// </summary>
-        /// <param name="entityName">The name of the database table to query from.</param>
-        /// <param name="searchBy">Optional name of a column to filter by.</param>
-        /// <param name="searchValueOf">Optional value of the column that is being filtered by.</param>
-        /// <returns>Returns as a list of the specified entity type in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.</returns>
-        [HttpGet, Route("{entityName}")]
-        [Produces(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
-        public virtual IActionResult GetEntities([FromRoute] string entityName, [FromQuery] string searchBy, [FromQuery] string searchValueOf)
-        {
-            try
-            {
-                string requestName = $"{nameof(GetEntities)} : Entity Name = {entityName} : Search by = {searchBy} : Search by value = {searchValueOf}";
-                LogRequest(requestName, null);
-                ValidateRequestMethod(HttpVerb.GET);
-                string userName = GetCurrentUserName();
-                Type entityType = GetEntityType(entityName);
-                if (OnBeforeGetEntitiesByField != null)
-                {
-                    OnBeforeGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _dbRepository, entityType, searchBy, searchValueOf, null));
-                }
-                List<object> outputEntities = string.IsNullOrEmpty(searchBy) ?
-                    _dbRepository.GetAllEntities(entityType, userName).Contents :
-                    _dbRepository.GetEntitiesByField(entityType, searchBy, searchValueOf, userName).Contents;
-                if (OnAfterGetEntitiesByField != null)
-                {
-                    OnAfterGetEntitiesByField(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, _dbRepository, entityType, searchBy, searchValueOf, outputEntities));
-                }
-                string serializedText = GetSerializer().SerializeToText(outputEntities, GetNKitSerializerModelTypes());
-                LogResponse(requestName, serializedText);
-                Response.ContentType = _webApiSettings.ResponseContentType;
-                return Ok(serializedText);
-            }
-            finally
-            {
-                DisposeEntityContext();
-            }
-        }
-
-        /// <summary>
-        /// Saves (updates or inserts) a single entity to a database table matching the entity name. 
-        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
-        /// The request body can be in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
-        /// The request body can be text/plain, application/json or application/xml.
-        /// Returns a text message simple message indicating that the entity has been saved. 
-        /// The Content-Type of the is always text/plain.
-        /// Called as such: "/{entityName}" with the JSON or XML contents as part of the request body.
-        /// </summary>
-        /// <param name="entityName">The name of the database table to save to.</param>
-        /// <param name="serializedText">The JSON or XML representation of the entity (record) being saved.</param>
-        /// <returns>Returns a text message simple message indicating that the entity has been saved. </returns>
-        [HttpPut, Route("{entityName}")]
-        [Consumes(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
-        [Produces(MimeContentType.TEXT_PLAIN)]
-        public virtual IActionResult PutEntity(string entityName, [FromBody] string serializedText)
-        {
-            try
-            {
-                string requestName = $"{nameof(PutEntity)} : Entity Name : {entityName}";
-                ValidateRequestMethod(HttpVerb.PUT);
-                string userName = GetCurrentUserName();
-                Type entityType = GetEntityType(entityName);
-                object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
-                LogRequest(requestName, serializedText);
-                if (OnBeforePut != null)
-                {
-                    OnBeforePut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _dbRepository, entityType, inputEntity));
-                }
-                _dbRepository.Save(entityType, new List<object>() { inputEntity }, userName);
-                if (OnAfterPut != null)
-                {
-                    OnAfterPut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, _dbRepository, entityType, inputEntity));
-                }
-                string responseMessage = string.Format("{0} saved successfully.", entityName);
-                LogResponse(requestName, responseMessage);
-                return Ok(responseMessage);
-            }
-            finally
-            {
-                DisposeEntityContext();
-            }
-        }
-
-        /// <summary>
-        /// Inserts a single entity to a database table matching the entity name.
-        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
-        /// The request body can be in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
-        /// The request body can be text/plain, application/json or application/xml.
-        /// Returns a text message simple message indicating that the entity has been saved. 
-        /// The Content-Type of the is always text/plain.
-        /// Called as such: "/{entityName}" with the JSON or XML contents as part of the request body.
-        /// </summary>
-        /// <param name="entityName">The name of the database table to save to.</param>
-        /// <param name="serializedText">The JSON or XML representation of the entity (record) being inserted.</param>
-        /// <returns>Returns a text message simple message indicating that the entity has been inserted. </returns>
-        [HttpPost, Route("{entityName}")]
-        [Consumes(MimeContentType.TEXT_PLAIN, MimeContentType.APPLICATION_JSON, MimeContentType.APPLICATION_XML)]
-        [Produces(MimeContentType.TEXT_PLAIN)]
-        public virtual IActionResult PostEntity(string entityName, [FromBody] string serializedText)
-        {
-            try
-            {
-                string requestName = $"{nameof(PostEntity)} : Entity Name = {entityName}";
-                ValidateRequestMethod(HttpVerb.POST);
-                string userName = GetCurrentUserName();
-                Type entityType = GetEntityType(entityName);
-                object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
-                LogRequest(requestName, serializedText);
-                if (OnBeforePost != null)
-                {
-                    OnBeforePost(this, new NKitRestApiPostEntityEventArgsCore(entityName, userName, _dbRepository, entityType, inputEntity));
-                }
-                _dbRepository.Insert(entityType, new List<object>() { inputEntity }, userName);
-                if (OnAfterPost != null)
-                {
-                    OnAfterPost(this, new NKitRestApiPostEntityEventArgsCore(
-                        entityName, userName, _dbRepository, entityType, inputEntity));
-                }
-                string responseMessage = string.Format("{0} inserted successfully.", entityName);
-                LogResponse(requestName, responseMessage);
-                return Ok(responseMessage);
-            }
-            finally
-            {
-                DisposeEntityContext();
-            }
-        }
-
-        /// <summary>
-        /// Deletes a single entity (table record) of the the specified entity name (table name) by searching for its surrogate key (single table key) supplied in the entityId parameter.
-        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
-        /// Returns a text message simple message indicating that the entity has been deleted. 
-        /// The Content-Type of the is always text/plain.
-        /// Called as such: "/{entityName}/{entityId}"
-        /// </summary>
-        /// <param name="entityName">The name of the database table to delete from.</param>
-        /// <param name="entityId">The surrogate key (single table key) of the database record to be deleted.</param>
-        /// <returns>Returns a text message simple message indicating that the entity has been deleted. </returns>
-        [HttpDelete, Route("{entityName}/{entityId}")]
-        [Produces(MimeContentType.TEXT_PLAIN)]
-        public virtual IActionResult DeleteEntity(string entityName, string entityId)
-        {
-            try
-            {
-                string requestName = $"{nameof(DeleteEntity)} : Entity Name = {entityName} : Entity ID = {entityId}";
-                LogRequest(requestName, null);
-                ValidateRequestMethod(HttpVerb.DELETE);
-                string userName = GetCurrentUserName();
-                Type entityType = GetEntityType(entityName);
-                if (OnBeforeDelete != null)
-                {
-                    OnBeforeDelete(this, new NKitRestApiDeleteEntityEventArgsCore(
-                        entityName, userName, _dbRepository, entityType, entityId));
-                }
-                _dbRepository.DeleteBySurrogateKey(entityType, new List<object>() { entityId }, userName);
-                if (OnAfterDelete != null)
-                {
-                    OnAfterDelete(this, new NKitRestApiDeleteEntityEventArgsCore(
-                        entityName, userName, _dbRepository, entityType, entityId));
-                }
-                string responseMessage = string.Format("{0} deleted successfully.", entityName);
-                LogResponse(requestName, responseMessage);
-                return Ok(responseMessage);
-            }
-            finally
-            {
-                DisposeEntityContext();
-            }
-        }
-
-        #endregion //Actions
     }
 }

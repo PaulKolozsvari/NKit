@@ -142,9 +142,15 @@
 
         #region Core Methods
 
-        public ServiceProcedureResult Save<E>(
-            List<E> entities,
-            string userName) where E : class
+        /// <summary>
+        /// Saves a list of entities to the underlying DbContext in a single transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table).</typeparam>
+        /// <param name="entities">The list of entities to be saved.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult SaveInTransaction<E>(List<E> entities) where E : class
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -175,10 +181,15 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Save)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult Save(
-            Type entityType,
-            List<object> entities,
-            string userName)
+        /// <summary>
+        /// Saves a list of entities to the underlying DbContext in a single transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="entityType">The type of entity (database table).</param>
+        /// <param name="entities">The list of entities to be saved.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult SaveInTransaction(Type entityType, List<object> entities)
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -209,9 +220,15 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Save)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult Insert<E>(
-            List<E> entities,
-            string userName) where E : class
+        /// <summary>
+        /// Inserts list of entities to the underlying DbContext in a single transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table).</typeparam>
+        /// <param name="entities">The list of entities to be inserted.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult InsertInTransaction<E>(List<E> entities) where E : class
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -242,10 +259,15 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Insert)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult Insert(
-            Type entityType,
-            List<object> entities,
-            string userName)
+        /// <summary>
+        /// Inserts list of entities to the underlying DbContext in a single transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="entityType">The type of entity (database table).</param>
+        /// <param name="entities">The list of entities to be inserted.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult InsertInTransaction(Type entityType, List<object> entities)
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -276,9 +298,15 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Insert)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult Delete<E>(
-            List<E> entities,
-            string userName) where E : class
+        /// <summary>
+        /// Deletes list of entities to the underlying DbContext in a single transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table).</typeparam>
+        /// <param name="entities">The list of entities to be deleted.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult DeleteInTransaction<E>(List<E> entities) where E : class
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -309,10 +337,15 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Delete)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult Delete(
-            Type entityType,
-            List<object> entities,
-            string userName)
+        /// <summary>
+        /// Deletes list of entities to the underlying DbContext in a single transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="entityType">The type of entity (database table).</param>
+        /// <param name="entities">The list of entities to be deleted.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult DeleteInTransaction(Type entityType, List<object> entities)
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -343,9 +376,14 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(Delete)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult DeleteBySurrogateKey<E>(
-            List<object> surrogateKeys,
-            string userName) where E : class
+        /// <summary>
+        /// Deletes list of entities to the underlying DbContext in a single transaction based on the surrogate keys of the entities.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="surrogateKeys">The surrogate keys entities (database records).</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult DeleteBySurrogateKeyInTransaction<E>(List<object> surrogateKeys) where E : class
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -376,10 +414,15 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteBySurrogateKey)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult DeleteBySurrogateKey(
-            Type entityType,
-            List<object> surrogateKeys,
-            string userName)
+        /// <summary>
+        /// Deletes list of entities to the underlying DbContext in a single transaction based on the surrogate keys of the entities.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="entityType">The type of entity (database table).</param>
+        /// <param name="surrogateKeys">The surrogate keys entities (database records).</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult DeleteBySurrogateKeyInTransaction(Type entityType, List<object> surrogateKeys)
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -410,8 +453,14 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteBySurrogateKey)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult DeleteAll<E>(
-            string userName) where E : class
+        /// <summary>
+        /// Deletes all entities of the specified type from the underlying DbContext in a single transaction based on the surrogate keys of the entities.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table).</typeparam>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult DeleteAllInTransaction<E>() where E : class
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -439,9 +488,14 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceProcedureResult DeleteAll(
-            Type entityType,
-            string userName)
+        /// <summary>
+        /// Deletes all entities of the specified type from the underlying DbContext in a single transaction based on the surrogate keys of the entities. 
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="entityType">The type of entity (database table)</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceProcedureResult DeleteAllInTransaction(Type entityType)
         {
             int attempts = 0;
             while (attempts < _transactionDeadlockRetryAttempts)
@@ -469,68 +523,299 @@
             return new ServiceProcedureResult(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
         }
 
-        public ServiceFunctionResult<E> GetEntityBySurrogateKey<E>(
-            object keyValue,
-            string userName) where E : class
+        /// <summary>
+        /// Gets an entity of the specified type based on it's surrogate key. Query is performed in a transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table)</typeparam>
+        /// <param name="keyValue">The value of the surrogate key.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceFunctionResult<E> GetEntityBySurrogateKeyInTransaction<E>(object keyValue) where E : class
         {
-            return new ServiceFunctionResult<E> { Contents = base.GetEntityBySurrogateKey<E>(keyValue) };
-        }
-
-        public ServiceFunctionResult<object> GetEntityBySurrogateKey(
-            Type entityType,
-            object keyValue,
-            string userName)
-        {
-            return new ServiceFunctionResult<object>() { Contents = base.GetEntityBySurrogateKey(entityType, keyValue) };
-        }
-
-        public ServiceFunctionResult<List<E>> GetEntitiesByField<E>(
-            string fieldName,
-            object fieldValue,
-            string userName) where E : class
-        {
-            return new ServiceFunctionResult<List<E>>() { Contents = base.GetEntitiesByField<E>(fieldName, fieldValue) };
-        }
-
-        public ServiceFunctionResult<List<object>> GetEntitiesByField(
-            Type entityType,
-            string fieldName,
-            object fieldValue,
-            string userName)
-        {
-            return new ServiceFunctionResult<List<object>>() { Contents = base.GetEntitiesByField(entityType, fieldName, fieldValue) };
-        }
-
-        public ServiceFunctionResult<List<E>> GetAllEntities<E>(
-            string userName) where E : class
-        {
-            return new ServiceFunctionResult<List<E>>() { Contents = base.GetAllEntities<E>() };
-        }
-
-        public ServiceFunctionResult<List<object>> GetAllEntities(
-            Type entityType,
-            string userName)
-        {
-            return new ServiceFunctionResult<List<object>>() { Contents = base.GetAllEntities(entityType) };
-        }
-
-        public ServiceFunctionResult<int> GetTotalCount<E>(
-            string userName) where E : class
-        {
-            return new ServiceFunctionResult<int>() { Contents = base.GetTotalCount<E>() };
-        }
-
-        public ServiceFunctionResult<long> GetTotalCountLong<E>(
-            string userName) where E : class
-        {
-            try
+            int attempts = 0;
+            while (attempts < _transactionDeadlockRetryAttempts)
             {
-                return new ServiceFunctionResult<long>() { Contents = base.GetTotalCountLong<E>() };
+                try
+                {
+                    E result = null;
+                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    {
+                        result = base.GetEntityBySurrogateKey<E>(keyValue);
+                        t.Complete();
+                    }
+                    return new ServiceFunctionResult<E> { Contents = result };
+                }
+                catch (SqlException sqlEx)
+                {
+                    attempts++;
+                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
             }
-            catch (Exception ex)
+            return new ServiceFunctionResult<E>(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+        }
+
+        /// <summary>
+        /// Gets an entity of the specified type based on it's surrogate key. Query is performed in a transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="entityType">The type of entity (database table)</param>
+        /// <param name="keyValue">The value of the surrogate key.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceFunctionResult<object> GetEntityBySurrogateKeyInTransaction(Type entityType, object keyValue)
+        {
+            int attempts = 0;
+            while (attempts < _transactionDeadlockRetryAttempts)
             {
-                throw ex;
+                try
+                {
+                    object result = null;
+                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    {
+                        result = base.GetEntityBySurrogateKey(entityType, keyValue);
+                        t.Complete();
+                    }
+                    return new ServiceFunctionResult<object> { Contents = result };
+                }
+                catch (SqlException sqlEx)
+                {
+                    attempts++;
+                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
             }
+            return new ServiceFunctionResult<object>(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+        }
+
+        /// <summary>
+        /// Gets a list of entities of the specified type based by searching for a specific field and its value i.e. filtering based on a column. Query is performed in a transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table)</typeparam>
+        /// <param name="fieldName">The name of the field (column) to filter by.</param>
+        /// <param name="fieldValue">The value of the field (column) to filter by.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceFunctionResult<List<E>> GetEntitiesByFieldInTransaction<E>(string fieldName, object fieldValue) where E : class
+        {
+            int attempts = 0;
+            while (attempts < _transactionDeadlockRetryAttempts)
+            {
+                try
+                {
+                    List<E> result = null;
+                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    {
+                        result = base.GetEntitiesByField<E>(fieldName, fieldValue);
+                        t.Complete();
+                    }
+                    return new ServiceFunctionResult<List<E>> { Contents = result };
+                }
+                catch (SqlException sqlEx)
+                {
+                    attempts++;
+                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+            }
+            return new ServiceFunctionResult<List<E>>(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+        }
+
+        /// <summary>
+        /// Gets a list of entities of the specified type based by searching for a specific field and its value i.e. filtering based on a column. Query is performed in a transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="entityType">The type of entity (database table)</param>
+        /// <param name="fieldName">The name of the field (column) to filter by.</param>
+        /// <param name="fieldValue">The value of the field (column) to filter by.</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceFunctionResult<List<object>> GetEntitiesByFieldInTransaction(Type entityType, string fieldName, object fieldValue)
+        {
+            int attempts = 0;
+            while (attempts < _transactionDeadlockRetryAttempts)
+            {
+                try
+                {
+                    List<object> result = null;
+                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    {
+                        result = base.GetEntitiesByField(entityType, fieldName, fieldValue);
+                        t.Complete();
+                    }
+                    return new ServiceFunctionResult<List<object>> { Contents = result };
+                }
+                catch (SqlException sqlEx)
+                {
+                    attempts++;
+                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+            }
+            return new ServiceFunctionResult<List<object>>(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+        }
+
+        /// <summary>
+        /// Gets all entities of the specified type i.e. all records in a database table. Query is performed in a transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table)</typeparam>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceFunctionResult<List<E>> GetAllEntitiesInTransaction<E>() where E : class
+        {
+            int attempts = 0;
+            while (attempts < _transactionDeadlockRetryAttempts)
+            {
+                try
+                {
+                    List<E> result = null;
+                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    {
+                        result = base.GetAllEntities<E>();
+                        t.Complete();
+                    }
+                    return new ServiceFunctionResult<List<E>> { Contents = result };
+                }
+                catch (SqlException sqlEx)
+                {
+                    attempts++;
+                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+            }
+            return new ServiceFunctionResult<List<E>>(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+        }
+
+        /// <summary>
+        /// Gets all entities of the specified type i.e. all records in a database table. Query is performed in a transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <param name="entityType">The type of entity (database table)</param>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceFunctionResult<List<object>> GetAllEntitiesInTransaction(
+            Type entityType)
+        {
+            int attempts = 0;
+            while (attempts < _transactionDeadlockRetryAttempts)
+            {
+                try
+                {
+                    List<object> result = null;
+                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    {
+                        result = base.GetAllEntities(entityType);
+                        t.Complete();
+                    }
+                    return new ServiceFunctionResult<List<object>> { Contents = result };
+                }
+                catch (SqlException sqlEx)
+                {
+                    attempts++;
+                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+            }
+            return new ServiceFunctionResult<List<object>>(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+        }
+
+        /// <summary>
+        /// Gets an integer (Int32) count of the specified type i.e. number of records records in a database table. Query is performed in a transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table)</typeparam>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceFunctionResult<int> GetTotalCountInTransaction<E>() where E : class
+        {
+            int attempts = 0;
+            while (attempts < _transactionDeadlockRetryAttempts)
+            {
+                try
+                {
+                    int result = 0;
+                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    {
+                        result = base.GetTotalCount<E>();
+                        t.Complete();
+                    }
+                    return new ServiceFunctionResult<int> { Contents = result };
+                }
+                catch (SqlException sqlEx)
+                {
+                    attempts++;
+                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+            }
+            return new ServiceFunctionResult<int>(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
+        }
+
+        /// <summary>
+        /// Gets a long (Int64) count of the specified type i.e. number of records records in a database table. Query is performed in a transaction.
+        /// The transaction is retried X times based on the TransactionDeadlockRetryAttempts setting configured in the NKitDbRepository section of the appsettings.xml file.
+        /// No exception is thrown if all the attemps failed. Instead a result is returned with a result code of error.
+        /// </summary>
+        /// <typeparam name="E">The type of entity (database table)</typeparam>
+        /// <returns>Returns a wrapper containing the result and ServiceResult code.</returns>
+        public ServiceFunctionResult<long> GetTotalCountLongInTransaction<E>() where E : class
+        {
+            int attempts = 0;
+            while (attempts < _transactionDeadlockRetryAttempts)
+            {
+                try
+                {
+                    long result = 0;
+                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    {
+                        result = base.GetTotalCountLong<E>();
+                        t.Complete();
+                    }
+                    return new ServiceFunctionResult<long> { Contents = result };
+                }
+                catch (SqlException sqlEx)
+                {
+                    attempts++;
+                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+            }
+            return new ServiceFunctionResult<long>(new ServiceResult() { Code = ServiceResultCode.FatalError, Message = $"{nameof(DeleteAll)} operation could not be completed. See previous errors for results." });
         }
 
         #endregion //Core Methods
