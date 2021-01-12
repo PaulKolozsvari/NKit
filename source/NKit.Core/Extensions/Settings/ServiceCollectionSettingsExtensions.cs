@@ -16,50 +16,16 @@
     using NKit.Data.DB.LINQ;
     using NKit.Utilities;
     using NKit.Utilities.Email;
+    using NKit.Utilities.Logging;
     using NKit.Utilities.SettingsFile;
     using NKit.Utilities.SettingsFile.Default;
     using NKit.Web.Service.RestApi.ContentMapping;
 
     #endregion //Using Directives
 
-    public static class SettingsServiceCollectionExtensions
+    public static class ServiceCollectionSettingsExtensions
     {
         #region Methods
-
-        #region Utility Methods
-
-        /// <summary>
-        /// Creates a LoggerFactory to use to create an ILogger. This method can be used to create an ILogger inside a .NET Core Startup.ConfigureServices method
-        /// (where the logger has not been created since the DI container has not been created) thus allowing you to log activity that occurs inside the Startup.ConfigureServices method.
-        /// </summary>
-        /// <typeparam name="T">The type acting as the ILogger category. When called from the Start class, the category can be the Startup class.</typeparam>
-        /// <param name="configuration">The IConfiguration received in the Startup class.</param>
-        /// <returns></returns>
-        public static ILogger CreateLogger(string categoryName, NKitLoggingSettings loggingSettings)
-        {
-            ILoggerFactory loggerFactory = LoggerFactory.Create(loggingBuilder =>
-            {
-                loggingBuilder.ClearProviders();
-                loggingBuilder.AddDebug();
-                loggingBuilder.AddEventSourceLogger();
-                if (loggingSettings.LogToConsole)
-                {
-                    loggingBuilder.AddConsole();
-                }
-                if (loggingSettings.LogToWindowsEventLog)
-                {
-                    loggingBuilder.AddEventLog(new EventLogSettings()
-                    {
-                        LogName = loggingSettings.EventLogName,
-                        SourceName = loggingSettings.EventSourceName,
-                    });
-                }
-            });
-            ILogger result = loggerFactory.CreateLogger(categoryName);
-            return result;
-        }
-
-        #endregion //Utility Methods
 
         #region Register Settings Methods
 
@@ -88,7 +54,7 @@
             out NKitEmailCllientSettings emailSettings,
             string loggerCategoryName)
         {
-            ILogger logger = !string.IsNullOrEmpty(loggerCategoryName) ? CreateLogger(loggerCategoryName, NKitLoggingSettings.GetSettings(configuration)) : null;
+            ILogger logger = !string.IsNullOrEmpty(loggerCategoryName) ? NKitLoggingHelper.CreateLogger(loggerCategoryName, NKitLoggingSettings.GetSettings(configuration)) : null;
             RegisterDefaultNKitSettings(services, configuration, 
                 out generalSettings,
                 out webApiSettings,
@@ -183,79 +149,6 @@
         }
 
         #endregion //Register Settings Methods
-
-        #region Register Services Methods
-
-        /// <summary>
-        /// Reads all the NKit settings from the appsettings.json file and registers all the services required by NKit.
-        /// A new Ilogger gets created to log the settings if the loggingCategoryName is specified.
-        /// </summary>
-        /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
-        /// <typeparam name="R">The NKitDbContextRepository used to mnage the NKitDbContext.</typeparam>
-        /// <param name="configuration">The IConfiguration received in the Startup class.</param>
-        /// <param name="services">The DI services container received in the Startup class.</param>
-        /// <param name="registerEntityFrameworkSqlServerProvider">Whether or not to register Sql Server as the provider for the Entity Framework NKitDbContext i.e. sometimes it may be preferable to configure your own provider on the DbContext's OnConfiguring method, hence not requiring this Sql Server provider registration here.</param>
-        /// <param name="registerControllerInputFormatter">Whether or not to register the controller formatters i.e. allowing POST/PUT inputs requests in the formats provided in the NKit MimeContentType class.</param>
-        /// <param name="loggerCategoryName">Optional category name of the ILogger that will be created to log the settings being registered.</param>
-        public static void RegisterDefaultNKitServices<D, R>(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            bool registerEntityFrameworkSqlServerProvider,
-            bool registerControllerInputFormatter,
-            string loggerCategoryName) where D : NKitDbContext where R : NKitDbRepository
-        {
-            ILogger logger = !string.IsNullOrEmpty(loggerCategoryName) ? CreateLogger(loggerCategoryName, NKitLoggingSettings.GetSettings(configuration)) : null;
-            RegisterDefaultNKitServices<D, R>(services, configuration, registerEntityFrameworkSqlServerProvider, registerControllerInputFormatter, logger);
-        }
-
-        /// <summary>
-        /// Reads all the NKit settings from the appsettings.json file and registers all the services required by NKit.
-        /// </summary>
-        /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
-        /// <typeparam name="R">The NKitDbContextRepository used to mnage the NKitDbContext.</typeparam>
-        /// <param name="configuration">The IConfiguration received in the Startup class.</param>
-        /// <param name="services">The DI services container received in the Startup class.</param>
-        /// <param name="registerEntityFrameworkSqlServerProvider">Whether or not to register Sql Server as the provider for the Entity Framework NKitDbContext i.e. sometimes it may be preferable to configure your own provider on the DbContext's OnConfiguring method, hence not requiring this Sql Server provider registration here.</param>
-        /// <param name="registerControllerInputFormatter">Whether or not to register the controller formatters i.e. allowing POST/PUT inputs requests in the formats provided in the NKit MimeContentType class.</param>
-        /// <param name="logger">Optional ILogger which if specified is used to log all the NKit settings read from the appsettings.json file.</param>
-        public static void RegisterDefaultNKitServices<D, R>(
-            this IServiceCollection services,
-            IConfiguration configuration,
-            bool registerEntityFrameworkSqlServerProvider,
-            bool registerControllerInputFormatter,
-            ILogger logger) where D : NKitDbContext where R : NKitDbRepository
-        {
-            DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(SettingsServiceCollectionExtensions));
-            DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(SettingsServiceCollectionExtensions));
-            NKitWebApiControllerSettings webApiSettings = NKitWebApiControllerSettings.GetSettings(configuration);
-            NKitDbRepositorySettings dbContextSettings = NKitDbRepositorySettings.GetSettings(configuration);
-            NKitLoggingSettings loggingSettings = NKitLoggingSettings.GetSettings(configuration);
-            NKitEmailCllientSettings emailSettings = NKitEmailCllientSettings.GetSettings(configuration);
-            NKitWebApiClientSettings webApiClientSettings = NKitWebApiClientSettings.GetSettings(configuration);
-            if (emailSettings != null)
-            {
-                services.AddTransient<NKitEmailClient>();
-            }
-            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            if (dbContextSettings != null)
-            {
-                if (registerEntityFrameworkSqlServerProvider)
-                {
-                    services.AddDbContext<D>(dbContextOptionsBuilder => dbContextOptionsBuilder.UseSqlServer(dbContextSettings.DatabaseConnectionString, sqlServerOptionsBuilder => sqlServerOptionsBuilder.CommandTimeout(dbContextSettings.DatabaseCommandTimeout)), ServiceLifetime.Transient); //Register the NKitDbContext.
-                }
-                else
-                {
-                    services.AddDbContext<D>(ServiceLifetime.Transient); //Register the NKitDbContext.
-                }
-            }
-            services.AddTransient<R>(); //Register the NKitDbContextRepository.
-            if (registerControllerInputFormatter)
-            {
-                services.AddControllers(mvcOptions => mvcOptions.InputFormatters.Insert(mvcOptions.InputFormatters.Count, new NKitWebApiControllerInputFormatter()));
-            }
-        }
-
-        #endregion //Register Services Methods
 
         #endregion //Methods
     }

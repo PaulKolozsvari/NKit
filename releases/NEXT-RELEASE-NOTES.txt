@@ -53,4 +53,8 @@
 *   Created separate NKitWebApiControllerCrud controler that only contains the action method and inherits from NKitWebApiController which has all the base utility methods i.e. no CRUD action methods.
     This might be useful for users that want to implement an NKit controller without exposing the database's CRUD methods.
 
+*   Moved all extension method classes into separate folder on the NKit.Core project.
+*   Added additional extension methods to to the IServiceCollection to allow registering individual services like NKitEmailClient, NKitDbContext and NKitDbContextRepository.
+*   Added extra method on AssemblyReader to retrieve the file paths of all generated XML documenation files.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.

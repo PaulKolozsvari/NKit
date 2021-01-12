@@ -11,12 +11,12 @@
 
     #endregion //Using Directives
 
-    #region Application Builder - Extension Methods
+    #region Methods
 
     /// <summary>
     /// Extension method used to add the middleware to the HTTP request pipeline.
     /// </summary>
-    public static class MiddlewareApplicationBuilderExtensions
+    public static class ApplicationBuilderMiddlewareExtensions
     {
         #region Methods
 
@@ -32,5 +32,5 @@
         #endregion //Methods
     }
 
-    #endregion //Application Builder - Extension Methods
+    #endregion //Methods
 }

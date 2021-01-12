@@ -90,6 +90,21 @@
             return result;
         }
 
+        /// <summary>
+        /// Checks the entry assembly and collects all referenced projects' output XML document file paths.
+        /// </summary>
+        /// <returns>Returns all referenced projects' output XML document file paths.</returns>
+        public static List<string> GetAllXMlDocumenationFilePaths()
+        {
+            //Collect all referenced projects output XML document file paths  
+            Assembly currentAssembly = Assembly.GetEntryAssembly();
+            List<string> result = currentAssembly.GetReferencedAssemblies()
+            .Union(new AssemblyName[] { currentAssembly.GetName() })
+            .Select(a => Path.Combine(Path.GetDirectoryName(currentAssembly.Location), $"{a.Name}.xml"))
+            .Where(f => File.Exists(f)).ToList();
+            return result;
+        }
+
         #endregion //Methods
     }
 }

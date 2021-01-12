@@ -34,8 +34,4 @@
     <ProjectReference Include="..\NKit.Standard\NKit.Standard.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Web\Service\RestApi\Response\" />
-  </ItemGroup>
-
 </Project>
