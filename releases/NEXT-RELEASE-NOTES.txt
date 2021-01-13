@@ -57,4 +57,6 @@
 *   Added additional extension methods to to the IServiceCollection to allow registering individual services like NKitEmailClient, NKitDbContext and NKitDbContextRepository.
 *   Added extra method on AssemblyReader to retrieve the file paths of all generated XML documenation files.
 
+*   Renamed the NKitEmailClient to NKitEmailService and added it through DI to the NKitWebApiController to be accessible to any controller deriving from it.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.

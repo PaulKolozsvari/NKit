@@ -62,7 +62,7 @@
             D dbContextRepo,
             IOptions<NKitHttpExceptionHandlerMiddlewareSettings> middlewareSettings, 
             ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger,
-            NKitEmailClient emailClient)
+            NKitEmailClientService emailClient)
         {
             try
             {
@@ -107,7 +107,7 @@
             D dbContextRepo,
             IOptions<NKitHttpExceptionHandlerMiddlewareSettings> middlewareSettings,
             ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger,
-            NKitEmailClient emailClient)
+            NKitEmailClientService emailClient)
         {
             if (context.Response.HasStarted)
             {

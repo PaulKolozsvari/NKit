@@ -1,4 +1,13 @@
-﻿*	Use ASP.NET Core APIs in a class library:
+﻿*	Dependency Injection in .NET and different types of services i.e.Transient, Scoped & Singletons as well as object disposing scenarios: https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection
+*	Dependency Injection in ASP.NET Core(services): https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-5.0
+*	.NET Core Dependency Injection with constructor parameters: https://cmatskas.com/net-core-dependency-injection-with-constructor-parameters-2/
+*	.NET Core Dependency Injection with Options: https://csharp.christiannagel.com/2016/07/27/diwithoptions/
+*	Options pattern in ASP.NET Core: 
+	-	https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-5.0
+	-	https://docs.microsoft.com/en-us/dotnet/core/extensions/options
+	-	How to use the IOptions pattern for configuration in ASP.NET Core RC2: https://andrewlock.net/how-to-use-the-ioptions-pattern-for-configuration-in-asp-net-core-rc2/
+
+*	Use ASP.NET Core APIs in a class library:
 	-	Include the following tag in the .NET Core project's file:
 
 		<ItemGroup>

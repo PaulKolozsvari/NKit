@@ -24,6 +24,7 @@
     using System.Reflection;
     using NKit.Data.DB.LINQ.Models;
     using NKit.Utilities.Serialization;
+    using NKit.Utilities.Email;
 
     #endregion //Using Directives
 
@@ -46,9 +47,10 @@
             IOptions<NKitGeneralSettings> generalOptions,
             IOptions<NKitWebApiControllerSettings> webApiControllerOptions,
             IOptions<NKitDbRepositorySettings> databaseOptions,
-            IOptions<NKitEmailCllientSettings> emailOptions,
+            IOptions<NKitEmailClientServiceSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
             IOptions<NKitWebApiClientSettings> webApiClientOptions,
+            NKitEmailClientService emailClientService,
             ILogger logger)
         {
             DataValidator.ValidateObjectNotNull(dbRespository, nameof(dbRespository), nameof(NKitWebApiController<D>));
@@ -73,6 +75,7 @@
             _loggingSettings = loggingOptions.Value;
             _webApiClientSettings = webApiClientOptions.Value;
 
+            _emailClientService = emailClientService;
             _logger = logger;
         }
 
@@ -82,14 +85,16 @@
 
         private readonly Nullable<Guid> _serviceInstanceId;
 
+        private readonly NKitEmailClientService _emailClientService;
         private readonly ILogger _logger;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly D _dbRepository;
 
         private readonly NKitGeneralSettings _generalSettings;
         private readonly NKitWebApiControllerSettings _webApiControllerSettings;
         private readonly NKitDbRepositorySettings _dbRepositorySettings;
-        private readonly NKitEmailCllientSettings _emailSettings;
+        private readonly NKitEmailClientServiceSettings _emailSettings;
         private readonly NKitLoggingSettings _loggingSettings;
         private readonly NKitWebApiClientSettings _webApiClientSettings;
 
@@ -101,6 +106,11 @@
         /// A unique GUID of the current instance of this controller. A new instance of this controller is created per request.
         /// </summary>
         protected Nullable<Guid> ServiceInstanceId { get { return _serviceInstanceId; } }
+
+        /// <summary>
+        /// An email client service that can be used to send out out emails as per configuration in the NKitEmailClientServiceSettings section in the appsettings.json file.
+        /// </summary>
+        protected NKitEmailClientService EmailClientService { get { return _emailClientService; } }
 
         /// <summary>
         /// Logger being supplied to the controller through dependency injection.
@@ -135,7 +145,7 @@
         /// <summary>
         /// The NKitEmailCllient settings that were configured in the appsettings.json file.
         /// </summary>
-        protected NKitEmailCllientSettings EmailSettings { get { return _emailSettings; } }
+        protected NKitEmailClientServiceSettings EmailSettings { get { return _emailSettings; } }
 
         /// <summary>
         /// The NKitEmailCllient settings that were configured in the appsettings.json file.
@@ -424,6 +434,16 @@
         protected Type[] GetNKitSerializerModelTypes()
         {
             return new Type[] { typeof(NKitBaseModel), typeof(NKitHttpExceptionResponse), typeof(NKitLogEntry) };
+        }
+
+        /// <summary>
+        /// Sets the current response ContentType to the ContentType configured in the ResponseContentType setting in the WebApiControllerSettings section of the appsettings.json file.
+        /// </summary>
+        /// <returns>Returns the ResponseContentType setting in the WebApiControllerSettings section of the appsettings.json file</returns>
+        protected string SetNKitResponseContentType()
+        {
+            Response.ContentType = WebApiControllerSettings.ResponseContentType;
+            return WebApiControllerSettings.ResponseContentType;
         }
 
         #endregion //Methods

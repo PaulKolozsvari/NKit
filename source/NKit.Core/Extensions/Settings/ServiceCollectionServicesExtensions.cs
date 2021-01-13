@@ -117,12 +117,12 @@
         {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
             DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(ServiceCollectionSettingsExtensions));
-            NKitEmailCllientSettings emailSettings = NKitEmailCllientSettings.GetSettings(configuration);
+            NKitEmailClientServiceSettings emailSettings = NKitEmailClientServiceSettings.GetSettings(configuration);
             if (emailSettings == null)
             {
-                throw new NullReferenceException($"{nameof(NKitEmailCllientSettings)} not registered. Must configure {nameof(NKitEmailCllientSettings)} in the appsettings.json file and registered before calling {nameof(RegisterNKitEmailClient)}.");
+                throw new NullReferenceException($"{nameof(NKitEmailClientServiceSettings)} not registered. Must configure {nameof(NKitEmailClientServiceSettings)} in the appsettings.json file and registered before calling {nameof(RegisterNKitEmailClient)}.");
             }
-            services.AddTransient<NKitEmailClient>();
+            services.AddTransient<NKitEmailClientService>();
         }
 
         /// <summary>
@@ -132,14 +132,14 @@
         /// </summary>
         /// <param name="services">The DI services container received in the Startup class.</param>
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
-        public static void RegisterNKitEmailClient<E>(this IServiceCollection services, IConfiguration configuration) where E : NKitEmailClient
+        public static void RegisterNKitEmailClient<E>(this IServiceCollection services, IConfiguration configuration) where E : NKitEmailClientService
         {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
             DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(ServiceCollectionSettingsExtensions));
-            NKitEmailCllientSettings emailSettings = NKitEmailCllientSettings.GetSettings(configuration);
+            NKitEmailClientServiceSettings emailSettings = NKitEmailClientServiceSettings.GetSettings(configuration);
             if (emailSettings == null)
             {
-                throw new NullReferenceException($"{nameof(NKitEmailCllientSettings)} not registered. Must configure {nameof(NKitEmailCllientSettings)} in the appsettings.json file and registered before calling {nameof(RegisterNKitEmailClient)}.");
+                throw new NullReferenceException($"{nameof(NKitEmailClientServiceSettings)} not registered. Must configure {nameof(NKitEmailClientServiceSettings)} in the appsettings.json file and registered before calling {nameof(RegisterNKitEmailClient)}.");
             }
             services.AddTransient<E>();
         }

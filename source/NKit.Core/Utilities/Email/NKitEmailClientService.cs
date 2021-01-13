@@ -13,13 +13,13 @@
 
     #endregion //Using Directives
 
-    public class NKitEmailClient : EmailClient
+    public class NKitEmailClientService : EmailClient
     {
         #region Constructors
 
-        public NKitEmailClient(
-            IOptions<NKitEmailCllientSettings> emailOptions,
-            ILogger<NKitEmailClient> logger) :
+        public NKitEmailClientService(
+            IOptions<NKitEmailClientServiceSettings> emailOptions,
+            ILogger<NKitEmailClientService> logger) :
             base(emailOptions.Value.EmailNotificationsEnabled,
                 emailOptions.Value.ThrowEmailFailExceptions,
                 emailOptions.Value.EmailProvider,
@@ -46,7 +46,7 @@
 
         #region Fields
 
-        protected ILogger _logger;
+        protected readonly ILogger _logger;
 
         #endregion //Fields
 

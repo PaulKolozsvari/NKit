@@ -51,7 +51,7 @@
             out NKitWebApiClientSettings webApiClientSettings,
             out NKitDbRepositorySettings databaseSettings,
             out NKitLoggingSettings loggingSettings,
-            out NKitEmailCllientSettings emailSettings,
+            out NKitEmailClientServiceSettings emailSettings,
             string loggerCategoryName)
         {
             ILogger logger = !string.IsNullOrEmpty(loggerCategoryName) ? NKitLoggingHelper.CreateLogger(loggerCategoryName, NKitLoggingSettings.GetSettings(configuration)) : null;
@@ -88,7 +88,7 @@
             out NKitWebApiClientSettings webApiClientSettings,
             out NKitDbRepositorySettings databaseSettings,
             out NKitLoggingSettings loggingSettings,
-            out NKitEmailCllientSettings emailSettings,
+            out NKitEmailClientServiceSettings emailSettings,
             ILogger logger)
         {
             generalSettings = NKitGeneralSettings.RegisterConfiguration(configuration, services);
@@ -97,7 +97,7 @@
             webApiClientSettings = NKitWebApiClientSettings.RegisterConfiguration(configuration, services);
             databaseSettings = NKitDbRepositorySettings.RegisterConfiguration(configuration, services);
             loggingSettings = NKitLoggingSettings.RegisterConfiguration(configuration, services);
-            emailSettings = NKitEmailCllientSettings.RegisterConfiguration(configuration, services);
+            emailSettings = NKitEmailClientServiceSettings.RegisterConfiguration(configuration, services);
             if (logger == null)
             {
                 return;
@@ -126,7 +126,7 @@
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(loggingSettings));
             logMessage.AppendLine();
 
-            logMessage.AppendLine($"*** {nameof(NKitEmailCllientSettings)} ***");
+            logMessage.AppendLine($"*** {nameof(NKitEmailClientServiceSettings)} ***");
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(emailSettings));
             logMessage.AppendLine();
 

@@ -10,6 +10,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NKit.Data.DB.LINQ;
+    using NKit.Utilities.Email;
     using NKit.Utilities.SettingsFile.Default;
     using NKit.Web.Client;
     using NKit.Web.Service.RestApi.Events;
@@ -34,11 +35,12 @@
             IOptions<NKitGeneralSettings> generalOptions,
             IOptions<NKitWebApiControllerSettings> webApiControllerOptions,
             IOptions<NKitDbRepositorySettings> databaseOptions,
-            IOptions<NKitEmailCllientSettings> emailOptions,
+            IOptions<NKitEmailClientServiceSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
-            IOptions<NKitWebApiClientSettings> webApiClientOptions, 
+            IOptions<NKitWebApiClientSettings> webApiClientOptions,
+            NKitEmailClientService emailClientService,
             ILogger logger) :
-            base(dbRespository, httpContextAccessor, generalOptions, webApiControllerOptions, databaseOptions, emailOptions, loggingOptions, webApiClientOptions, logger)
+            base(dbRespository, httpContextAccessor, generalOptions, webApiControllerOptions, databaseOptions, emailOptions, loggingOptions, webApiClientOptions, emailClientService, logger)
         {
         }
 
@@ -148,7 +150,7 @@
         /// Optional search by field and search value of can be applied to apply a filter based on a specific field and its value i.e. searching by a specific column in the database table.
         /// Returns as a list of the specified entity type in either JSON or XML format based on the configured SerializerType property set in the NKitWebApiControllerSettings section of the appsettings.json file.
         /// The Content-Type of the response is based on the configured ResponseContentType property in the NKitWebApiControllerSettings section of the appsettings.json file.
-        /// Called as such: "/{entityName}?={fieldName}&amp;searchValueOf={fieldValue}"
+        /// Called as such: "/{entityName}?{fieldName}&amp;searchValueOf={fieldValue}"
         /// </summary>
         /// <param name="entityName">The name of the database table to query from.</param>
         /// <param name="searchBy">Optional name of a column to filter by.</param>

@@ -12,7 +12,7 @@
 
     #endregion //Using Directives
 
-    public class NKitEmailCllientSettings : NKitSettings
+    public class NKitEmailClientServiceSettings : NKitSettings
     {
         #region Properties
 
@@ -133,27 +133,27 @@
         /// The Configuration object is created read from based on the appsettings.json. The appsettings.json file name is determined by reading the ASPNETCORE_ENVIRONMENT variable i.e. appsettings.{environment}.json or appsettings.json when the environment variable is not set.
         /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>
-        public static NKitEmailCllientSettings GetSettings()
+        public static NKitEmailClientServiceSettings GetSettings()
         {
-            return GetSettings<NKitEmailCllientSettings>();
+            return GetSettings<NKitEmailClientServiceSettings>();
         }
 
         /// <summary>
         /// Reads the NKitEmailSettings configuration section from the appsettings.json file and deserializes to an instance of NKitEmailSettings.
         /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>
-        public static NKitEmailCllientSettings GetSettings(IConfiguration configuration)
+        public static NKitEmailClientServiceSettings GetSettings(IConfiguration configuration)
         {
-            return GetSettings<NKitEmailCllientSettings>(configuration);
+            return GetSettings<NKitEmailClientServiceSettings>(configuration);
         }
 
         /// <summary>
         /// Register Configuration from the appsettings.json which will be made available as IOptions to all services.
         /// </summary>
         /// <param name="services"></param>
-        public static NKitEmailCllientSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
+        public static NKitEmailClientServiceSettings RegisterConfiguration(IConfiguration configuration, IServiceCollection services)
         {
-            return RegisterConfiguration<NKitEmailCllientSettings>(configuration, services);
+            return RegisterConfiguration<NKitEmailClientServiceSettings>(configuration, services);
         }
 
         #endregion //Methods
