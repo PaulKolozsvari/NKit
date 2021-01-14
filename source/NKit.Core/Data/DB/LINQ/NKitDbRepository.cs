@@ -8,7 +8,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using System.Transactions;
-    using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
     using NKit.Utilities.SettingsFile.Default;
     using NKit.Data;
@@ -17,6 +16,8 @@
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
+    using Microsoft.Data.Sqlite;
+    using Microsoft.Data.SqlClient;
 
     #endregion //Using Directives
 
@@ -86,10 +87,58 @@
 
         #region Constants
 
+        #region Sql Server Error Codes
+
         /// <summary>
         /// Error code on transaction deadlock exeptions.
         /// </summary>
-        public const int SQL_TRANSACTION_DEADLOCK_ERROR_CODE = 1205;
+        public const int SQL_SERVER_TRANSACTION_DEADLOCK_ERROR_CODE = 1205;
+
+        #endregion //Sql Server Error Codes
+
+        #region Sqlite Error Codes
+
+        //SQLite EF Core Database Provider Limitations: https://docs.microsoft.com/en-us/ef/core/providers/sqlite/limitations
+
+        /// <summary>
+        /// The SQLITE_BUSY result code indicates that the database file could not be written (or in some cases read) because of 
+        /// concurrent activity by some other database connection, usually a database connection in a separate process.
+        /// https://www.sqlite.org/rescode.html
+        /// </summary>
+        public const int SQLITE_BUSY_ERROR_CODE = 5;
+
+        /// <summary>
+        /// The SQLITE_BUSY_RECOVERY error code is an extended error code for SQLITE_BUSY that indicates that an operation could not 
+        /// continue because another process is busy recovering a WAL mode database file following a crash. The SQLITE_BUSY_RECOVERY 
+        /// error code only occurs on WAL mode databases.
+        /// https://www.sqlite.org/rescode.html
+        /// </summary>
+        public const int SQLITE_BUSY_RECOVERY_ERROR_CODE = 261;
+
+        /// <summary>
+        /// The SQLITE_BUSY_SNAPSHOT error code is an extended error code for SQLITE_BUSY that occurs on WAL mode databases when a 
+        /// database connection tries to promote a read transaction into a write transaction but finds that another database connection 
+        /// has already written to the database and thus invalidated prior reads
+        /// https://www.sqlite.org/rescode.html
+        /// </summary>
+        public const int SQLITE_BUSY_SNAPSHOT_ERROR_CODE = 517;
+
+        /// <summary>
+        /// The SQLITE_BUSY_TIMEOUT error code indicates that a blocking Posix advisory file lock request in the VFS layer failed due 
+        /// to a timeout. Blocking Posix advisory locks are only available as a proprietary SQLite extension and even then are only 
+        /// supported if SQLite is compiled with the SQLITE_EANBLE_SETLK_TIMEOUT compile-time option.
+        /// https://www.sqlite.org/rescode.html
+        /// </summary>
+        public const int SQLITE_BUSY_TIMEOUT_ERROR_CODE = 773;
+
+        /// <summary>
+        /// The SQLITE_LOCKED result code indicates that a write operation could not continue because of a conflict within the same 
+        /// database connection or a conflict with a different database connection that uses a shared cache.
+        /// https://www.sqlite.org/rescode.html
+        /// </summary>
+        public const int SQLITE_LOCKED_ERROR_CODE = 6;
+
+        #endregion //Sqlite Error Codes
 
         #endregion //Constants
 
@@ -140,6 +189,24 @@
 
         #region Methods
 
+        #region Utility Methods
+
+        protected bool IsSqlServerDeadlockException(SqlException ex)
+        {
+            return ex.Number == SQL_SERVER_TRANSACTION_DEADLOCK_ERROR_CODE;
+        }
+
+        protected bool IsSqliteLockException(SqliteException ex)
+        {
+            return ex.ErrorCode == SQLITE_BUSY_ERROR_CODE ||
+                ex.ErrorCode == SQLITE_BUSY_RECOVERY_ERROR_CODE ||
+                ex.ErrorCode == SQLITE_BUSY_SNAPSHOT_ERROR_CODE ||
+                ex.ErrorCode == SQLITE_BUSY_TIMEOUT_ERROR_CODE ||
+                ex.ErrorCode == SQLITE_LOCKED_ERROR_CODE;
+        }
+
+        #endregion //Utility Methods
+
         #region Core Methods
 
         /// <summary>
@@ -170,9 +237,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -209,9 +286,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -248,9 +335,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -287,9 +384,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -326,9 +433,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -365,9 +482,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -403,9 +530,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -442,9 +579,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -477,9 +624,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -512,9 +669,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -549,9 +716,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -586,9 +763,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -624,9 +811,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -662,9 +859,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -698,9 +905,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -735,9 +952,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -771,9 +998,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;
@@ -807,9 +1044,19 @@
                 catch (SqlException sqlEx)
                 {
                     attempts++;
-                    if (sqlEx.Number != SQL_TRANSACTION_DEADLOCK_ERROR_CODE || attempts >= _transactionDeadlockRetryAttempts)
+                    if (!IsSqlServerDeadlockException(sqlEx) || attempts >= _transactionDeadlockRetryAttempts)
                     {
                         throw sqlEx; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
+                    }
+                    Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
+                    continue;
+                }
+                catch (SqliteException sqliteException)
+                {
+                    attempts++;
+                    if (!IsSqliteLockException(sqliteException) || attempts >= _transactionDeadlockRetryAttempts)
+                    {
+                        throw sqliteException; //If this was not caused by a deadlock, or if the retry attempts have been reached, then throw the exception.
                     }
                     Thread.Sleep(_transactionDeadlockRetryWaitPeriod);
                     continue;

@@ -96,7 +96,7 @@
             {
                 if (registerEntityFrameworkSqlServerProvider)
                 {
-                    services.AddDbContext<D>(dbContextOptionsBuilder => dbContextOptionsBuilder.UseSqlServer(dbContextSettings.DatabaseConnectionString, sqlServerOptionsBuilder => sqlServerOptionsBuilder.CommandTimeout(dbContextSettings.DatabaseCommandTimeout)), ServiceLifetime.Transient); //Register the NKitDbContext.
+                    services.AddDbContext<D>(dbContextOptionsBuilder => dbContextOptionsBuilder.UseSqlServer(dbContextSettings.DatabaseConnectionString, sqlServerOptionsBuilder => sqlServerOptionsBuilder.CommandTimeout(dbContextSettings.DatabaseCommandTimeoutSeconds)), ServiceLifetime.Transient); //Register the NKitDbContext.
                 }
                 else
                 {

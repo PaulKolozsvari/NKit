@@ -55,11 +55,10 @@
             DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbRespositoryBase));
             DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitDbRespositoryBase));
             _generalSettings = generalOptions.Value;
-            _dbContextSettings = dbContextOptions.Value;
+            _dbRepositorySettings = dbContextOptions.Value;
             _loggingSettings = loggingOptions.Value;
             _serviceProvider = serviceProvider;
             _dbContextType = dbContextType;
-            _dbContextSettings = dbContextOptions.Value;
         }
 
         /// <summary>
@@ -80,11 +79,11 @@
             DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbRespositoryBase));
             DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitDbRespositoryBase));
             _generalSettings = generalOptions.Value;
-            _dbContextSettings = dbContextOptions.Value;
+            _dbRepositorySettings = dbContextOptions.Value;
             _loggingSettings = loggingOptions.Value;
             _db = db;
-            _db.Database.SetConnectionString(_dbContextSettings.DatabaseConnectionString);
-            _db.Database.SetCommandTimeout(_dbContextSettings.DatabaseCommandTimeout);
+            _db.Database.SetConnectionString(_dbRepositorySettings.DatabaseConnectionString);
+            _db.Database.SetCommandTimeout(_dbRepositorySettings.DatabaseCommandTimeoutSeconds);
         }
 
         #endregion //Constructors
@@ -95,7 +94,7 @@
         protected Type _dbContextType;
         protected DbContext _db;
         protected NKitGeneralSettings _generalSettings;
-        protected NKitDbRepositorySettings _dbContextSettings;
+        protected NKitDbRepositorySettings _dbRepositorySettings;
         protected NKitLoggingSettings _loggingSettings;
 
         #endregion //Fields
@@ -112,6 +111,8 @@
                 if ((_db == null) && (_serviceProvider != null))
                 {
                     _db = (DbContext)_serviceProvider.GetService(_dbContextType);
+                    _db.Database.SetConnectionString(_dbRepositorySettings.DatabaseConnectionString);
+                    _db.Database.SetCommandTimeout(_dbRepositorySettings.DatabaseCommandTimeoutSeconds);
                 }
                 return _db;
             }
@@ -637,7 +638,7 @@
         /// <returns>Returns a list of change results.</returns>
         public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey<E>(object surrogateKeyValue, object entityIdentifier) where E : class
         {
-            return this.DeleteBySurrogateKey<E, object>(surrogateKeyValue, entityIdentifier, false);
+            return DeleteBySurrogateKey<E, object>(surrogateKeyValue, entityIdentifier, false);
         }
 
         /// <summary>
@@ -649,7 +650,9 @@
         /// <returns>Returns a list of change results.</returns>
         public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey(object surrogateKeyValue, object entityIdentifier, Type entityType)
         {
-            return this.DeleteBySurrogateKeyWithoutSavingToDb(surrogateKeyValue, entityIdentifier, false, entityType, null);
+            List<LinqFunnelChangeResult> result = DeleteBySurrogateKeyWithoutSavingToDb(surrogateKeyValue, entityIdentifier, false, entityType, null);
+            DB.SaveChanges();
+            return result;
         }
 
         /// <summary>
@@ -660,13 +663,16 @@
         /// <typeparam name="E">The entity type of the entity which will be deleted i.e. the table from where it will be deleted.</typeparam>
         /// <typeparam name="T">The tombstone entity type i.e. the table where an tombstone will be created.</typeparam>
         /// <param name="surrogateKeyValue">The surrogate key of the entity to be deleted</param>
+        /// <param name="entityIdentifier">Unique value identifying the entity.</param>
         /// <param name="createTombstone">Indicates whether a tombstone should be created.</param>
         /// <returns>Returns a list of change results.</returns>
         public virtual List<LinqFunnelChangeResult> DeleteBySurrogateKey<E, T>(object surrogateKeyValue, object entityIdentifier, bool createTombstone)
             where E : class
             where T : class
         {
-            return DeleteBySurrogateKeyWithoutSavingToDb(surrogateKeyValue, entityIdentifier, createTombstone, typeof(E), typeof(T));
+            List<LinqFunnelChangeResult> result = DeleteBySurrogateKeyWithoutSavingToDb(surrogateKeyValue, entityIdentifier, createTombstone, typeof(E), typeof(T));
+            DB.SaveChanges();
+            return result;
         }
 
         /// <summary>
@@ -1251,7 +1257,7 @@
         /// </summary>
         public virtual NKitLogEntry LogExceptionToNKitLogEntry(Exception ex, Nullable<EventId> eventId, bool includeExceptionDetailsInErrorMessage)
         {
-            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlServerTableExists(nameof(NKitLogEntry)))
+            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlTableExists(nameof(NKitLogEntry)))
             {
                 return null;
             }
@@ -1274,7 +1280,7 @@
 
         public virtual NKitLogEntry LogWebActionActivityToNKitLogEntry(string className, string actionName, string message, Nullable<EventId> eventId)
         {
-            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlServerTableExists(nameof(NKitLogEntry)))
+            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlTableExists(nameof(NKitLogEntry)))
             {
                 return null;
             }
@@ -1284,7 +1290,7 @@
                 Message = message,
                 Source = _generalSettings.ApplicationName,
                 ClassName = className,
-                FunctionName = "Request",
+                FunctionName = actionName ?? "Request",
                 StackTrace = null,
                 EventId = eventId.HasValue ? eventId.Value.Id : 0,
                 EventName = eventId.HasValue ? eventId.Value.Name : null,
@@ -1294,26 +1300,41 @@
             return logEntry;
         }
 
+        public virtual bool SqlTableExists(string tableName)
+        {
+            switch (_dbRepositorySettings.DatabaseProviderName)
+            {
+                case NKitDbProviderName.SqlServer:
+                    return SqlServerTableExists(tableName);
+                case NKitDbProviderName.Sqlite:
+                    return SqliteTableExists(tableName);
+                default:
+                    throw new ArgumentException($"Unsupported {nameof(NKitDbProviderName)} of {_dbRepositorySettings.DatabaseProviderName} set in {nameof(_dbRepositorySettings.DatabaseProviderName)}.");
+            }
+        }
+
         public virtual bool SqlServerTableExists(string tableName)
         {
-            //string sqlQuery = $"SELECT COUNT(*) as Count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
-            //using (DbConnection conn = DB.Database.GetDbConnection())
-            //{
-            //    if (conn != null)
-            //    {
-            //        var count = conn.Query<int>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
-            //        return (count > 0);
-            //    }
-            //}
-            //return false;
             string sqlQuery = $"SELECT COUNT(*) as Count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
-            DbConnection conn = DB.Database.GetDbConnection();
-            if (conn != null)
+            DbConnection connection = DB.Database.GetDbConnection();
+            if (connection == null)
             {
-                var count = conn.Query<int>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
-                return (count > 0);
+                return false;
             }
-            return false;
+            int count = connection.Query<int>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
+            return (count > 0);
+        }
+
+        public virtual bool SqliteTableExists(string tableName)
+        {
+            string sqlQuery = $"SELECT name FROM sqlite_master WHERE type = 'table' AND name = '{tableName}'";
+            DbConnection connection = DB.Database.GetDbConnection();
+            if (connection == null)
+            {
+                return false;
+            }
+            string queryResult = connection.Query<string>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
+            return !string.IsNullOrEmpty(queryResult) && queryResult.Equals(tableName);
         }
 
         /// <summary>

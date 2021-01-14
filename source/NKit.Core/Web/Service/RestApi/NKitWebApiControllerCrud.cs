@@ -51,52 +51,62 @@
         /// <summary>
         /// Event fired on request for get entities before the query is run against the database.
         /// </summary>
-        public event OnBeforeGetEntitiesHandlerCore OnBeforeGetEntities;
+        public event OnBeforeGetEntitiesHandler OnBeforeGetEntities;
 
         /// <summary>
         /// Event fired on request for get entities after the query is run against the database.
         /// </summary>
-        public event OnAfterGetEntitiesHandlerCore OnAfterGetEntities;
+        public event OnAfterGetEntitiesHandler OnAfterGetEntities;
 
         /// <summary>
         /// Event fired on request for getting an entity by ID, before the query is run against the database.
         /// </summary>
-        public event OnBeforeGetEntityByIdHandlerCore OnBeforeGetEntityById;
+        public event OnBeforeGetEntityByIdHandler OnBeforeGetEntityById;
 
         /// <summary>
         /// Event fired on request for getting an entity by ID, after the query is run against the database.
         /// </summary>
-        protected event OnAfterGetEntityByIdHandlerCore OnAfterGetEntityById;
+        protected event OnAfterGetEntityByIdHandler OnAfterGetEntityById;
 
         /// <summary>
         /// Event fired on request for putting (saving) an entity, before the query is run against the database.
         /// </summary>
-        public event OnBeforePutEntityHandlerCore OnBeforePut;
+        public event OnBeforePutEntityHandler OnBeforePut;
 
         /// <summary>
         /// Event fired on request for putting (saving) an entity, after the query is run against the database.
         /// </summary>
-        public event OnAfterPutEntityHandlerCore OnAfterPut;
+        public event OnAfterPutEntityHandler OnAfterPut;
 
         /// <summary>
         /// Event fired on request for posting (inserting) an entity, before the query is run against the database.
         /// </summary>
-        public event OnBeforePostEntityHandlerCore OnBeforePost;
+        public event OnBeforePostEntityHandler OnBeforePost;
 
         /// <summary>
         /// Event fired on request for posting (inserting) an entity, after the query is run against the database.
         /// </summary>
-        public event OnAfterPostEntityHandlerCore OnAfterPost;
+        public event OnAfterPostEntityHandler OnAfterPost;
 
         /// <summary>
         /// Event fired on request for deleting an entity, before the query is run against the database.
         /// </summary>
-        public event OnBeforeDeleteEntityHandlerCore OnBeforeDelete;
+        public event OnBeforeDeleteEntityHandler OnBeforeDelete;
 
         /// <summary>
         /// Event fired on request for deleting an entity, after the query is run against the database.
         /// </summary>
-        public event OnAfterDeleteEntityHandlerCore OnAfterDelete;
+        public event OnAfterDeleteEntityHandler OnAfterDelete;
+
+        /// <summary>
+        /// Event fired on request for deleting all entities of a specific type, before the query is run against the database.
+        /// </summary>
+        public event OnBeforeDeleteAllEntitiesHandler OnBeforeDeleteAll;
+
+        /// <summary>
+        /// Event fired on request for deleting all entities of a specific type, after the query is run against the database.
+        /// </summary>
+        public event OnAfterDeleteAllEntitiesHandler OnAfterDeleteAll;
 
         #endregion //Events
 
@@ -123,15 +133,9 @@
                 ValidateRequestMethod(HttpVerb.GET);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
-                if (OnBeforeGetEntityById != null)
-                {
-                    OnBeforeGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, DbRepository, entityType, entityId, null));
-                }
-                object outputEntity = DbRepository.GetEntityBySurrogateKeyInTransaction(entityType, entityId).Contents;
-                if (OnAfterGetEntityById != null)
-                {
-                    OnAfterGetEntityById(this, new NKitRestApiGetEntityByIdEventArgsCore(entityName, userName, DbRepository, entityType, entityId, outputEntity));
-                }
+                OnBeforeGetEntityById?.Invoke(this, new NKitRestApiGetEntityByIdEventArgs(entityName, userName, DbRepository, entityType, entityId, null));
+                object outputEntity = DbRepository.GetEntityBySurrogateKey(entityType, entityId);
+                OnAfterGetEntityById?.Invoke(this, new NKitRestApiGetEntityByIdEventArgs(entityName, userName, DbRepository, entityType, entityId, outputEntity));
                 string serializedText = GetSerializer().SerializeToText(outputEntity, GetNKitSerializerModelTypes());
                 LogWebResponse(requestName, serializedText);
                 Response.ContentType = WebApiControllerSettings.ResponseContentType;
@@ -167,17 +171,11 @@
                 ValidateRequestMethod(HttpVerb.GET);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
-                if (OnBeforeGetEntities != null)
-                {
-                    OnBeforeGetEntities(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, DbRepository, entityType, searchBy, searchValueOf, null));
-                }
+                OnBeforeGetEntities?.Invoke(this, new NKitRestApiGetEntitiesEventArgs(entityName, userName, DbRepository, entityType, searchBy, searchValueOf, null));
                 List<object> outputEntities = string.IsNullOrEmpty(searchBy) ?
-                    DbRepository.GetAllEntitiesInTransaction(entityType).Contents :
-                    DbRepository.GetEntitiesByFieldInTransaction(entityType, searchBy, searchValueOf).Contents;
-                if (OnAfterGetEntities != null)
-                {
-                    OnAfterGetEntities(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, DbRepository, entityType, searchBy, searchValueOf, outputEntities));
-                }
+                    DbRepository.GetAllEntities(entityType) :
+                    DbRepository.GetEntitiesByField(entityType, searchBy, searchValueOf);
+                OnAfterGetEntities?.Invoke(this, new NKitRestApiGetEntitiesEventArgs(entityName, userName, DbRepository, entityType, searchBy, searchValueOf, outputEntities));
                 string serializedText = GetSerializer().SerializeToText(outputEntities, GetNKitSerializerModelTypes());
                 LogWebResponse(requestName, serializedText);
                 Response.ContentType = WebApiControllerSettings.ResponseContentType;
@@ -208,15 +206,9 @@
                 ValidateRequestMethod(HttpVerb.GET);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
-                if (OnBeforeGetEntities != null)
-                {
-                    OnBeforeGetEntities(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, DbRepository, entityType, null, null, null));
-                }
+                OnBeforeGetEntities?.Invoke(this, new NKitRestApiGetEntitiesEventArgs(entityName, userName, DbRepository, entityType, null, null, null));
                 int result = DbRepository.GetTotalCount(entityType);
-                if (OnAfterGetEntities != null)
-                {
-                    OnAfterGetEntities(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, DbRepository, entityType, null, null, new List<object>() { result }));
-                }
+                OnAfterGetEntities?.Invoke(this, new NKitRestApiGetEntitiesEventArgs(entityName, userName, DbRepository, entityType, null, null, new List<object>() { result }));
                 string serializedText = GetSerializer().SerializeToText(result, GetNKitSerializerModelTypes());
                 LogWebResponse(requestName, serializedText);
                 Response.ContentType = WebApiControllerSettings.ResponseContentType;
@@ -247,15 +239,9 @@
                 ValidateRequestMethod(HttpVerb.GET);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
-                if (OnBeforeGetEntities != null)
-                {
-                    OnBeforeGetEntities(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, DbRepository, entityType, null, null, null));
-                }
+                OnBeforeGetEntities?.Invoke(this, new NKitRestApiGetEntitiesEventArgs(entityName, userName, DbRepository, entityType, null, null, null));
                 long result = DbRepository.GetTotalCountLong(entityType);
-                if (OnAfterGetEntities != null)
-                {
-                    OnAfterGetEntities(this, new NKitRestApiGetEntitiesEventArgsCore(entityName, userName, DbRepository, entityType, null, null, new List<object>() { result }));
-                }
+                OnAfterGetEntities?.Invoke(this, new NKitRestApiGetEntitiesEventArgs(entityName, userName, DbRepository, entityType, null, null, new List<object>() { result }));
                 string serializedText = GetSerializer().SerializeToText(result, GetNKitSerializerModelTypes());
                 LogWebResponse(requestName, serializedText);
                 Response.ContentType = WebApiControllerSettings.ResponseContentType;
@@ -292,15 +278,9 @@
                 Type entityType = GetEntityType(entityName);
                 object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
                 LogWebRequest(requestName, serializedText);
-                if (OnBeforePut != null)
-                {
-                    OnBeforePut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, DbRepository, entityType, inputEntity));
-                }
-                DbRepository.SaveInTransaction(entityType, new List<object>() { inputEntity });
-                if (OnAfterPut != null)
-                {
-                    OnAfterPut(this, new NKitRestApiPutEntityEventArgsCore(entityName, userName, DbRepository, entityType, inputEntity));
-                }
+                OnBeforePut?.Invoke(this, new NKitRestApiPutEntityEventArgs(entityName, userName, DbRepository, entityType, inputEntity));
+                DbRepository.Save(entityType, new List<object>() { inputEntity });
+                OnAfterPut?.Invoke(this, new NKitRestApiPutEntityEventArgs(entityName, userName, DbRepository, entityType, inputEntity));
                 string responseMessage = string.Format("{0} saved successfully.", entityName);
                 LogWebResponse(requestName, responseMessage);
                 return Ok(responseMessage);
@@ -336,16 +316,9 @@
                 Type entityType = GetEntityType(entityName);
                 object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
                 LogWebRequest(requestName, serializedText);
-                if (OnBeforePost != null)
-                {
-                    OnBeforePost(this, new NKitRestApiPostEntityEventArgsCore(entityName, userName, DbRepository, entityType, inputEntity));
-                }
-                DbRepository.InsertInTransaction(entityType, new List<object>() { inputEntity });
-                if (OnAfterPost != null)
-                {
-                    OnAfterPost(this, new NKitRestApiPostEntityEventArgsCore(
-                        entityName, userName, DbRepository, entityType, inputEntity));
-                }
+                OnBeforePost?.Invoke(this, new NKitRestApiPostEntityEventArgs(entityName, userName, DbRepository, entityType, inputEntity));
+                DbRepository.Insert(entityType, new List<object>() { inputEntity });
+                OnAfterPost?.Invoke(this, new NKitRestApiPostEntityEventArgs(entityName, userName, DbRepository, entityType, inputEntity));
                 string responseMessage = string.Format("{0} inserted successfully.", entityName);
                 LogWebResponse(requestName, responseMessage);
                 return Ok(responseMessage);
@@ -377,18 +350,45 @@
                 ValidateRequestMethod(HttpVerb.DELETE);
                 string userName = GetCurrentUserName();
                 Type entityType = GetEntityType(entityName);
-                if (OnBeforeDelete != null)
-                {
-                    OnBeforeDelete(this, new NKitRestApiDeleteEntityEventArgsCore(
-                        entityName, userName, DbRepository, entityType, entityId));
-                }
-                DbRepository.DeleteBySurrogateKeyInTransaction(entityType, new List<object>() { entityId });
-                if (OnAfterDelete != null)
-                {
-                    OnAfterDelete(this, new NKitRestApiDeleteEntityEventArgsCore(
-                        entityName, userName, DbRepository, entityType, entityId));
-                }
+                OnBeforeDelete?.Invoke(this, new NKitRestApiDeleteEntityEventArgs(entityName, userName, DbRepository, entityType, entityId));
+                DbRepository.DeleteBySurrogateKey(entityId, null, entityType);
+                OnAfterDelete?.Invoke(this, new NKitRestApiDeleteEntityEventArgs(entityName, userName, DbRepository, entityType, entityId));
                 string responseMessage = string.Format("{0} deleted successfully.", entityName);
+                LogWebResponse(requestName, responseMessage);
+                return Ok(responseMessage);
+            }
+            finally
+            {
+                DisposeEntityContext();
+            }
+        }
+
+        /// <summary>
+        /// Deletes all entities (table records) of the specified entity name (table name).
+        /// This action is dynamic in that any database table can be specified as the entity name as long as it's been added to the DbContext as a DbSet.
+        /// Returns a text message simple message indicating that the entities have been deleted. 
+        /// N.B. It is not advised to use this action method for database tables that contain a large amount of records as the database command can timeout or lock up SQL server.
+        /// For large database tables, a custom stored procedure should be developed to delete records in batches.
+        /// The Content-Type of the is always text/plain.
+        /// Called as such: "/{entityName}"
+        /// </summary>
+        /// <param name="entityName"></param>
+        /// <returns></returns>
+        [HttpDelete, Route("{entityName}")]
+        [Produces(MimeContentType.TEXT_PLAIN)]
+        public virtual IActionResult DeleteAllEntities(string entityName)
+        {
+            try
+            {
+                string requestName = $"{nameof(DeleteAllEntities)} : Entity Name = {entityName}";
+                LogWebRequest(requestName, null);
+                ValidateRequestMethod(HttpVerb.DELETE);
+                string userName = GetCurrentUserName();
+                Type entityType = GetEntityType(entityName);
+                OnBeforeDeleteAll?.Invoke(this, new NKitRestApiDeleteAllEntitiesEventArgs(entityName, userName, DbRepository, entityType));
+                DbRepository.DeleteAll(entityType);
+                OnAfterDeleteAll?.Invoke(this, new NKitRestApiDeleteAllEntitiesEventArgs(entityName, userName, DbRepository, entityType));
+                string responseMessage = string.Format("All {0} entities deleted successfully.", entityName);
                 LogWebResponse(requestName, responseMessage);
                 return Ok(responseMessage);
             }

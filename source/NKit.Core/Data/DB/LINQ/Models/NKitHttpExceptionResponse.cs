@@ -82,33 +82,28 @@
         public int HttpStatusCode { get; set; }
 
         [Required]
-        [Column(TypeName = VARCHAR_MAX)]
         public string ExceptionMessage { get; set; }
 
-        [Column(TypeName = VARCHAR_MAX)]
         public string InnerExceptionMessage { get; set; }
 
-        [Column(TypeName = VARCHAR_MAX)]
         public string ExceptionOriginatingClassName { get; set; }
 
-        [Column(TypeName = VARCHAR_MAX)]
         public string ExceptionOriginatingFunctionName { get; set; }
 
         [Required]
-        [Column(TypeName = VARCHAR_50)]
+        [StringLength(50)]
         public string ContentType { get; set; }
 
         [Required]
         public int EventId { get; set; }
 
-        [Column(TypeName = VARCHAR_200)]
+        [StringLength(200)]
         public string EventName { get; set; }
 
         [Required]
         [Column(TypeName = DATE_TIME)]
         public DateTime DateCreated { get; set; }
 
-        [Column(TypeName = VARCHAR_MAX)]
         public string ExceptionStackTrace { get; set; }
 
         #endregion //Properties

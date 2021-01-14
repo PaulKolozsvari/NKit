@@ -12,11 +12,11 @@
 
     #endregion //Using Directives
 
-    public class NKitRestApiPutEntityEventArgsCore : NKitRestApiEventArgsCore
+    public class NKitRestApiPutEntityEventArgs : NKitRestApiEventArgs
     {
         #region Constructors
 
-        public NKitRestApiPutEntityEventArgsCore(
+        public NKitRestApiPutEntityEventArgs(
             string entityName,
             string userName,
             NKitDbRepository entityContext,

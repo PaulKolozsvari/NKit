@@ -59,4 +59,11 @@
 
 *   Renamed the NKitEmailClient to NKitEmailService and added it through DI to the NKitWebApiController to be accessible to any controller deriving from it.
 
+*   Moved the configuration of the NKitDbContext to the class itself for both Sqlite and UseSqlServer depending on which provider was configured in the appsettings.json file.
+    -   Added new settings related to NKitDbContextRepository to configure which Db provider to use and whether the configuration should occur in the NKitDbContext (set in setting AutoConfigureDatabaseProvider)
+*   Implemented Sqlite provider and related SQL queries for SQLite in the NKitWebApiController and NKitDbContextRepository.
+*   Changed the NKitWebApiController to not use transaction methods from the NKitDbContextRepository but rather the regular CRUD methods which don't use transactions due to the fact that
+    some database providers like the Sqlite provider do not support atomic transactions.
+*   Implemented action in NKitWebApiControllerCrud for DeleteAllEntities.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.

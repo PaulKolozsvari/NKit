@@ -19,28 +19,22 @@
         public Guid NKitLogEntryId { get; set; }
 
         [Required]
-        [Column(TypeName = VARCHAR_MAX)]
         public string Message { get; set; }
 
         [StringLength(200)]
-        [Column(TypeName = VARCHAR_200)]
         public string Source { get; set; }
 
         [StringLength(200)]
-        [Column(TypeName = VARCHAR_200)]
         public string ClassName { get; set; }
 
         [StringLength(200)]
-        [Column(TypeName = VARCHAR_200)]
         public string FunctionName { get; set; }
 
-        [Column(TypeName = VARCHAR_MAX)]
         public string StackTrace { get; set; }
 
         [Required]
         public int EventId { get; set; }
 
-        [Column(TypeName = VARCHAR_200)]
         public string EventName { get; set; }
 
         [Required]
