@@ -12,6 +12,9 @@
 
     public class NKitLogEntry : NKitBaseModel
     {
+        //To ensure a model has string fields set to varchar instead nvarchar: modelBuilder.Properties<string>().Configure(c => c.HasColumnType("varchar"));
+        //https://stackoverflow.com/questions/20961869/configure-ef6-to-use-varchar-as-default-instead-of-nvarchar
+
         #region Properties
 
         [Required]

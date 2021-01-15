@@ -14,11 +14,11 @@
     using NKit.Core.Data.DB.LINQ;
     using NKit.Data;
     using NKit.Data.DB.LINQ;
+    using NKit.Settings;
+    using NKit.Settings.Default;
     using NKit.Utilities;
     using NKit.Utilities.Email;
     using NKit.Utilities.Logging;
-    using NKit.Utilities.SettingsFile;
-    using NKit.Utilities.SettingsFile.Default;
     using NKit.Web.Service.RestApi.ContentMapping;
 
     #endregion //Using Directives

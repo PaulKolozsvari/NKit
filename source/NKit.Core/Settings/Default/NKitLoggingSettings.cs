@@ -1,4 +1,4 @@
-﻿namespace NKit.Utilities.SettingsFile.Default
+﻿namespace NKit.Settings.Default
 {
     #region Using Directives
 

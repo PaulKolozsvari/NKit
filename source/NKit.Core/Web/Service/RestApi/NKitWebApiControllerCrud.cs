@@ -10,8 +10,8 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NKit.Data.DB.LINQ;
+    using NKit.Settings.Default;
     using NKit.Utilities.Email;
-    using NKit.Utilities.SettingsFile.Default;
     using NKit.Web.Client;
     using NKit.Web.Service.RestApi.Events;
 

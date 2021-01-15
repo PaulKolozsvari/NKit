@@ -1,8 +1,7 @@
-﻿namespace NKit.Utilities.SettingsFile.Default
+﻿namespace NKit.Settings.Default
 {
     #region Using Directives
 
-    using NKit.Utilities.SettingsFile;
     using System;
     using System.Collections.Generic;
     using System.Text;

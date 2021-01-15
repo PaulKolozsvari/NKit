@@ -10,8 +10,8 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.EventLog;
     using NKit.Extensions;
+    using NKit.Settings.Default;
     using NKit.Utilities;
-    using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
 

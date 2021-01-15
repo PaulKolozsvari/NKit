@@ -66,4 +66,6 @@
     some database providers like the Sqlite provider do not support atomic transactions.
 *   Implemented action in NKitWebApiControllerCrud for DeleteAllEntities.
 
+*   Moved the Settings classes to higher namespace NKit.Settings instead of under Utilities.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.

@@ -15,10 +15,10 @@
     using NKit.Web.Service.RestApi.Exceptions;
     using NKit.Data.DB.LINQ;
     using NKit.Utilities;
-    using NKit.Utilities.SettingsFile.Default;
     using NKit.Data.DB.LINQ.Models;
     using NKit.Utilities.Serialization;
     using NKit.Utilities.Email;
+    using NKit.Settings.Default;
 
     #endregion //Using Directives
 

@@ -9,7 +9,7 @@
     using System.Text;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using NKit.Utilities.SettingsFile.Default;
+    using NKit.Settings.Default;
 
     #endregion //Using Directives
 

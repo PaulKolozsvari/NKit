@@ -1,4 +1,4 @@
-﻿namespace NKit.Utilities.SettingsFile
+﻿namespace NKit.Settings
 {
     #region Using Directives
 
@@ -7,7 +7,6 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using NKit.Utilities;
-    using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
 

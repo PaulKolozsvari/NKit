@@ -10,8 +10,8 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using NKit.Settings.Default;
     using NKit.Utilities;
-    using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
 

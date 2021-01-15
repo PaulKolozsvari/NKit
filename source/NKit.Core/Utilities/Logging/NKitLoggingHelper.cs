@@ -7,7 +7,7 @@
     using System.Text;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.EventLog;
-    using NKit.Utilities.SettingsFile.Default;
+    using NKit.Settings.Default;
 
     #endregion //Using Directives
 

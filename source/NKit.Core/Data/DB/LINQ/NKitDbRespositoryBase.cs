@@ -11,7 +11,6 @@
     using System.Reflection;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using NKit.Utilities.SettingsFile.Default;
     using NKit.Data;
     using NKit.Standard.Data.DB.LINQ;
     using Dapper;
@@ -21,6 +20,7 @@
     using Microsoft.Extensions.Logging;
     using NKit.Data.DB.LINQ.Models;
     using System.Data;
+    using NKit.Settings.Default;
 
     #endregion //Using Directives
 

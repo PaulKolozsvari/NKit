@@ -19,12 +19,12 @@
     using System.Security.Claims;
     using NKit.Data;
     using Microsoft.Extensions.Options;
-    using NKit.Utilities.SettingsFile.Default;
     using System.IO;
     using System.Reflection;
     using NKit.Data.DB.LINQ.Models;
     using NKit.Utilities.Serialization;
     using NKit.Utilities.Email;
+    using NKit.Settings.Default;
 
     #endregion //Using Directives
 

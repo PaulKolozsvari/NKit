@@ -11,8 +11,8 @@
     using NKit.Data;
     using NKit.Data.DB;
     using NKit.Data.DB.LINQ.Models;
+    using NKit.Settings.Default;
     using NKit.Utilities;
-    using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives
 
