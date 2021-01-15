@@ -25,6 +25,7 @@
     using NKit.Utilities.Serialization;
     using NKit.Utilities.Email;
     using NKit.Settings.Default;
+    using NKit.Core.Data.DB.LINQ;
 
     #endregion //Using Directives
 
@@ -37,23 +38,23 @@
     /// </summary>
     /// <typeparam name="D">The NKitDbRepository that manages an underlying DbContext.</typeparam>
     [ApiController]
-    public class NKitWebApiController<D> : ControllerBase where D : NKitDbRepository
+    public class NKitWebApiController<D> : ControllerBase where D : NKitDbContext
     {
         #region Constructors
 
         public NKitWebApiController(
-            D dbRespository,
+            D dbContext,
             IHttpContextAccessor httpContextAccessor,
             IOptions<NKitGeneralSettings> generalOptions,
             IOptions<NKitWebApiControllerSettings> webApiControllerOptions,
-            IOptions<NKitDbRepositorySettings> databaseOptions,
+            IOptions<NKitDbContextSettings> databaseOptions,
             IOptions<NKitEmailClientServiceSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
             IOptions<NKitWebApiClientSettings> webApiClientOptions,
             NKitEmailClientService emailClientService,
             ILogger logger)
         {
-            DataValidator.ValidateObjectNotNull(dbRespository, nameof(dbRespository), nameof(NKitWebApiController<D>));
+            DataValidator.ValidateObjectNotNull(dbContext, nameof(dbContext), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitWebApiController<D>));
 
             DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitWebApiController<D>));
@@ -65,7 +66,7 @@
 
             _serviceInstanceId = Guid.NewGuid();
 
-            _dbRepository = dbRespository;
+            _dbContext = dbContext;
             _httpContextAccessor = httpContextAccessor;
 
             _generalSettings = generalOptions.Value;
@@ -89,11 +90,11 @@
         private readonly ILogger _logger;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly D _dbRepository;
+        private readonly D _dbContext;
 
         private readonly NKitGeneralSettings _generalSettings;
         private readonly NKitWebApiControllerSettings _webApiControllerSettings;
-        private readonly NKitDbRepositorySettings _dbRepositorySettings;
+        private readonly NKitDbContextSettings _dbRepositorySettings;
         private readonly NKitEmailClientServiceSettings _emailSettings;
         private readonly NKitLoggingSettings _loggingSettings;
         private readonly NKitWebApiClientSettings _webApiClientSettings;
@@ -123,9 +124,9 @@
         protected IHttpContextAccessor HttpContextAccessor { get { return _httpContextAccessor; } }
 
         /// <summary>
-        /// The NKitDbRepository which can be used to access data in the database.
+        /// The NKitDbContext which can be used to access data in the database.
         /// </summary>
-        protected D DbRepository { get { return _dbRepository; } }
+        protected D DbContext { get { return _dbContext; } }
 
         /// <summary>
         /// The NKitGeneralSettings settings that were configured in the appsettings.json file.
@@ -140,7 +141,7 @@
         /// <summary>
         /// The NKitDbRepository settings that were configured in the appsettings.json file.
         /// </summary>
-        protected NKitDbRepositorySettings DbRepositorySettings { get { return _dbRepositorySettings; } }
+        protected NKitDbContextSettings DbRepositorySettings { get { return _dbRepositorySettings; } }
 
         /// <summary>
         /// The NKitEmailCllient settings that were configured in the appsettings.json file.
@@ -186,9 +187,9 @@
             {
                 _logger.LogInformation(logMessage);
             }
-            if (_dbRepository != null && _webApiControllerSettings.LogRequestsInDatabaseNKitLogEntry)
+            if (_dbContext != null && _webApiControllerSettings.LogRequestsInDatabaseNKitLogEntry)
             {
-                _dbRepository.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(27, "Request"));
+                _dbContext.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(27, "Request"));
             }
         }
 
@@ -217,9 +218,9 @@
             {
                 _logger.LogInformation(logMessage);
             }
-            if (_dbRepository != null && _webApiControllerSettings.LogResponsesInDatabaseNKitLogEntry)
+            if (_dbContext != null && _webApiControllerSettings.LogResponsesInDatabaseNKitLogEntry)
             {
-                _dbRepository.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(28, "Response"));
+                _dbContext.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(28, "Response"));
             }
         }
 
@@ -410,9 +411,9 @@
         /// </summary>
         protected void DisposeEntityContext()
         {
-            if (_dbRepository != null)
+            if (_dbContext != null)
             {
-                _dbRepository.Dispose();
+                _dbContext.Dispose();
             }
         }
 

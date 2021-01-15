@@ -31,41 +31,37 @@
         /// The Entity Framework SQL Server Provider is not registered as part of this call.
         /// </summary>
         /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
-        /// <typeparam name="R">The NKitDbContextRepository used to mnage the NKitDbContext.</typeparam>
         /// <param name="services">The DI services container received in the Startup class.</param>
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
-        public static void RegisterDefaultNKitServices<D, R>(
+        public static void RegisterDefaultNKitServices<D>(
             this IServiceCollection services,
-            IConfiguration configuration) where D : NKitDbContext where R : NKitDbRepository
+            IConfiguration configuration) where D : NKitDbContext
         {
-            RegisterDefaultNKitServices<D, R>(services, configuration, true, false, true, true);
+            RegisterDefaultNKitServices<D>(services, configuration, true,  true, true);
         }
 
         /// <summary>
         /// Reads all the NKit settings from the appsettings.json file and registers all the services required by NKit.
         /// </summary>
         /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
-        /// <typeparam name="R">The NKitDbContextRepository used to mnage the NKitDbContext.</typeparam>
         /// <param name="services">The DI services container received in the Startup class.</param>
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
-        /// <param name="registerNKitDbContextRepository">Whether or not to register the NKitDbDbContext specified by D and the NKitDbContextRepository specified by R.</param>
-        /// <param name="registerEntityFrameworkSqlServerProvider">Whether or not to register Sql Server as the provider for the Entity Framework NKitDbContext i.e. sometimes it may be preferable to configure your own provider on the DbContext's OnConfiguring method, hence not requiring this Sql Server provider registration here.</param>
+        /// <param name="registerNKitDbContext">Whether or not to register the NKitDbContext specified by D.</param>
         /// <param name="registerDefaultNKitEmailClient">Whether or not to register the default NKitEmailClient.</param>
         /// <param name="registerControllerInputFormatter">Whether or not to register the controller formatters i.e. allowing POST/PUT inputs requests in the formats provided in the NKit MimeContentType class.</param>
-        public static void RegisterDefaultNKitServices<D, R>(
+        public static void RegisterDefaultNKitServices<D>(
             this IServiceCollection services,
             IConfiguration configuration,
-            bool registerNKitDbContextRepository,
-            bool registerEntityFrameworkSqlServerProvider,
+            bool registerNKitDbContext,
             bool registerDefaultNKitEmailClient,
-            bool registerControllerInputFormatter) where D : NKitDbContext where R : NKitDbRepository
+            bool registerControllerInputFormatter) where D : NKitDbContext
         {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
             DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(ServiceCollectionSettingsExtensions));
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            if (registerNKitDbContextRepository)
+            if (registerNKitDbContext)
             {
-                RegisterNKitDbContextRepository<D, R>(services, configuration, registerEntityFrameworkSqlServerProvider);
+                RegisterNKitDbContext<D>(services, configuration);
             }
             if (registerDefaultNKitEmailClient)
             {
@@ -82,28 +78,17 @@
         /// which make them accessible through the Dependency Injection container and available to all NKit controllers just as the NKitWebApiController and/or NKitWebApiControllerCrud.
         /// </summary>
         /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
-        /// <typeparam name="R">The NKitDbContextRepository used to mnage the NKitDbContext.</typeparam>
         /// <param name="services">The DI services container received in the Startup class.</param>
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
-        /// <param name="registerEntityFrameworkSqlServerProvider">Whether or not to register Sql Server as the provider for the Entity Framework NKitDbContext i.e. sometimes it may be preferable to configure your own provider on the DbContext's OnConfiguring method, hence not requiring this Sql Server provider registration here.</param>
-        public static void RegisterNKitDbContextRepository<D, R>(
+        public static void RegisterNKitDbContext<D>(
             this IServiceCollection services,
-            IConfiguration configuration,
-            bool registerEntityFrameworkSqlServerProvider) where D : NKitDbContext where R : NKitDbRepository
+            IConfiguration configuration) where D : NKitDbContext
         {
-            NKitDbRepositorySettings dbContextSettings = NKitDbRepositorySettings.GetSettings(configuration);
+            NKitDbContextSettings dbContextSettings = NKitDbContextSettings.GetSettings(configuration);
             if (dbContextSettings != null)
             {
-                if (registerEntityFrameworkSqlServerProvider)
-                {
-                    services.AddDbContext<D>(dbContextOptionsBuilder => dbContextOptionsBuilder.UseSqlServer(dbContextSettings.DatabaseConnectionString, sqlServerOptionsBuilder => sqlServerOptionsBuilder.CommandTimeout(dbContextSettings.DatabaseCommandTimeoutSeconds)), ServiceLifetime.Transient); //Register the NKitDbContext.
-                }
-                else
-                {
-                    services.AddDbContext<D>(ServiceLifetime.Transient); //Register the NKitDbContext.
-                }
+                services.AddDbContext<D>(ServiceLifetime.Transient); //Register the NKitDbContext.
             }
-            services.AddTransient<R>(); //Register the NKitDbContextRepository.
         }
 
         /// <summary>

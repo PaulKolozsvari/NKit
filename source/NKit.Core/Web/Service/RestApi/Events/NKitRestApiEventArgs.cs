@@ -8,6 +8,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
+    using NKit.Core.Data.DB.LINQ;
     using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives
@@ -19,12 +20,12 @@
         public NKitRestApiEventArgs(
             string entityName,
             string userName,
-            NKitDbRepository entityContext,
+            NKitDbContext dbContext,
             Type entityType)
         {
             _entityName = entityName;
             _userName = userName;
-            _entityContext = entityContext;
+            _dbContext = dbContext;
             _entityType = entityType;
         }
 
@@ -34,7 +35,7 @@
 
         private string _entityName;
         private string _userName;
-        private NKitDbRepository _entityContext;
+        private NKitDbContext _dbContext;
         private Type _entityType;
 
         #endregion //Fields
@@ -51,9 +52,9 @@
             get { return _userName; }
         }
 
-        public NKitDbRepository EntityContext
+        public NKitDbContext DbContext
         {
-            get { return _entityContext; }
+            get { return _dbContext; }
         }
 
         public Type EntityType

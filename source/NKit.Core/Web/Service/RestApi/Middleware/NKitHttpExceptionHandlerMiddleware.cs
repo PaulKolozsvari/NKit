@@ -19,6 +19,7 @@
     using NKit.Utilities.Serialization;
     using NKit.Utilities.Email;
     using NKit.Settings.Default;
+    using NKit.Core.Data.DB.LINQ;
 
     #endregion //Using Directives
 
@@ -28,7 +29,7 @@
     /// ASP.NET Core - Middleware Pipeline: https://www.tutorialsteacher.com/core/aspnet-core-middleware
     /// You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     /// </summary>
-    public class NKitHttpExceptionHandlerMiddleware<D> where D : NKitDbRepository
+    public class NKitHttpExceptionHandlerMiddleware<D> where D : NKitDbContext
     {
         #region Constructors
 
@@ -59,7 +60,7 @@
 
         public async Task Invoke(
             HttpContext context,
-            D dbContextRepo,
+            D dbContext,
             IOptions<NKitHttpExceptionHandlerMiddlewareSettings> middlewareSettings, 
             ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger,
             NKitEmailClientService emailClient)
@@ -70,7 +71,7 @@
             }
             catch (NKitHttpStatusCodeException ex)
             {
-                HandleException(ex, ex.EventId, context, dbContextRepo, middlewareSettings, logger, emailClient);
+                HandleException(ex, ex.EventId, context, dbContext, middlewareSettings, logger, emailClient);
                 NKitHttpExceptionResponse response = new NKitHttpExceptionResponse(ex, middlewareSettings.Value.IncludeStackTraceInExceptionResponse);
                 string responseText = response.GetResponseText(middlewareSettings.Value.SerializerType, middlewareSettings.Value.ResponseContentType);
                 context.Response.Clear();
@@ -81,7 +82,7 @@
             }
             catch (Exception ex)
             {
-                HandleException(ex, null, context, dbContextRepo, middlewareSettings, logger, emailClient);
+                HandleException(ex, null, context, dbContext, middlewareSettings, logger, emailClient);
                 int httpStatusCode = (int)HttpStatusCode.InternalServerError;
                 NKitHttpExceptionResponse response = new NKitHttpExceptionResponse(ex, httpStatusCode, null, null, middlewareSettings.Value.IncludeStackTraceInExceptionResponse);
                 string responseText = response.GetResponseText(middlewareSettings.Value.SerializerType, middlewareSettings.Value.ResponseContentType);
@@ -93,9 +94,9 @@
             }
             finally
             {
-                if (dbContextRepo != null)
+                if (dbContext != null)
                 {
-                    dbContextRepo.Dispose();
+                    dbContext.Dispose();
                 }
             }
         }
@@ -104,7 +105,7 @@
             Exception ex,
             Nullable<EventId> eventId,
             HttpContext context,
-            D dbContextRepo,
+            D dbContext,
             IOptions<NKitHttpExceptionHandlerMiddlewareSettings> middlewareSettings,
             ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger,
             NKitEmailClientService emailClient)
@@ -123,7 +124,7 @@
             {
                 logger.Log(LogLevel.Error, ex, message);
             }
-            dbContextRepo.LogExceptionToNKitLogEntry(ex, eventId, middlewareSettings.Value.IncludeExceptionStackTraceInDatabaseNKitLogEntry);
+            dbContext.LogExceptionToNKitLogEntry(ex, eventId, middlewareSettings.Value.IncludeExceptionStackTraceInDatabaseNKitLogEntry);
             if (middlewareSettings.Value.SendEmailOnException)
             {
                 emailClient.SendExceptionEmailNotification(ex, out string errorMessage, out string emailLogMessageText, middlewareSettings.Value.AppendHostNameToExceptionEmails, null);

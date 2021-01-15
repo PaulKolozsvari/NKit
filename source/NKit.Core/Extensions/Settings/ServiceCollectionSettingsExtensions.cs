@@ -49,7 +49,7 @@
             out NKitWebApiControllerSettings webApiSettings,
             out NKitHttpExceptionHandlerMiddlewareSettings httpExceptionHandlerMiddlewareSettings,
             out NKitWebApiClientSettings webApiClientSettings,
-            out NKitDbRepositorySettings databaseSettings,
+            out NKitDbContextSettings databaseSettings,
             out NKitLoggingSettings loggingSettings,
             out NKitEmailClientServiceSettings emailSettings,
             string loggerCategoryName)
@@ -86,7 +86,7 @@
             out NKitWebApiControllerSettings webApiSettings,
             out NKitHttpExceptionHandlerMiddlewareSettings httpExceptionHandlerMiddlewareSettings,
             out NKitWebApiClientSettings webApiClientSettings,
-            out NKitDbRepositorySettings databaseSettings,
+            out NKitDbContextSettings databaseSettings,
             out NKitLoggingSettings loggingSettings,
             out NKitEmailClientServiceSettings emailSettings,
             ILogger logger)
@@ -95,7 +95,7 @@
             webApiSettings = NKitWebApiControllerSettings.RegisterConfiguration(configuration, services);
             httpExceptionHandlerMiddlewareSettings = NKitHttpExceptionHandlerMiddlewareSettings.RegisterConfiguration(configuration, services);
             webApiClientSettings = NKitWebApiClientSettings.RegisterConfiguration(configuration, services);
-            databaseSettings = NKitDbRepositorySettings.RegisterConfiguration(configuration, services);
+            databaseSettings = NKitDbContextSettings.RegisterConfiguration(configuration, services);
             loggingSettings = NKitLoggingSettings.RegisterConfiguration(configuration, services);
             emailSettings = NKitEmailClientServiceSettings.RegisterConfiguration(configuration, services);
             if (logger == null)
@@ -118,7 +118,7 @@
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(httpExceptionHandlerMiddlewareSettings));
             logMessage.AppendLine();
 
-            logMessage.AppendLine($"*** {nameof(NKitDbRepositorySettings)} ***");
+            logMessage.AppendLine($"*** {nameof(NKitDbContextSettings)} ***");
             logMessage.AppendLine(GOC.Instance.JsonSerializer.SerializeToText(databaseSettings));
             logMessage.AppendLine();
 

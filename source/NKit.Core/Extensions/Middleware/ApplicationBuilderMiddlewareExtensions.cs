@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.Text;
     using Microsoft.AspNetCore.Builder;
+    using NKit.Core.Data.DB.LINQ;
     using NKit.Data.DB.LINQ;
     using NKit.Web.Service.RestApi.Middleware;
 
@@ -24,7 +25,7 @@
         /// Registers the NKitHttpExceptionHandlerMiddleware
         /// </summary>
         /// <typeparam name="D">The NKitDbContextRepository type being used in the application.</typeparam>
-        public static IApplicationBuilder UseNKitHttpExceptionHandlerMiddleware<D>(this IApplicationBuilder applicationBuilder) where D : NKitDbRepository
+        public static IApplicationBuilder UseNKitHttpExceptionHandlerMiddleware<D>(this IApplicationBuilder applicationBuilder) where D : NKitDbContext
         {
             return applicationBuilder.UseMiddleware<NKitHttpExceptionHandlerMiddleware<D>>();
         }

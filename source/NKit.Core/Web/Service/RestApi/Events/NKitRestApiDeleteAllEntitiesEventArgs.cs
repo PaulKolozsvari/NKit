@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using NKit.Core.Data.DB.LINQ;
 
     #endregion //Using Directives
 
@@ -15,10 +16,10 @@
 
         public NKitRestApiDeleteAllEntitiesEventArgs(
             string entityName, 
-            string userName, 
-            NKitDbRepository entityContext, 
+            string userName,
+            NKitDbContext dbContext, 
             Type entityType) : 
-            base(entityName, userName, entityContext, entityType)
+            base(entityName, userName, dbContext, entityType)
         {
         }
 
