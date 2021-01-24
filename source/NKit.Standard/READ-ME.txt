@@ -68,3 +68,8 @@
 *	Using the NetStandard library in .NET Framework project:
 	Include the following line in the PropertyGroup for each configuration i.e. Debug/Release. Otherwise it will not be able to load the references that the NetStandard project has e.g. System.ServiceModel.Http.
 		-	<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+
+	https://stackoverflow.com/questions/49925484/you-must-add-a-reference-to-assembly-netstandard-version-2-0-0-0
+		1. Install the NetStandard.Library via NuGet
+		2. Manually editing the .csproj file and adding the reference. <Reference Include="netstandard" />
+		3. Expanding project-->References in the VS Solution Explorer, right clicking on 'netstandard' and showing the properties page and setting "Copy Local" to true.

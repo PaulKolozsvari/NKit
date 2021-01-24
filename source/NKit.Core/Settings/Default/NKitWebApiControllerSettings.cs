@@ -16,39 +16,45 @@
         #region Properties
 
         /// <summary>
+        /// Sets the host URL which this API can be accessed from.
+        /// </summary>
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Sets the host URL which this API can be accessed from.", CategorySequenceId = 0)]
+        public string HostUrl { get; set; }
+
+        /// <summary>
         /// Sets the serializer type that is used to serialize the responses from the NKitWebApiController. 'XML' or 'JSON' is supported.
         /// </summary>
-        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Sets the serializer type that is used to serialize/deserialize the requests/responses from the NKitWebApiController. 'XML' or 'JSON' is supported.", CategorySequenceId = 0)]
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Sets the serializer type that is used to serialize/deserialize the requests/responses from the NKitWebApiController. 'XML' or 'JSON' is supported.", CategorySequenceId = 1)]
         public SerializerType SerializerType { get; set; }
 
         /// <summary>
         /// Sets the default content type that the NKitWebApiController returns e.g. 'text/plain', 'application/json' or 'application/xml' is supported.
         /// </summary>
-        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Sets the default content type that the NKitWebApiController returns e.g. 'text/plain', 'application/json' or 'application/xml' is supported.", CategorySequenceId = 1)]
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Sets the default content type that the NKitWebApiController returns e.g. 'text/plain', 'application/json' or 'application/xml' is supported.", CategorySequenceId = 2)]
         public string ResponseContentType { get; set; }
 
         /// <summary>
         /// Whether or not the log requests to the NKitWebApiController in the logger.
         /// </summary>
-        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log requests to the NKitWebApiController in the logger.", CategorySequenceId = 2)]
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log requests to the NKitWebApiController in the logger.", CategorySequenceId = 3)]
         public bool LogRequests { get; set; }
 
         /// <summary>
         /// Whether or not the log reponses from the NKitWebApiController in the logger.
         /// </summary>
-        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log reponses from the NKitWebApiController in the logger.", CategorySequenceId = 3)]
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log reponses from the NKitWebApiController in the logger.", CategorySequenceId = 4)]
         public bool LogResponses { get; set; }
 
         /// <summary>
         /// Whether or not the log requests to the database table NKitLogEntry.
         /// </summary>
-        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log requests to the database table NKitLogEntry.", CategorySequenceId = 4)]
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log requests to the database table NKitLogEntry.", CategorySequenceId = 5)]
         public bool LogRequestsInDatabaseNKitLogEntry { get; set; }
 
         /// <summary>
         /// Whether or not the log responses to the database table NKitLogEntry.
         /// </summary>
-        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log responses from to the database table NKitLogEntry.", CategorySequenceId = 5)]
+        [NKitSettingInfo("Web API", AutoFormatDisplayName = true, Description = "Whether or not the log responses from to the database table NKitLogEntry.", CategorySequenceId = 6)]
         public bool LogResponsesInDatabaseNKitLogEntry { get; set; }
 
         #endregion //Properties

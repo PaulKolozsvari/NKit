@@ -353,7 +353,7 @@
     <Compile Include="Web\Client\Funnel\FunnelServiceResultHandlerWindows.cs" />
     <Compile Include="Web\Client\NToolkitWebService\NToolkitWebServiceClientWrapperWindows.cs" />
     <Compile Include="Web\Client\NToolkitWebService\NToolkitWebServiceFilterStringWindows.cs" />
-    <Compile Include="Web\MVC\Controllers\NToolkitControllerWindows.cs" />
+    <Compile Include="Web\MVC\Controllers\NKitControllerWindows.cs" />
     <Compile Include="Web\MVC\Extensions\ButtonHelpersWindows.cs" />
     <Compile Include="Web\MVC\Extensions\ExtensionMethodsWindows.cs" />
     <Compile Include="Web\MVC\Models\FilterModelWindows.cs" />

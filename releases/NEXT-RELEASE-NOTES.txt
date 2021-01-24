@@ -69,4 +69,6 @@
 *   Moved the Settings classes to higher namespace NKit.Settings instead of under Utilities.
 *   Removed the NKitDbRepository and moved all its CRUD and utility methods into the NKitDbContext, to remove the need for a wrapper repository class housing the NKitDbContext.
 
+*   Added extension method to IWebHostBuilder to set the HostUrl from the NKitWebApiControllerSettings.
+
 *   TODO: Implement logging of NKitHttpExceptionResponse to the database.

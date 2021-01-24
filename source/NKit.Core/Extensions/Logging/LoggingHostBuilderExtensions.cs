@@ -24,8 +24,6 @@
         /// For more information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-5.0
         /// Logging Levels: https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.loglevel?view=dotnet-plat-ext-5.0
         /// </summary>
-        /// <param name="hostBuilder"></param>
-        /// <returns></returns>
         public static IHostBuilder ConfigureNKitLogging(this IHostBuilder hostBuilder)
         {
             NKitLoggingSettings loggingSettings = NKitLoggingSettings.GetSettings();

@@ -446,6 +446,12 @@
 
         #endregion //Data Methods
 
+        protected virtual RedirectToRouteResult HandleException(Exception ex)
+        {
+            ExceptionHandler.HandleException(ex);
+            return RedirectToError(ex.Message);
+        }
+
         #endregion //Methods
     }
 }
