@@ -918,8 +918,8 @@
     <Compile Include="..\NKit.Windows\Web\Client\SOAP\SoapClientMessageInspectorWindows.cs">
       <Link>Web\Client\SOAP\SoapClientMessageInspectorWindows.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Windows\Web\MVC\Controllers\NToolkitControllerWindows.cs">
-      <Link>Web\MVC\Controllers\NToolkitControllerWindows.cs</Link>
+    <Compile Include="..\NKit.Windows\Web\MVC\Controllers\NKitControllerWindows.cs">
+      <Link>Web\MVC\Controllers\NKitControllerWindows.cs</Link>
     </Compile>
     <Compile Include="..\NKit.Windows\Web\MVC\Extensions\ButtonHelpersWindows.cs">
       <Link>Web\MVC\Extensions\ButtonHelpersWindows.cs</Link>

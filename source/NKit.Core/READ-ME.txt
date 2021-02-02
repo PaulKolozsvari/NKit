@@ -1,4 +1,24 @@
-﻿*	Dependency Injection in .NET and different types of services i.e.Transient, Scoped & Singletons as well as object disposing scenarios: https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection
+﻿*	Organizations on NuGet:
+	-	https://devblogs.microsoft.com/nuget/organizations-on-nuget-org/
+	-	https://docs.microsoft.com/en-us/nuget/nuget-org/organizations-on-nuget-org#transform-existing-account-to-an-organization
+
+*	Quickstart: Create and publish a NuGet package using Visual Studio (.NET Standard, Windows only):
+	-	https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-visual-studio
+		1.	Set the package properties in the project settings.
+		2.	Switch to Release build configuration.
+		3.	Right click project and click Pack, which will create the nupkg for the project.
+		4.	Login to NuGet and create an Key (if you don't have one already): https://www.nuget.org/account/apikeys
+			-	Nuget API Key (2021-02-02): oy2jwot74yjvltgfrzuax6vmwrt227cuhncvayigffpzmm
+		5.	Publish Package with .NET CLI (Command Line Interface):
+			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
+			-	Run the following command and just replacing the key with your own key:
+					dotnet nuget push NKit.Core.1.0.0.nupkg -k oy2jwot74yjvltgfrzuax6vmwrt227cuhncvayigffpzmm -s https://api.nuget.org/v3/index.json
+		6.	Publish the package with Nuget Push:
+			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
+			-	Run the following command and just replacing the key with your own key:
+					nuget push NKit.Core.1.0.0.nupkg oy2jwot74yjvltgfrzuax6vmwrt227cuhncvayigffpzmm -Source https://api.nuget.org/v3/index.json
+
+*	Dependency Injection in .NET and different types of services i.e.Transient, Scoped & Singletons as well as object disposing scenarios: https://docs.microsoft.com/en-us/dotnet/core/extensions/dependency-injection
 *	Dependency Injection in ASP.NET Core(services): https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection?view=aspnetcore-5.0
 *	.NET Core Dependency Injection with constructor parameters: https://cmatskas.com/net-core-dependency-injection-with-constructor-parameters-2/
 *	.NET Core Dependency Injection with Options: https://csharp.christiannagel.com/2016/07/27/diwithoptions/

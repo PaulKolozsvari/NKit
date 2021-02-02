@@ -2,6 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>NKit.Core</AssemblyName>
+    <RootNamespace>NKit</RootNamespace>
+    <Company>Binary Chef</Company>
+    <Product>NKit.Core</Product>
+    <Authors>Paul Kolozsvari</Authors>
+    <RepositoryUrl>https://github.com/PaulKolozsvari/NKit</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/PaulKolozsvari/NKit</PackageProjectUrl>
+    <Description>.NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications. NKit.Standard is the .NET Standard compatible version of NKit.</Description>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <PackageReleaseNotes>.NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications.</PackageReleaseNotes>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>.NET Toolkit</PackageTags>
+    <Version>1.0.0</Version>
+    <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
