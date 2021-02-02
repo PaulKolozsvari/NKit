@@ -418,14 +418,14 @@
     <Compile Include="..\NKit.Standard\Web\MVC\Models\ConfirmationModel.cs">
       <Link>Web\MVC\Models\ConfirmationModel.cs</Link>
     </Compile>
-    <Compile Include="..\NKit.Standard\Web\MVC\Models\FiglutEntityModel.cs">
-      <Link>Web\MVC\Models\FiglutEntityModel.cs</Link>
-    </Compile>
     <Compile Include="..\NKit.Standard\Web\MVC\Models\FilterModelStandard.cs">
       <Link>Web\MVC\Models\FilterModelStandard.cs</Link>
     </Compile>
     <Compile Include="..\NKit.Standard\Web\MVC\Models\InformationModel.cs">
       <Link>Web\MVC\Models\InformationModel.cs</Link>
+    </Compile>
+    <Compile Include="..\NKit.Standard\Web\MVC\Models\NKitEntityModel.cs">
+      <Link>Web\MVC\Models\NKitEntityModel.cs</Link>
     </Compile>
     <Compile Include="..\NKit.Standard\Web\MVC\Models\WaitModel.cs">
       <Link>Web\MVC\Models\WaitModel.cs</Link>
