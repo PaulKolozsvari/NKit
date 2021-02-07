@@ -73,3 +73,6 @@
 		1. Install the NetStandard.Library via NuGet
 		2. Manually editing the .csproj file and adding the reference. <Reference Include="netstandard" />
 		3. Expanding project-->References in the VS Solution Explorer, right clicking on 'netstandard' and showing the properties page and setting "Copy Local" to true.
+
+Grant permissions to a user to to create the event log without requiring to run as administrator:
+	-	https://blog.sandro-pereira.com/2012/02/16/the-source-was-not-found-but-some-or-all-event-logs-could-not-be-searched-inaccessible-logs-security/

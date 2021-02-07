@@ -1,0 +1,74 @@
+*   Added option to the FtpClient UploadFile and DownloadFile methods to enable or disable SSL for the FTP request.
+*   Moved all the settings related classes from the Standard library to the Windows library because Core library will implement settings differently i.e. via Options pattern. 
+*   In NKit.Core, fixed the EntityFrameworkExtensionsCore Set in method for dynamic types to prevent ambiguious error exception where it cannot find the correct generic Set overload method on DbContext.
+*   Implemented ControllerInputFormatter to allow configuring controllers to allow receiving of plain text or any of the media types specified in the constructor of this class.
+*   Added utility methods in the Settings class to read specific settings sections from the appsettings.json file and also register them onfigurations to make them accessible to the services collection.
+*   Implemented NKitBaseModel that can be inherrited by any models in an app.
+*   Implemented NKitLogEntry model that is used by the LinqFunnelContextCore to log exceptions and info to the database NKitLogEntry which needs to be registered by underlying DbContext
+    as a DbSet in the application using the NKit.
+*   Added exception handling middleware which logs to the AppLogger as well as to the database in the NKitLogEntry table.
+
+*   Changed the GetEntityType in the WebApiRestServiceControllerCore to also look for the entity type in the current assembly NKit.Core.dll in the default core Rest Models Namespace.
+    This would need to happen if the consumer is trying to read/write default models/entities to the database like the NKitLogEntry.
+*   Added logging setting LogToNKitLogEntryDatabaseTable to make it configurable as to whether or not the NKitDbContextRepository should log to the database.
+*   Implemented Logging options in the NKitDbContextRepository to check whether or logging to the database is enabled or not.
+*   Consolidated the GetEntities and GetEntitiesByField action on the NKitWebApiController to a single action that performs both functions depending on whether the searchBy query parameter is specified.
+
+*   Upgraded some of the System. references in the NKit.Standard libraty to match the .NET references to prevent the downgrade errors when publishing a self-contained .NET Core App.
+*   Added writing of all the settings to the console in the NKitApplication.
+*   Removed the OnConfiguring method in the NKitDbContext class, to allow the consumer class specify the configuration i.e. to specify the provider when calling the UseSqlServer method.
+
+*   Implemented NKitEmailService.
+*   Implemented custom Console logging provider which changes the colors of information, error and warning messages.
+*   Added NKitGeneralSettings default settings class.
+*   Added EventId and EventName to NKitLogEntry model i.e. database.
+*   Added Console logging settings to make the colors used in the console logger configurable e.g. DardRed for Errors, Red for Critical, Yellow for Warnings, Green for Information, Blue for debug.
+*   Implemented NKitHttpExceptionResponse model to always return this object on exceptions handled by the NKitHttpExceptionHandlerMiddleware based on the content type specified when throwing a NKitHttpStatusCodeException.
+
+*   Implemented serializer type to be configurable for the NKitWebApiController which it will use to serialize and deserialize requests and responses. This is set in the NKitWebApiSettings.
+*   Implemented configurable ResponseContentType for the NKitWebApiController which it sets on responses. This is set in the NKitWebApiSettings.
+*   Implemented method in the MimeContentType to get the content type from the SerializerType.
+
+*   Implemented separate content types and serializer type on the http exception handler middleware and separate middleware settings.
+*   Renamed some of the settings classes to match the classes that they target i.e. NKitWebApiControllerSettings for the NKitWebApiController etc.
+*   Implementing configurable log requests and responses settings in the NKitWebApiControllerSettings.
+
+*   Made the NKitHttpExceptionHandlerMiddleware have configurable settings related to emails i.e. to send email on exception or not and whether or not to append the hostname to the email.
+*   Made the fields and methods in the EmailClient in the standard NKit protected instead of private to allow a custom implementation of this EmailClient to be implemented in the NKit Core
+    library by inheriting from the EmailClient in the standard NKit.
+*   Removed the NKitEmailService which created and held an instance of EmailClient. Replaced it with NKitEmailClient which inherits from EmailClient and overrides the LogEmailNotification
+    method which logs to the .NET Core logger instead of the custom GOC.Instance.Logger which does not work in .NET Core.
+*   Implemented logging of requests and responses in the NKitWebApiController to the database table NKitLogEntry.
+*   Implemented methods on all the NKitSettings classes to be able to get the settings without providing a IConfiguration instance to the GetSettings method. It then reads the configuration based on the current environment's appsettings.json file.
+*   Added validation to the UpdateNKitDatabase extension method to throw an appropriate exception if the NKitNKitDbContextRepositorySettings have been set in the appsettings.json method.
+
+*   Added template batch files for installing and uninstalling an exe as a windows service.
+
+*   Added XML documentation to all the NKitWebApiController actions.
+*   Removed all the children related fields in the NKitDbContextRepository methods i.e. loadChildren and saveChildren.
+
+*   Added XML comments to the all the NKitDbRepository methods and properties.
+*   Added XML comments to the all the NKitWebApiController methods and properties.
+*   Implementing action GetEntityCount and GetEntityCountLong in NKitWebApiControllerCrud to return the number of records in a specified database table.
+*   Created separate NKitWebApiControllerCrud controler that only contains the action method and inherits from NKitWebApiController which has all the base utility methods i.e. no CRUD action methods.
+    This might be useful for users that want to implement an NKit controller without exposing the database's CRUD methods.
+
+*   Moved all extension method classes into separate folder on the NKit.Core project.
+*   Added additional extension methods to to the IServiceCollection to allow registering individual services like NKitEmailClient, NKitDbContext and NKitDbContextRepository.
+*   Added extra method on AssemblyReader to retrieve the file paths of all generated XML documenation files.
+
+*   Renamed the NKitEmailClient to NKitEmailService and added it through DI to the NKitWebApiController to be accessible to any controller deriving from it.
+
+*   Moved the configuration of the NKitDbContext to the class itself for both Sqlite and UseSqlServer depending on which provider was configured in the appsettings.json file.
+    -   Added new settings related to NKitDbContextRepository to configure which Db provider to use and whether the configuration should occur in the NKitDbContext (set in setting AutoConfigureDatabaseProvider)
+*   Implemented Sqlite provider and related SQL queries for SQLite in the NKitWebApiController and NKitDbContextRepository.
+*   Changed the NKitWebApiController to not use transaction methods from the NKitDbContextRepository but rather the regular CRUD methods which don't use transactions due to the fact that
+    some database providers like the Sqlite provider do not support atomic transactions.
+*   Implemented action in NKitWebApiControllerCrud for DeleteAllEntities.
+
+*   Moved the Settings classes to higher namespace NKit.Settings instead of under Utilities.
+*   Removed the NKitDbRepository and moved all its CRUD and utility methods into the NKitDbContext, to remove the need for a wrapper repository class housing the NKitDbContext.
+
+*   Added extension method to IWebHostBuilder to set the HostUrl from the NKitWebApiControllerSettings.
+
+*   TODO: Implement logging of NKitHttpExceptionResponse to the database.

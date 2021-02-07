@@ -24,3 +24,6 @@
 			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
 			-	Run the following command and just replacing the key with your own key:
 					nuget push NKit.Windows.Standalone.1.3.5.nupkg oy2lv4zstkrq3ajihd5qihkzpwjhlowurladdayigzosmq -Source https://api.nuget.org/v3/index.json
+
+Grant permissions to a user to to create the event log without requiring to run as administrator:
+	-	https://blog.sandro-pereira.com/2012/02/16/the-source-was-not-found-but-some-or-all-event-logs-could-not-be-searched-inaccessible-logs-security/
