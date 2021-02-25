@@ -1,2 +1,3 @@
 *   Fixed DataShaper method that search for numeric parts in strings.
 *   Fixed SqliteQueryWindows to not append WherClause columns in separate lines but in a single line.
+*   Changed DataShaper IsValidEmail method to add multiple checks for a valid email address.
