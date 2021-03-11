@@ -46,6 +46,10 @@
             foreach (WhereClauseColumnWindows whereColumn in whereClause)
             {
                 string whereColumnName = whereColumn.ColumnName;
+                if (whereColumn.IsCustomClause)
+                {
+                    _sqlQueryString.AppendLine(whereColumn.ToString());
+                }
                 if (whereColumn.UseParameter)
                 {
                     string parameterName = string.Format("@{0}", DataShaper.GetUniqueIdentifier());
