@@ -17,7 +17,7 @@
         {
         }
 
-        public WhereClauseColumn(string customClause, WhereClauseLogicalOperator logicalOperatorAgainstNextColumn)
+        public WhereClauseColumnWindows(string customClause, WhereClauseLogicalOperatorWindows logicalOperatorAgainstNextColumn)
         {
             _customClause = customClause;
             _isCustomClause = !string.IsNullOrEmpty(_customClause);
