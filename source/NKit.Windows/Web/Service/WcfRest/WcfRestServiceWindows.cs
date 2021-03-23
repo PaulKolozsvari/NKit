@@ -25,13 +25,14 @@
     {
         #region Constructors
 
-        public WcfRestServiceWindows() : this(false)
+        public WcfRestServiceWindows() : this(false, true)
         {
         }
 
-        public WcfRestServiceWindows(bool auditServiceCalls)
+        public WcfRestServiceWindows(bool auditServiceCalls, bool handleExceptions)
         {
             _auditServiceCalls = auditServiceCalls;
+            _handleExceptions = handleExceptions;
             if (!_serviceInstanceId.HasValue)
             {
                 _serviceInstanceId = Guid.NewGuid();
@@ -62,6 +63,8 @@
 
         protected bool _auditServiceCalls;
         protected Nullable<Guid> _serviceInstanceId;
+
+        protected bool _handleExceptions;
 
         #endregion //Events
 
@@ -353,7 +356,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw ex;
             }
@@ -393,7 +399,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw ex;
             }
@@ -438,7 +447,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw ex;
             }
@@ -484,7 +496,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw ex;
             }
@@ -531,7 +546,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw ex;
             }
@@ -578,7 +596,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw ex;
             }
@@ -623,7 +644,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw ex;
             }
@@ -664,7 +688,10 @@
             catch (Exception ex)
             {
                 FileUploadCompleted(fileName);
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw ex;
             }
@@ -696,7 +723,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw;
             }
@@ -715,7 +745,10 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerWindows.HandleException(ex);
+                if (_handleExceptions)
+                {
+                    ExceptionHandlerWindows.HandleException(ex, null);
+                }
                 UpdateHttpStatusOnException(ex);
                 throw;
             }

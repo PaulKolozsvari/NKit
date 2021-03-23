@@ -5,3 +5,6 @@
 *   Fixed ToString method in WhereClauseParanthesisWindows which was not adding _ between logical operations.
 *   Fixed GetNonNumericPartOfString in DataShaper.
 *   Added constructor to WhereClauseColumn that allows for specifing a custom clause and SqliteQueryWindows to use the custom clause.
+
+2021-03-23:
+*   Added constructor parameter handleExceptions to WcfRestServiceWindows to allow sub class to specify whether it wants to handle the exceptions itself or not.
