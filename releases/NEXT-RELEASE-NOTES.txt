@@ -8,3 +8,4 @@
 
 2021-03-23:
 *   Added constructor parameter handleExceptions to WcfRestServiceWindows to allow sub class to specify whether it wants to handle the exceptions itself or not.
+*   Flagged all the methods in the WcfRestServiceWindows as virtual to be overridden by the sub class.

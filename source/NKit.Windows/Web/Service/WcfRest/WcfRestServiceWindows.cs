@@ -658,7 +658,7 @@
         }
 
         //http://blogs.msdn.com/b/webapps/archive/2012/09/06/wcf-chunking.aspx
-        public Stream FileUpload(string fileName, Stream inputStream)
+        public virtual Stream FileUpload(string fileName, Stream inputStream)
         {
             try
             {
@@ -697,7 +697,7 @@
             }
         }
 
-        public Stream FileUploadCompleted(string fileName)
+        public virtual Stream FileUploadCompleted(string fileName)
         {
             try
             {
@@ -732,7 +732,7 @@
             }
         }
 
-        public Stream FileDownload(string fileName)
+        public virtual Stream FileDownload(string fileName)
         {
             try
             {
