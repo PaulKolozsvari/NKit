@@ -20,7 +20,6 @@
     using NKit.Core.Data.DB.LINQ;
     using NKit.Data;
     using NKit.Settings.Default;
-    using NKit.Standard.Data.DB.LINQ;
     using NKit.Data.DB.LINQ;
     using System.Linq.Expressions;
     using NKit.Data.DB.LINQ.Models;

@@ -13,7 +13,7 @@
     using System.Data.SqlClient;
     using System.Data;
     using System.IO;
-    using NKit.Toolkit.Data.ORM;
+    using NKit.Data.ORM;
 
     #endregion //Using Directives
 

@@ -12,7 +12,7 @@
     using NKit.Data.DB.SQLQuery;
     using System.Data.SqlClient;
     using System.Reflection.Emit;
-    using NKit.Toolkit.Data.ORM;
+    using NKit.Data.ORM;
     using System.Data.Common;
 
     #endregion //Using Directives

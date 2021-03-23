@@ -14,7 +14,7 @@
     using SQLite;
     using NKit.Data.DB.SQLQuery;
     using System.Data.SQLite;
-    using NKit.Toolkit.Data.ORM;
+    using NKit.Data.ORM;
 
     #endregion //Using Directives
 

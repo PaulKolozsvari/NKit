@@ -11,7 +11,6 @@
     using System.Text;
     using System.Threading.Tasks;
     using NKit.Data.DB.LINQ;
-    using NKit.Standard.Data.DB.LINQ;
     using NKit.Utilities.SettingsFile.Default;
 
     #endregion //Using Directives

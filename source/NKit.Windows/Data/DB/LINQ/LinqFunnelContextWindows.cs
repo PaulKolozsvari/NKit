@@ -12,7 +12,7 @@
     using System.Linq.Expressions;
     using System.Collections;
     using System.Text;
-    using NKit.Standard.Data.DB.LINQ;
+    using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives
 

@@ -1,4 +1,4 @@
-﻿namespace NKit.Toolkit.Data.ORM
+﻿namespace NKit.Data.ORM
 {
     using NKit.Data.DB.SQLServer;
     #region Using Directives

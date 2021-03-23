@@ -17,7 +17,6 @@
     using NKit.Web.Service.WcfRest.Events;
     using System.ServiceModel.Channels;
     using System.Threading;
-    using NKit.Standard.Data.DB.LINQ;
 
     #endregion //Using Directives
 

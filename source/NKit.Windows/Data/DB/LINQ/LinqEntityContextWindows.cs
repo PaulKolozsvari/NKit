@@ -10,7 +10,7 @@
     using System.Data;
     using System.Data.SqlClient;
     using System.Threading;
-    using NKit.Standard.Data.DB.LINQ;
+    using NKit.Data.DB.LINQ;
     using NKit.Web.Service;
     using NKit.Data.DB.SQLServer;
     using NKit.Data.DB.LINQ.Logging;

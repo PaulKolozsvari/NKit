@@ -12,7 +12,7 @@
     using System.IO;
 	using System.Xml.Serialization;
     using NKit.Data.DB;
-    using NKit.Toolkit.Data.ORM;
+    using NKit.Data.ORM;
     using NKit.Data.DB.SQLQuery;
 
     #endregion //Using Directives
