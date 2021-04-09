@@ -11,3 +11,6 @@
 *   Flagged all the methods in the WcfRestServiceWindows as virtual to be overridden by the sub class.
 *   Removed the NKit.Standard namespace from the standard library.
 *   Removed the NKit.Toolkit namespace from the windows library.
+
+2021-04-09:
+*   Added more data types names to NKitBaseModel.
