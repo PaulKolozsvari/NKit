@@ -14,3 +14,8 @@
 
 2021-04-09:
 *   Added more data types names to NKitBaseModel.
+
+2021-04-22:
+*   Added the following classes to the NKit.Core library:
+    -   SortDirectionTypeCore and SortDirection
+    -   FilterModelCore.
