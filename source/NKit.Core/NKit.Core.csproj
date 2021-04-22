@@ -51,4 +51,8 @@
     <ProjectReference Include="..\NKit.Standard\NKit.Standard.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Web\MVC\Models\" />
+  </ItemGroup>
+
 </Project>
