@@ -78,6 +78,13 @@
 
         #endregion //Constructors
 
+        #region Constants
+
+        protected const string STARTED = "Started";
+        protected const string STOPPED = "Stopped";
+
+        #endregion //Constants
+
         #region Events
 
         public event OnDailyJobFeedBack OnDailyJobStarted;

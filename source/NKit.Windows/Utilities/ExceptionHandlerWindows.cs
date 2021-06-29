@@ -148,7 +148,7 @@
                             EntityReaderGeneric<GOCWindows>.GetPropertyName(p => p.SendEmailOnException, false),
                             EntityReaderGeneric<GOCWindows>.GetPropertyName(p => p.EmailClient, false)));
                     }
-                    GOCWindows.Instance.EmailClient.SendExceptionEmailNotification(exception, out emailErrorMessage, out emailLogMessageText, GOCWindows.Instance.AppendHostNameToExceptionEmails, emailNotificationRecipients);
+                    GOCWindows.Instance.EmailClient.SendExceptionEmailNotification(exception, out emailErrorMessage, out emailLogMessageText, GOCWindows.Instance.AppendHostNameToExceptionEmails, eventDetailsMessage, emailNotificationRecipients);
                 }
                 return closeApplication;
             }
