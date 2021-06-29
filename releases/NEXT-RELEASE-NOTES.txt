@@ -22,3 +22,6 @@
 
 2021-04-26:
 *   Fixed the DataShaperWindows which had duplicate methods from the DataShaper and moved new methods from the Windows file to the underlying DataShaper file.
+
+2021-06-29:
+*   Added ability to include event details to an Exception email alert.
