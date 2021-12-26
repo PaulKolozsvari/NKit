@@ -11,12 +11,12 @@
     <RepositoryUrl>https://github.com/PaulKolozsvari/NKit</RepositoryUrl>
     <PackageProjectUrl>https://github.com/PaulKolozsvari/NKit</PackageProjectUrl>
     <Description>.NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications. NKit.Standard is the .NET Standard compatible version of NKit.</Description>
-    <AssemblyVersion>1.3.4.0</AssemblyVersion>
-    <FileVersion>1.3.4.0</FileVersion>
+    <AssemblyVersion>1.3.7.0</AssemblyVersion>
+    <FileVersion>1.3.7.0</FileVersion>
     <PackageReleaseNotes>.NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications.</PackageReleaseNotes>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>.NET Toolkit</PackageTags>
-    <Version>1.3.4</Version>
+    <Version>1.3.7</Version>
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
 

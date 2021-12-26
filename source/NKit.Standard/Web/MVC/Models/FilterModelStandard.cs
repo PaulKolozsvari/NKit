@@ -23,11 +23,35 @@
 
         #endregion //Constructors
 
+        #region Fields
+
+        private bool _resetPage;
+        private int _page;
+
+        #endregion //Fields
+
         #region Properties
 
         public bool IsAdministrator { get; set; }
 
-        public int Page { get; set; }
+        public bool ResetPage
+        {
+            get { return _resetPage; }
+            set { _resetPage = value; }
+        }
+
+        public int Page
+        {
+            get
+            {
+                _page = _page <= 0 || _resetPage ? 1 : _page;
+                return _page;
+            }
+            set
+            {
+                _page = value;
+            }
+        }
 
         public int PageSize { get; set; }
 
@@ -38,8 +62,8 @@
         {
             get
             {
-                Page = Page <= 0 ? 1 : Page;
-                return (Page - 1) * PageSize;
+                _page = _page <= 0 ? 1 : _page;
+                return (_page - 1) * PageSize;
             }
         }
 

@@ -173,6 +173,24 @@
             context.OutgoingResponse.StatusDescription = errorMessage;
         }
 
+        protected virtual void UpdateHttpStatusOnExceptionWithStackTrace(Exception ex)
+        {
+            WebOperationContext context = WebOperationContext.Current;
+            if (context.OutgoingResponse.StatusCode == HttpStatusCode.OK ||
+                context.OutgoingResponse.StatusCode == HttpStatusCode.Created)
+            {
+                context.OutgoingResponse.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+            }
+            /*A status description with escape sequences causes the server to not respond to the request 
+            causing the client to not get a response therefore not know what the exception was.*/
+            string errorMessage = ex.Message.Replace("\r", string.Empty);
+            errorMessage += "Stack Trace: ";
+            errorMessage += ex.StackTrace.Replace("\r", string.Empty);
+            errorMessage = errorMessage.Replace("\n", string.Empty);
+            errorMessage = errorMessage.Replace("\t", string.Empty);
+            context.OutgoingResponse.StatusDescription = errorMessage;
+        }
+
         protected virtual void ValidateRequestMethod(HttpVerb verb)
         {
             ValidateRequestMethod(verb.ToString());

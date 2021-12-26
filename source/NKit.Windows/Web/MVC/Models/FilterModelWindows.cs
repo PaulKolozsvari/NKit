@@ -21,6 +21,7 @@
             {
                 DataModel = new List<T>();
             }
+            this.PageSize = 10;
         }
 
         #endregion //Constructors

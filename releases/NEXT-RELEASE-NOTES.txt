@@ -25,3 +25,9 @@
 
 2021-06-29:
 *   Added ability to include event details to an Exception email alert.
+
+2021-12-26:
+*   Added new field to source/NKit.Standard/Web/MVC/Models/FilterModelStandard.cs to allow for sending a flag from the view that a page reset is required by the controller.
+*   Added long version of ascending and descending constants: source/NKit.Windows/Data/DB/SQLQuery/SortDirectionWindows.cs
+*   Set a default page size of 10 on: source/NKit.Windows/Web/MVC/Models/FilterModelWindows.cs
+*   Addeds more details to exceptions returned from the WCF service: source/NKit.Windows/Web/Service/WcfRest/WcfRestServiceWindows.cs

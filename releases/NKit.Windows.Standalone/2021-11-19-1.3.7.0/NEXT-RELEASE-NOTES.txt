@@ -1,0 +1,27 @@
+*   Fixed DataShaper method that search for numeric parts in strings.
+*   Fixed SqliteQueryWindows to not append WherClause columns in separate lines but in a single line.
+*   Changed DataShaper IsValidEmail method to add multiple checks for a valid email address.
+
+*   Fixed ToString method in WhereClauseParanthesisWindows which was not adding _ between logical operations.
+*   Fixed GetNonNumericPartOfString in DataShaper.
+*   Added constructor to WhereClauseColumn that allows for specifing a custom clause and SqliteQueryWindows to use the custom clause.
+
+2021-03-23:
+*   Added constructor parameter handleExceptions to WcfRestServiceWindows to allow sub class to specify whether it wants to handle the exceptions itself or not.
+*   Flagged all the methods in the WcfRestServiceWindows as virtual to be overridden by the sub class.
+*   Removed the NKit.Standard namespace from the standard library.
+*   Removed the NKit.Toolkit namespace from the windows library.
+
+2021-04-09:
+*   Added more data types names to NKitBaseModel.
+
+2021-04-22:
+*   Added the following classes to the NKit.Core library:
+    -   SortDirectionTypeCore and SortDirection
+    -   FilterModelCore.
+
+2021-04-26:
+*   Fixed the DataShaperWindows which had duplicate methods from the DataShaper and moved new methods from the Windows file to the underlying DataShaper file.
+
+2021-06-29:
+*   Added ability to include event details to an Exception email alert.
