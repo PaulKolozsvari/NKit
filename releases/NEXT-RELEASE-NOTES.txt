@@ -31,3 +31,6 @@
 *   Added long version of ascending and descending constants: source/NKit.Windows/Data/DB/SQLQuery/SortDirectionWindows.cs
 *   Set a default page size of 10 on: source/NKit.Windows/Web/MVC/Models/FilterModelWindows.cs
 *   Addeds more details to exceptions returned from the WCF service: source/NKit.Windows/Web/Service/WcfRest/WcfRestServiceWindows.cs
+
+2022-01-12:
+*   Added validation code on SqliteDatabase to check if connection exists and open before runnign query, throwing exception if it does not.
