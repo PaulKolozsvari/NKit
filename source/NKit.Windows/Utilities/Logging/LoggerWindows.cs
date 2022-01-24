@@ -22,7 +22,6 @@
 
         public LoggerWindows() : base()
         {
-            
         }
 
         public LoggerWindows(
@@ -150,6 +149,9 @@
                         break;
                     case LogMessageType.FailureAudit:
                         _eventLog.WriteEntry(logMessageString, EventLogEntryType.FailureAudit);
+                        break;
+                    case LogMessageType.ProgressAudit:
+                        _eventLog.WriteEntry(logMessageString, EventLogEntryType.Information);
                         break;
                     default:
                         break;

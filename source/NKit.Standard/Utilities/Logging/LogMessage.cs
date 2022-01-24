@@ -16,20 +16,28 @@
     {
         #region Constructors
 
-        public LogMessage(string message, LogMessageType logMessageType, LoggingLevel loggingLevel)
+        public LogMessage(string message, LogMessageType logMessageType, LoggingLevel loggingLevel) : 
+            this(message, logMessageType, loggingLevel, DateTime.Now, null)
         {
-            _message = message;
-            _logMessageType = logMessageType;
-            _loggingLevel = loggingLevel;
-            _date = DateTime.Now;
         }
 
-        public LogMessage(string message, LogMessageType logMessageType, LoggingLevel loggingLevel, DateTime datetime)
+        public LogMessage(string message, LogMessageType logMessageType, LoggingLevel loggingLevel, Nullable<ConsoleColor> consoleColor) : 
+            this(message, logMessageType, loggingLevel, DateTime.Now, consoleColor)
+        {
+        }
+
+        public LogMessage(string message, LogMessageType logMessageType, LoggingLevel loggingLevel, DateTime datetime) :
+            this(message, logMessageType, loggingLevel, datetime, null)
+        {
+        }
+
+        public LogMessage(string message, LogMessageType logMessageType, LoggingLevel loggingLevel, DateTime datetime, Nullable<ConsoleColor> consoleColor)
         {
             _message = message;
             _logMessageType = logMessageType;
             _loggingLevel = loggingLevel;
-            _date = datetime;            
+            _date = datetime;
+            _consoleColor = consoleColor;
         }
 
         #endregion //Constructors
@@ -40,6 +48,7 @@
         protected LogMessageType _logMessageType;
         protected LoggingLevel _loggingLevel;
         protected DateTime _date;
+        protected Nullable<ConsoleColor> _consoleColor;
 
         #endregion //Fields
 
@@ -58,6 +67,35 @@
             get { return _logMessageType; }
         }
 
+        public ConsoleColor ConsoleColor
+        {
+            get
+            {
+                if (_consoleColor.HasValue)
+                {
+                    return _consoleColor.Value;
+                }
+                switch (_logMessageType)
+                {
+                    case LogMessageType.Exception:
+                        return ConsoleColor.Red;
+                    case LogMessageType.Error:
+                        return ConsoleColor.Red;
+                    case LogMessageType.Information:
+                        return ConsoleColor.White;
+                    case LogMessageType.Warning:
+                        return ConsoleColor.Yellow;
+                    case LogMessageType.SuccessAudit:
+                        return ConsoleColor.DarkYellow;
+                    case LogMessageType.FailureAudit:
+                        return ConsoleColor.DarkRed;
+                    case LogMessageType.ProgressAudit:
+                        return ConsoleColor.Gray;
+                    default:
+                        return ConsoleColor.White;
+                }
+            }
+        }
         public LoggingLevel LoggingLevel
         {
             get { return _loggingLevel; }

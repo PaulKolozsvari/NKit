@@ -7,6 +7,7 @@
         Information,
         Warning,
         SuccessAudit,
-        FailureAudit
+        FailureAudit,
+        ProgressAudit,
     }
 }

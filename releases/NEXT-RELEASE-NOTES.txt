@@ -34,3 +34,9 @@
 
 2022-01-12:
 *   Added validation code on SqliteDatabase to check if connection exists and open before runnign query, throwing exception if it does not.
+
+2022-01-24:
+*   Added console colors to LogMessages and Logger so that it has default colors for different types of message types.
+*   Added extra overloads to the LogMessage method to allow setting the console color.
+*   Added event log type of ProgressAudit which has a different color.
+*   Changed the FileSystemHelper.DeleteFileForce to return a result if the file was successfully deleted or not and whether or not exceptions should be swallowed.

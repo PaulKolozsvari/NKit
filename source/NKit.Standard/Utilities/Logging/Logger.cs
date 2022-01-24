@@ -21,7 +21,7 @@
 
         public Logger()
         {
-            Initialize(false, false, LoggingLevel.Normal, DEFAULT_LOG_FILE_NAME);
+            Initialize(false, true, LoggingLevel.Normal, DEFAULT_LOG_FILE_NAME);
         }
 
         public Logger(
@@ -46,6 +46,7 @@
 
             _logFileName = logFileName;
             _loggingLevel = loggingLevel;
+            _originalConsoleColor = Console.ForegroundColor;
         }
 
         #region Constants
@@ -70,6 +71,7 @@
 
         protected string _logFileName;
         protected LoggingLevel _loggingLevel;
+        protected ConsoleColor _originalConsoleColor;
 
         #endregion //Fields
 
@@ -126,7 +128,15 @@
             }
             if (_logToConsole)
             {
-                Console.WriteLine(logMessage.ToString());
+                try
+                {
+                    Console.ForegroundColor = logMessage.ConsoleColor;
+                    Console.WriteLine(logMessage.ToString());
+                }
+                finally
+                {
+                    Console.ResetColor();
+                }
             }
             if (_logToFile && !string.IsNullOrEmpty(_logFileName))
             {

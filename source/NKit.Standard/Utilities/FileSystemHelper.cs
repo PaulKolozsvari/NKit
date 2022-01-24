@@ -102,42 +102,80 @@
         }
 
 
+        public static bool DeleteDirectoryRecursive(DirectoryInfo baseDirectoryPath)
+        {
+            return DeleteDirectoryRecursive(baseDirectoryPath, false, out string exceptionMessage);
+        }
+
         /// <summary>
         /// Deletes a directory recursively: all sub directory and all files within it.
         /// If a file within the directory or sub-directory is marked as read-only it will be edit it as not read-only and then deleted.
         /// </summary>
-        public static void DeleteDirectoryRecursive(DirectoryInfo baseDirectoryPath)
+        public static bool DeleteDirectoryRecursive(DirectoryInfo baseDirectoryPath, bool swallowExceptions, out string exceptionMessage)
         {
-            if (!baseDirectoryPath.Exists)
+            exceptionMessage = string.Empty;
+            try
             {
-                return;
+                if (!baseDirectoryPath.Exists)
+                {
+                    return false;
+                }
+                foreach (DirectoryInfo dir in baseDirectoryPath.EnumerateDirectories())
+                {
+                    DeleteDirectoryRecursive(dir);
+                }
+                var files = baseDirectoryPath.GetFiles();
+                foreach (var file in files)
+                {
+                    DeleteFileForce(file, swallowExceptions, out exceptionMessage);
+                }
+                baseDirectoryPath.Delete();
+                return !baseDirectoryPath.Exists;
             }
-            foreach (DirectoryInfo dir in baseDirectoryPath.EnumerateDirectories())
+            catch (Exception ex)
             {
-                DeleteDirectoryRecursive(dir);
+                if (!swallowExceptions)
+                {
+                    throw ex;
+                }
+                exceptionMessage = ex.Message;
+                return false;
             }
-            var files = baseDirectoryPath.GetFiles();
-            foreach (var file in files)
-            {
-                DeleteFileForce(file);
-            }
-            baseDirectoryPath.Delete();
+        }
+
+        public static bool DeleteFileForce(FileInfo file)
+        {
+            return DeleteFileForce(file, false, out string exceptionMessage);
         }
 
         /// <summary>
         /// Deletes a file and if it's set to read-only it will edit it as not read-only and then deleted.
         /// </summary>
-        public static void DeleteFileForce(FileInfo file)
+        public static bool DeleteFileForce(FileInfo file, bool swallowExceptions, out string exceptionMessage)
         {
-            if (!file.Exists)
+            exceptionMessage = string.Empty;
+            try
             {
-                return;
+                if (!file.Exists)
+                {
+                    return false;
+                }
+                if (file.IsReadOnly)
+                {
+                    file.IsReadOnly = false;
+                }
+                file.Delete();
+                return !file.Exists;
             }
-            if (file.IsReadOnly)
+            catch (Exception ex)
             {
-                file.IsReadOnly = false;
+                if (!swallowExceptions)
+                {
+                    throw ex;
+                }
+                exceptionMessage = ex.Message;
+                return false;
             }
-            file.Delete();
         }
 
         /// <summary>
