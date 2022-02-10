@@ -40,3 +40,6 @@
 *   Added extra overloads to the LogMessage method to allow setting the console color.
 *   Added event log type of ProgressAudit which has a different color.
 *   Changed the FileSystemHelper.DeleteFileForce to return a result if the file was successfully deleted or not and whether or not exceptions should be swallowed.
+
+2022-02-10:
+*   Added method to WcfRestServiceWindows to GetUserName.

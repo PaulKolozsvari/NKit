@@ -10,6 +10,7 @@
     using System.Runtime.InteropServices;
     using System.Xml;
     using System.IO.Compression;
+    using System.Diagnostics;
 
     #endregion //Using Directives
 
@@ -130,7 +131,7 @@
                     DeleteFileForce(file, swallowExceptions, out exceptionMessage);
                 }
                 baseDirectoryPath.Delete();
-                return !baseDirectoryPath.Exists;
+                return !Directory.Exists(baseDirectoryPath.FullName);
             }
             catch (Exception ex)
             {
@@ -165,7 +166,7 @@
                     file.IsReadOnly = false;
                 }
                 file.Delete();
-                return !file.Exists;
+                return !File.Exists(file.FullName);
             }
             catch (Exception ex)
             {

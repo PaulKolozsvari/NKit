@@ -111,6 +111,8 @@
             int totalThreadsRunning = ThreadHelper.GetTotalThreadsRunningCountInCurrentProcess();
             logMessage.AppendLine($"Request URI: {GetCurrentRequestUri()}");
             logMessage.AppendLine($"Request Verb: {WebOperationContext.Current.IncomingRequest.Method}");
+            logMessage.AppendLine($"User Name: {GetUserName()}");
+            logMessage.AppendLine($"Client IP Address: {GetCurrentRequestClientIpAddress()}");
             logMessage.AppendLine($"Service Instance ID: {_serviceInstanceId}");
             logMessage.AppendLine($"Worker Threads Running: {workerThreadsRunning}");
             logMessage.AppendLine($"Completion Port Threads Running: {completionPortThreadsRunning}");
@@ -292,6 +294,16 @@
                 }
                 userName = ServiceSecurityContext.Current.WindowsIdentity.Name;
             }
+        }
+
+        protected virtual string GetUserName()
+        {
+            string result = string.Empty;
+            if (ServiceSecurityContext.Current != null && !string.IsNullOrEmpty(ServiceSecurityContext.Current.WindowsIdentity.Name))
+            {
+                result = ServiceSecurityContext.Current.WindowsIdentity.Name;
+            }
+            return result;
         }
 
         protected virtual Type GetEntityType(string entityName)
