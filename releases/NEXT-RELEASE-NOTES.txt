@@ -46,3 +46,4 @@
 
 2022-02-16:
 *   Added method DisplayAutoClosingInformation on UIHelperWindows to display an message box that auto closes after a given period of time.
+*   Added method GetEntryAssemblyVersion to the Information class to to return the version text of the entry assembly.
