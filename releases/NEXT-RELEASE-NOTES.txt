@@ -43,3 +43,6 @@
 
 2022-02-10:
 *   Added method to WcfRestServiceWindows to GetUserName.
+
+2022-02-16:
+*   Added method DisplayAutoClosingInformation on UIHelperWindows to display an message box that auto closes after a given period of time.
