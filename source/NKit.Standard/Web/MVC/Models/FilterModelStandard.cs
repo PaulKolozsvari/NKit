@@ -34,6 +34,14 @@
 
         public bool IsAdministrator { get; set; }
 
+        public bool IsViewingAllowed { get; set; }
+
+        public bool IsCreateAllowed { get; set; }
+
+        public bool IsDeleteAllowed { get; set; }
+
+        public bool IsEditAllowed { get; set; }
+
         public bool ResetPage
         {
             get { return _resetPage; }
