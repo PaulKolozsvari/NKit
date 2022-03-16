@@ -50,3 +50,6 @@
 
 2022-03-05:
 *   Added is view, edit, create and delete properties on FilterModelStandard.
+
+2022-03-16:
+*   Added StringExtensions with some extension methods on strings to parse a string to an enum.

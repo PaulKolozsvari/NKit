@@ -270,6 +270,7 @@
     <Compile Include="Utilities\SMS\SmsInfoWindows.cs" />
     <Compile Include="Utilities\SMS\SmsReceivedEventArgsWindows.cs" />
     <Compile Include="Utilities\SMS\SmsReceivedInfoWindows.cs" />
+    <Compile Include="Utilities\StringExtensions.cs" />
     <Compile Include="Utilities\WindowsHelperWindows.cs" />
     <Compile Include="Extensions\DataBox\Events\Crud\AfterAddInputControlsArgsWindows.cs" />
     <Compile Include="Extensions\DataBox\Events\Crud\AfterCrudOperationArgsWindows.cs" />
