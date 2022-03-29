@@ -54,7 +54,7 @@
 
         /// <summary>
         /// Reads the configuration section from the appsettings.json file and deserializes it to the specified Settings type.
-        /// The section name in the appsettings.json file is depetermined based on the name of the Settings type e.g. DatabaseSettings.
+        /// The section name in the appsettings.json file is determined based on the name of the Settings type e.g. DatabaseSettings.
         /// </summary>
         public static S GetSettings<S>(IConfiguration configuration) where S : NKitSettings
         {

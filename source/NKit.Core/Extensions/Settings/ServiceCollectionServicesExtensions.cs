@@ -133,7 +133,7 @@
         /// Registers the default NKitWebApiControllerInputFormatter allowing POST/PUT inputs requests in the formats provided in the NKit MimeContentType class.
         /// </summary>
         /// <param name="services">The DI services container received in the Startup class.</param>
-        public static void RegisterNKitwebApiControllerInputFormatter(this IServiceCollection services)
+        public static void RegisterNKitEebApiControllerInputFormatter(this IServiceCollection services)
         {
             services.AddControllers(mvcOptions => mvcOptions.InputFormatters.Insert(mvcOptions.InputFormatters.Count, new NKitWebApiControllerInputFormatter()));
         }

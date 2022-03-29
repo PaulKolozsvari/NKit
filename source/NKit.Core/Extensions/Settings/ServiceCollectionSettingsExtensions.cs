@@ -55,7 +55,7 @@
             string loggerCategoryName)
         {
             ILogger logger = !string.IsNullOrEmpty(loggerCategoryName) ? NKitLoggingHelper.CreateLogger(loggerCategoryName, NKitLoggingSettings.GetSettings(configuration)) : null;
-            RegisterDefaultNKitSettings(services, configuration, 
+            RegisterDefaultNKitSettings(services, configuration,
                 out generalSettings,
                 out webApiSettings,
                 out httpExceptionHandlerMiddlewareSettings,

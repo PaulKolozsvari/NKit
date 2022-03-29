@@ -252,6 +252,7 @@
     <Compile Include="Utilities\SettingsFile\Default\WcfRestWebServiceAppSettings.cs" />
     <Compile Include="Utilities\SettingsFile\Default\WebServiceClientAppSettings.cs" />
     <Compile Include="Utilities\SettingsFile\Default\WebServiceMobileClientAppSettings.cs" />
+    <Compile Include="Utilities\SettingsFile\SettingsEnvironment.cs" />
     <Compile Include="Utilities\SettingsFile\SettingInfoAttribute.cs" />
     <Compile Include="Utilities\SettingsFile\SettingItem.cs" />
     <Compile Include="Utilities\SettingsFile\SettingsCache.cs" />

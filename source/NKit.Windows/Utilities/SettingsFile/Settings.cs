@@ -78,6 +78,12 @@
         [SettingInfoAttribute("Application", AutoFormatDisplayName = true, Description = "Whether or not a message box should be shown when an exception occurs. This setting should be loaded into GOC for the Exception Handler to determine behavior. This should only be enabled for Windows Forms application.", CategorySequenceId = 1)]
         public bool ShowMessageBoxOnException { get; set; }
 
+        /// <summary>
+        /// Indicates what environment the application is running in e.g. Production, Development or Test.
+        /// </summary>
+        [SettingInfo("Application", AutoFormatDisplayName = true, Description = "Indicates what environment the application is running in e.g. Production, Development or Test.", CategorySequenceId = 2)]
+        public SettingsEnvironment Environment { get; set; }
+
         #endregion //GOC Settings
 
         #endregion //Properties
