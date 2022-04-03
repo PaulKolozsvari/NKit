@@ -33,9 +33,13 @@
             }
             using (var serviceScope = applicationBuilder.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                using (var context = serviceScope.ServiceProvider.GetService<D>())
+                D context = serviceScope.ServiceProvider.GetService<D>();
+                if (context != null)
                 {
-                    context.Database.Migrate();
+                    using (context)
+                    {
+                        context.Database.Migrate();
+                    }
                 }
             }
         }

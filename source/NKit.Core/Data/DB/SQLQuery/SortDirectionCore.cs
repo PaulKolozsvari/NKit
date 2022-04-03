@@ -21,6 +21,15 @@
         /// </summary>
         public const string DESCENDING = "DESC";
 
+        /// <summary>
+        /// Sort in an ascending order.
+        /// </summary>
+        public const string ASCENDING_LONG = "ascending";
+        /// <summary>
+        /// Sort in a descending order
+        /// </summary>
+        public const string DESCENDING_LONG = "descending";
+
         #endregion //Constants
 
         #region Methods
@@ -59,6 +68,24 @@
                     return DESCENDING;
                 default:
                     return ASCENDING;
+            }
+        }
+
+        /// <summary>
+        /// Gets the string representation of th sort direction from the SortDirection type.
+        /// </summary>
+        /// <param name="sortDirectionType"></param>
+        /// <returns></returns>
+        public static string GetSortDirectionLong(SortDirectionTypeCore sortDirectionType)
+        {
+            switch (sortDirectionType)
+            {
+                case SortDirectionTypeCore.Ascending:
+                    return ASCENDING_LONG;
+                case SortDirectionTypeCore.Descending:
+                    return DESCENDING_LONG;
+                default:
+                    return ASCENDING_LONG;
             }
         }
 

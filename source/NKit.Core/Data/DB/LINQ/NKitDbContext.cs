@@ -29,6 +29,7 @@
     using Dapper;
     using NKit.Web.Service;
     using System.Threading;
+    using NKit.Utilities.Email;
 
     #endregion //Using Directives
 
@@ -43,7 +44,8 @@
             DbContextOptions options,
             IOptions<NKitGeneralSettings> generalOptions,
             IOptions<NKitDbContextSettings> dbContextOptions,
-            IOptions<NKitLoggingSettings> loggingOptions) : base(options)
+            IOptions<NKitLoggingSettings> loggingOptions,
+            IOptions<NKitEmailClientServiceSettings> emailClientServiceSettings) : base(options)
         {
             DataValidator.ValidateObjectNotNull(dbContextOptions, nameof(dbContextOptions), nameof(NKitDbContext));
             DataValidator.ValidateObjectNotNull(dbContextOptions.Value, nameof(dbContextOptions.Value), nameof(NKitDbContext));
@@ -54,6 +56,7 @@
             _generalSettings = generalOptions.Value;
             _dbContextSettings = dbContextOptions.Value;
             _loggingSettings = loggingOptions.Value;
+            _emailClientServiceSettings = emailClientServiceSettings.Value;
 
             base.Database.SetConnectionString(_dbContextSettings.DatabaseConnectionString);
             base.Database.SetCommandTimeout(_dbContextSettings.DatabaseCommandTimeoutSeconds);
@@ -132,6 +135,7 @@
         protected NKitGeneralSettings _generalSettings;
         protected NKitDbContextSettings _dbContextSettings;
         protected NKitLoggingSettings _loggingSettings;
+        protected NKitEmailClientServiceSettings _emailClientServiceSettings;
 
         protected TransactionScopeOption _transactionScopeOption;
         protected TransactionOptions _transactionOptions;
@@ -2380,6 +2384,43 @@
         #endregion //Core Methods
 
         #endregion //Transactional Crud Methods
+
+        #region Utility Methods
+
+        protected virtual string GetSearchFilterLowered(string searchFilter)
+        {
+            return searchFilter == null ? string.Empty : searchFilter.ToLower();
+        }
+
+        #endregion //Utility Methods
+
+        #region Methods to be implemented
+
+        public virtual List<EmailNotificationRecipient> GetInfoEmailNotificationRecipientsFailSafe()
+        {
+            try
+            {
+                return _emailClientServiceSettings != null ? _emailClientServiceSettings.DefaultEmailRecipients : new List<EmailNotificationRecipient>();
+            }
+            catch (Exception ex)
+            {
+                return new List<EmailNotificationRecipient>();
+            }
+        }
+
+        public List<EmailNotificationRecipient> GetErrorEmailNotificationRecipientsFailSafe()
+        {
+            try
+            {
+                return _emailClientServiceSettings != null ? _emailClientServiceSettings.DefaultEmailRecipients : new List<EmailNotificationRecipient>();
+            }
+            catch (Exception ex)
+            {
+                return new List<EmailNotificationRecipient>();
+            }
+        }
+
+        #endregion //Methods to be implemented
 
         #endregion //Methods
     }

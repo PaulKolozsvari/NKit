@@ -53,3 +53,6 @@
 
 2022-03-16:
 *   Added StringExtensions with some extension methods on strings to parse a string to an enum.
+
+2022-04-03:
+*   Added NKitMvcController and EmailListConverterCore.cs, ExceptionHandlerCore and other data layer changes to NKitDbContext. 
