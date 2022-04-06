@@ -22,6 +22,7 @@
         public Guid NKitLogEntryId { get; set; }
 
         [Required]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string Message { get; set; }
 
         [StringLength(200)]
@@ -33,11 +34,13 @@
         [StringLength(200)]
         public string FunctionName { get; set; }
 
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string StackTrace { get; set; }
 
         [Required]
         public int EventId { get; set; }
 
+        [StringLength(200)]
         public string EventName { get; set; }
 
         [Required]

@@ -82,16 +82,20 @@
         public int HttpStatusCode { get; set; }
 
         [Required]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string ExceptionMessage { get; set; }
 
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string InnerExceptionMessage { get; set; }
 
+        [StringLength(200)]
         public string ExceptionOriginatingClassName { get; set; }
 
+        [StringLength(200)]
         public string ExceptionOriginatingFunctionName { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(200)]
         public string ContentType { get; set; }
 
         [Required]
@@ -104,6 +108,7 @@
         [Column(TypeName = DATE_TIME)]
         public DateTime DateCreated { get; set; }
 
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string ExceptionStackTrace { get; set; }
 
         #endregion //Properties

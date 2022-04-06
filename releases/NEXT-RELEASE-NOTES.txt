@@ -56,3 +56,6 @@
 
 2022-04-03:
 *   Added NKitMvcController and EmailListConverterCore.cs, ExceptionHandlerCore and other data layer changes to NKitDbContext. 
+
+2022-04-06:
+*   Extended lenghts of various fields on NKitLogEntry and NKitHttpExceptionResponse Models.
