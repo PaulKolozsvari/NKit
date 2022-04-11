@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.MVC
+﻿namespace NKit.Web.MVC.Models
 {
     #region Using Directives
 
@@ -21,6 +21,7 @@
             {
                 DataModel = new List<T>();
             }
+            this.PageSize = 10;
         }
 
         #region Properties

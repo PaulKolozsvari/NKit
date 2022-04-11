@@ -20,6 +20,24 @@
         [NKitSettingInfo("Application", AutoFormatDisplayName = true, Description = "The name of the application.", CategorySequenceId = 0)]
         public string ApplicationName { get; set; }
 
+        /// <summary>
+        /// The name of the company that the application is for.
+        /// </summary>
+        [NKitSettingInfo("Application", AutoFormatDisplayName = true, Description = "The name of the company that the application is for.", CategorySequenceId = 1)]
+        public string CompanyName { get; set; }
+
+        /// <summary>
+        /// The URL of this web application home page.
+        /// </summary>
+        [NKitSettingInfo("Application", AutoFormatDisplayName = true, Description = "The URL of this web application home page.", CategorySequenceId = 2)]
+        public string WebsiteHomePageUrl { get; set; }
+
+        /// <summary>
+        /// The URL of this web application home page.
+        /// </summary>
+        [NKitSettingInfo("Application", AutoFormatDisplayName = true, Description = "The URL of this web API home page.", CategorySequenceId = 3)]
+        public string WebApiHomePageUrl { get; set; }
+
         #endregion //Properties
 
         #region Methods

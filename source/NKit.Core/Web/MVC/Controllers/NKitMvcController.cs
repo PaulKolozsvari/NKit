@@ -1,4 +1,4 @@
-﻿namespace NKit.Web.MVC
+﻿namespace NKit.Web.MVC.Controllers
 {
     #region Using Directives
 
@@ -23,10 +23,12 @@
     using System.IO;
     using System.Reflection;
     using NKit.Web.MVC.Models;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Hosting;
 
     #endregion //Using Directives
 
-    public class NKitMvcController<D> : Controller where D : NKitDbContext 
+    public class NKitMvcController<D, E> : Controller where D : NKitDbContext where E : NKitEmailClientService
     {
         #region Constructors
 
@@ -39,18 +41,19 @@
             IOptions<NKitEmailClientServiceSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
             IOptions<NKitWebApiClientSettings> webApiClientOptions,
-            NKitEmailClientService emailClientService,
-            ILogger logger)
+            E emailClientService,
+            ILogger logger,
+            IWebHostEnvironment environment)
         {
-            DataValidator.ValidateObjectNotNull(dbContext, nameof(dbContext), nameof(NKitMvcController<D>));
-            DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitMvcController<D>));
+            DataValidator.ValidateObjectNotNull(dbContext, nameof(dbContext), nameof(NKitMvcController<D, E>));
+            DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitMvcController<D, E>));
 
-            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitMvcController<D>));
-            DataValidator.ValidateObjectNotNull(webApiControllerOptions, nameof(webApiControllerOptions), nameof(NKitMvcController<D>));
-            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitMvcController<D>));
-            DataValidator.ValidateObjectNotNull(emailOptions, nameof(emailOptions), nameof(NKitMvcController<D>));
-            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitMvcController<D>));
-            DataValidator.ValidateObjectNotNull(webApiClientOptions, nameof(webApiClientOptions), nameof(NKitMvcController<D>));
+            DataValidator.ValidateObjectNotNull(generalOptions, nameof(generalOptions), nameof(NKitMvcController<D, E>));
+            DataValidator.ValidateObjectNotNull(webApiControllerOptions, nameof(webApiControllerOptions), nameof(NKitMvcController<D, E>));
+            DataValidator.ValidateObjectNotNull(databaseOptions, nameof(databaseOptions), nameof(NKitMvcController<D, E>));
+            DataValidator.ValidateObjectNotNull(emailOptions, nameof(emailOptions), nameof(NKitMvcController<D, E>));
+            DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitMvcController<D, E>));
+            DataValidator.ValidateObjectNotNull(webApiClientOptions, nameof(webApiClientOptions), nameof(NKitMvcController<D, E>));
 
             _serviceInstanceId = Guid.NewGuid();
 
@@ -66,6 +69,8 @@
 
             _emailClientService = emailClientService;
             _logger = logger;
+
+            _environment = environment;
         }
 
         #endregion //Constructors
@@ -89,9 +94,6 @@
 
         private readonly Nullable<Guid> _serviceInstanceId;
 
-        private readonly NKitEmailClientService _emailClientService;
-        private readonly ILogger _logger;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly D _dbContext;
 
@@ -102,6 +104,10 @@
         private readonly NKitLoggingSettings _loggingSettings;
         private readonly NKitWebApiClientSettings _webApiClientSettings;
 
+        private readonly E _emailClientService;
+        private readonly ILogger _logger;
+        private readonly IWebHostEnvironment _environment; 
+
         #endregion //Fields
 
         #region Properties
@@ -110,16 +116,6 @@
         /// A unique GUID of the current instance of this controller. A new instance of this controller is created per request.
         /// </summary>
         protected Nullable<Guid> ServiceInstanceId { get { return _serviceInstanceId; } }
-
-        /// <summary>
-        /// An email client service that can be used to send out out emails as per configuration in the NKitEmailClientServiceSettings section in the appsettings.json file.
-        /// </summary>
-        protected NKitEmailClientService EmailClientService { get { return _emailClientService; } }
-
-        /// <summary>
-        /// Logger being supplied to the controller through dependency injection.
-        /// </summary>
-        protected ILogger Logger { get { return _logger; } }
 
         /// <summary>
         /// HTTP Context Accessor which can be used to access the HTTP context providing information about the web request.
@@ -161,9 +157,49 @@
         /// </summary>
         protected NKitWebApiClientSettings WebApiClientSettings { get { return _webApiClientSettings; } }
 
+        /// <summary>
+        /// An email client service that can be used to send out out emails as per configuration in the NKitEmailClientServiceSettings section in the appsettings.json file.
+        /// </summary>
+        protected E EmailClientService { get { return _emailClientService; } }
+
+        /// <summary>
+        /// Logger being supplied to the controller through dependency injection.
+        /// </summary>
+        protected ILogger Logger { get { return _logger; } }
+
+        /// <summary>
+        /// Provides information about a web hosting environment the application is running in.
+        /// </summary>
+        public IWebHostEnvironment Environment { get { return _environment; } }
+
         #endregion //Properties
 
         #region Methods
+
+        public string GetAbsoluteFilePathFromRequest(string relativePath)
+        {
+            return Request.PathBase + relativePath[1..]; //https://stackoverflow.com/questions/50603901/asp-net-core-replacement-for-virtualpathutility
+        }
+
+        /// <summary>
+        /// Gets all the absolute file paths of all the files in the sub directory specified within the web root directory i.e. wwwroot.
+        /// </summary>
+        /// <param name="relativeDirectoryPath"></param>
+        /// <returns></returns>
+        public string[] GetAbsoluteFilesPathsInWebRootDirectory(string relativeDirectoryPath)
+        {
+            return Directory.GetFiles(Path.Combine(Environment.WebRootPath, relativeDirectoryPath));
+        }
+
+        /// <summary>
+        /// Gets the absolute file path of a file in the web root directory (i.e. wwwroot) given the relative file path.
+        /// </summary>
+        /// <param name="relativeFilePath"></param>
+        /// <returns></returns>
+        public string GetAbsoluteFilePathInWebRootDirectory(string relativeFilePath)
+        {
+            return Path.Combine(Environment.WebRootPath, relativeFilePath);
+        }
 
         /// <summary>
         /// Logs a web request to the Logger as well as to the NKitLogEntry database table, including all parameters of the current web request
@@ -192,7 +228,7 @@
             }
             if (_dbContext != null && _webApiControllerSettings.LogRequestsInDatabaseNKitLogEntry)
             {
-                _dbContext.LogWebActionActivityToNKitLogEntry(nameof(NKitMvcController<D>), actionName, logMessage, new EventId(27, "Request"));
+                _dbContext.LogWebActionActivityToNKitLogEntry(nameof(NKitMvcController<D, E>), actionName, logMessage, new EventId(27, "Request"));
             }
         }
 
@@ -223,7 +259,7 @@
             }
             if (_dbContext != null && _webApiControllerSettings.LogResponsesInDatabaseNKitLogEntry)
             {
-                _dbContext.LogWebActionActivityToNKitLogEntry(nameof(NKitMvcController<D>), actionName, logMessage, new EventId(28, "Response"));
+                _dbContext.LogWebActionActivityToNKitLogEntry(nameof(NKitMvcController<D, E>), actionName, logMessage, new EventId(28, "Response"));
             }
         }
 
@@ -244,6 +280,30 @@
             result.AppendLine($"Total Threads Running: {GetTotalThreadsRunningCountInCurrentProcess()}");
             result.AppendLine($"Current Thread ID: {Thread.CurrentThread.ManagedThreadId}");
             return result.ToString();
+        }
+
+        public async Task<string> GetRequestBodyAsync()
+        {
+            string result = string.Empty;
+            Request.EnableBuffering();
+            Request.Body.Seek(0, SeekOrigin.Begin);
+            using (StreamReader stream = new StreamReader(Request.Body, leaveOpen: true))
+            {
+                result = await stream.ReadToEndAsync();
+            }
+            return result;
+        }
+
+        public string GetRequestBody()
+        {
+            string result = string.Empty;
+            Request.EnableBuffering();
+            Request.Body.Seek(0, SeekOrigin.Begin);
+            using (StreamReader stream = new StreamReader(Request.Body, leaveOpen: true))
+            {
+                result = stream.ReadToEnd();
+            }
+            return result;
         }
 
         /// <summary>

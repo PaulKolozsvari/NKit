@@ -59,3 +59,12 @@
 
 2022-04-06:
 *   Extended lenghts of various fields on NKitLogEntry and NKitHttpExceptionResponse Models.
+
+2022-04-11:
+*   Added multiple extra features: 
+    -   Added extra general settings.
+    -   Updated email service to receive all settings.
+    -   Added ability to provide custom email service by inhertiting from the NKit one.
+    -   Added extra utility methods on NKit MVC controller asuch as the ability to get absolute path from the a file in wwwroot directory etc.
+    -   Fixed an issue in NKitDbContext that was getting entity by surrogate key through reflection call, the signature was not matching to method being called.
+    -   A few other minor improvements.

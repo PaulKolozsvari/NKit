@@ -20,6 +20,7 @@
     using NKit.Utilities.Email;
     using NKit.Settings.Default;
     using NKit.Core.Data.DB.LINQ;
+    using System.IO;
 
     #endregion //Using Directives
 
@@ -67,6 +68,7 @@
         {
             try
             {
+                string requestBody = await GetRequestBody(context);
                 await _next(context);
             }
             catch (NKitHttpStatusCodeException ex)
@@ -99,6 +101,19 @@
                     dbContext.Dispose();
                 }
             }
+        }
+
+        private async Task<string> GetRequestBody(HttpContext context)
+        {
+            string result = string.Empty;
+            context.Request.EnableBuffering();
+            context.Request.Body.Seek(0, SeekOrigin.Begin);
+            using (StreamReader stream = new StreamReader(context.Request.Body, leaveOpen: true))
+            {
+                result = await stream.ReadToEndAsync();
+            }
+            context.Request.Body.Seek(0, SeekOrigin.Begin);
+            return result;
         }
 
         private void HandleException(

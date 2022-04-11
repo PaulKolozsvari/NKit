@@ -42,6 +42,21 @@
 
         /// <summary>
         /// Reads all the NKit settings from the appsettings.json file and registers all the services required by NKit.
+        /// The Entity Framework SQL Server Provider is not registered as part of this call.
+        /// </summary>
+        /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
+        /// <typeparam name="E">The NKitEmailClientService to be used to send emails.</typeparam>
+        /// <param name="services">The DI services container received in the Startup class.</param>
+        /// <param name="configuration">The IConfiguration received in the Startup class.</param>
+        public static void RegisterDefaultNKitServices<D, E>(
+            this IServiceCollection services,
+            IConfiguration configuration) where D : NKitDbContext where E : NKitEmailClientService
+        {
+            RegisterDefaultNKitServices<D, E>(services, configuration, true, true, true);
+        }
+
+        /// <summary>
+        /// Reads all the NKit settings from the appsettings.json file and registers all the services required by NKit.
         /// </summary>
         /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
         /// <param name="services">The DI services container received in the Startup class.</param>
@@ -56,6 +71,26 @@
             bool registerDefaultNKitEmailClient,
             bool registerControllerInputFormatter) where D : NKitDbContext
         {
+            RegisterDefaultNKitServices<D, NKitEmailClientService>(services, configuration, registerNKitDbContext, registerDefaultNKitEmailClient, registerControllerInputFormatter);
+        }
+
+        /// <summary>
+        /// Reads all the NKit settings from the appsettings.json file and registers all the services required by NKit.
+        /// </summary>
+        /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
+        /// <typeparam name="E">The NKitEmailClientService to be used to send emails.</typeparam>
+        /// <param name="services">The DI services container received in the Startup class.</param>
+        /// <param name="configuration">The IConfiguration received in the Startup class.</param>
+        /// <param name="registerNKitDbContext">Whether or not to register the NKitDbContext specified by D.</param>
+        /// <param name="registerDefaultNKitEmailClient">Whether or not to register the default NKitEmailClient.</param>
+        /// <param name="registerControllerInputFormatter">Whether or not to register the controller formatters i.e. allowing POST/PUT inputs requests in the formats provided in the NKit MimeContentType class.</param>
+        public static void RegisterDefaultNKitServices<D, E>(
+            this IServiceCollection services,
+            IConfiguration configuration,
+            bool registerNKitDbContext,
+            bool registerDefaultNKitEmailClient,
+            bool registerControllerInputFormatter) where D : NKitDbContext where E : NKitEmailClientService
+        {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
             DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(ServiceCollectionSettingsExtensions));
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
@@ -65,7 +100,11 @@
             }
             if (registerDefaultNKitEmailClient)
             {
-                RegisterDefaultNKitEmailClient(services, configuration);
+                RegisterNKitEmailClient<E>(services, configuration);
+                if(typeof(E) != typeof(NKitEmailClientService))
+                {
+                    RegisterDefaultNKitEmailClient(services, configuration); //The NKitHttpExceptionHandlerMiddleware and other NKit components that make use of the NKitEmailClientService will not be able to resolve the custom (inherited) E type register in the above line. Therefore we need to register the base NKitEmailClient Service too.
+                }
             }
             if (registerControllerInputFormatter)
             {
@@ -100,14 +139,7 @@
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
         public static void RegisterDefaultNKitEmailClient(this IServiceCollection services, IConfiguration configuration)
         {
-            DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
-            DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(ServiceCollectionSettingsExtensions));
-            NKitEmailClientServiceSettings emailSettings = NKitEmailClientServiceSettings.GetSettings(configuration);
-            if (emailSettings == null)
-            {
-                throw new NullReferenceException($"{nameof(NKitEmailClientServiceSettings)} not registered. Must configure {nameof(NKitEmailClientServiceSettings)} in the appsettings.json file and registered before calling {nameof(RegisterNKitEmailClient)}.");
-            }
-            services.AddTransient<NKitEmailClientService>();
+            RegisterNKitEmailClient<NKitEmailClientService>(services, configuration);
         }
 
         /// <summary>

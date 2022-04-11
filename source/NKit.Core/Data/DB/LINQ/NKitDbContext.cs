@@ -1229,7 +1229,7 @@
         /// <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
         public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue, bool throwExceptionOnNotFound)
         {
-            MethodInfo methodDefinition = GetType().GetMethod("GetEntityBySurrogateKey", new Type[] { typeof(object), typeof(bool), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
+            MethodInfo methodDefinition = GetType().GetMethod("GetEntityBySurrogateKey", new Type[] { typeof(object), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
             MethodInfo method = methodDefinition.MakeGenericMethod(entityType);
             return method.Invoke(this, new object[] { keyValue, throwExceptionOnNotFound });
         }
