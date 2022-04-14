@@ -68,3 +68,6 @@
     -   Added extra utility methods on NKit MVC controller asuch as the ability to get absolute path from the a file in wwwroot directory etc.
     -   Fixed an issue in NKitDbContext that was getting entity by surrogate key through reflection call, the signature was not matching to method being called.
     -   A few other minor improvements.
+
+2022-04-14:
+*   Fixed the EmailClient to return the actual exception message not the email log messagem if an email fails to be sent.

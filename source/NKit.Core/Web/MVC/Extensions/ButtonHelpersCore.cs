@@ -91,7 +91,7 @@
         {
             var areaName = AreaName(helper);
             string controllerName = ControllerName(helper);
-            var imageTag = ImageTag("cross.png", request);
+            var imageTag = ImageTag("delete-2.png", request);
             var anchorHtml = AnchorTagWithImageAndText(
                 areaName,
                 controllerName,

@@ -405,8 +405,12 @@
                     throw;
                 }
                 errorMessage = ex.Message;
+                if (ex.InnerException != null)
+                {
+                    errorMessage += $" {ex.InnerException.Message}";
+                }
                 emailLogMessageText = string.Empty;
-                ExceptionHandler.HandleException(ex, false, out errorMessage, out emailLogMessageText, null); //If emailing failed, then specify that the ExceptionHandler should not try to send the email exception as it would be futile and would result in overflow stack due to cyclic redundancy between ExceptionHandler and EmailClient.
+                ExceptionHandler.HandleException(ex, false, out string emailErrorMessage, out emailLogMessageText, null); //If emailing failed, then specify that the ExceptionHandler should not try to send the email exception as it would be futile and would result in overflow stack due to cyclic redundancy between ExceptionHandler and EmailClient.
                 return false;
             }
             errorMessage = null;

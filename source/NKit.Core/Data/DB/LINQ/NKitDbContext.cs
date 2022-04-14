@@ -2408,7 +2408,7 @@
             }
         }
 
-        public List<EmailNotificationRecipient> GetErrorEmailNotificationRecipientsFailSafe()
+        public virtual List<EmailNotificationRecipient> GetErrorEmailNotificationRecipientsFailSafe()
         {
             try
             {
