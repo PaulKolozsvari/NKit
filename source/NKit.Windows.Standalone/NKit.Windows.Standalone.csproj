@@ -873,6 +873,9 @@
     <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingsCategoryInfo.cs">
       <Link>Utilities\SettingsFile\SettingsCategoryInfo.cs</Link>
     </Compile>
+    <Compile Include="..\NKit.Windows\Utilities\SettingsFile\SettingsEnvironment.cs">
+      <Link>Utilities\SettingsFile\SettingsEnvironment.cs</Link>
+    </Compile>
     <Compile Include="..\NKit.Windows\Utilities\Singletons\AppSingletonWindows.cs">
       <Link>Utilities\Singletons\AppSingletonWindows.cs</Link>
     </Compile>

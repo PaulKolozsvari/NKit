@@ -15,15 +15,14 @@
 		5.	Edit the .nuspec file with information such as the project URL etc.
 		6.	Package the NuGet Package: From a command prompt in the folder containing your .nuspec file, run the command
 			-	nuget pack
-		4.	Login to NuGet and create an Key (if you don't have one already): https://www.nuget.org/account/apikeys
-			-	Nuget API Key (2020-11-09): oy2lv4zstkrq3ajihd5qihkzpwjhlowurladdayigzosmq
+		7.	Login to NuGet and create an Key (if you don't have one already): https://www.nuget.org/account/apikeys
+			-	Nuget API Key (2022-04-20): oy2hk6n7i43shvqbhubatw4knz3vzlcezlzku6weke3yey
 			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
-			-	Run the following command and just replacing the key with your own key:
-					dotnet nuget push NKit.Windows.1.3.5.nupkg -k oy2jwot74yjvltgfrzuax6vmwrt227cuhncvayigffpzmm -s https://api.nuget.org/v3/index.json
-		6.	Publish the package with Nuget Push:
+		8.	Publish the package with Nuget Push:
 			-	Open a command prompt and change directory to the folder where the nupkg file has been created.
-			-	Run the following command and just replacing the key with your own key:
-					nuget push NKit.Windows.1.3.5.nupkg oy2jwot74yjvltgfrzuax6vmwrt227cuhncvayigffpzmm -Source https://api.nuget.org/v3/index.json
+			-	Run either one of the following commands and just replacing the key with your own key:
+					nuget push NKit.Windows.1.3.8.nupkg oy2hk6n7i43shvqbhubatw4knz3vzlcezlzku6weke3yey -Source https://api.nuget.org/v3/index.json
+					dotnet nuget push NKit.Windows.1.3.8.nupkg -k oy2hk6n7i43shvqbhubatw4knz3vzlcezlzku6weke3yey -s https://api.nuget.org/v3/index.json
 
 Grant permissions to a user to to create the event log without requiring to run as administrator:
 	-	https://blog.sandro-pereira.com/2012/02/16/the-source-was-not-found-but-some-or-all-event-logs-could-not-be-searched-inaccessible-logs-security/
