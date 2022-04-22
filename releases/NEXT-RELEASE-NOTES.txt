@@ -1,0 +1,4 @@
+*   2022-04-22:
+
+    -   Fixed the SqliteDatabaseWindows.TableExistsInDatabase to check if the reader is not null before reading.
+    -   Fixed the DatabaseWindows.GetTablesMentionedInQuery to return an empty list instead of throwing an exception.
