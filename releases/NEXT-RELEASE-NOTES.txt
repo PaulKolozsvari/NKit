@@ -2,3 +2,7 @@
 
     -   Fixed the SqliteDatabaseWindows.TableExistsInDatabase to check if the reader is not null before reading.
     -   Fixed the DatabaseWindows.GetTablesMentionedInQuery to return an empty list instead of throwing an exception.
+
+*   2022-04-03:
+
+    -   Added overloads for NKitMvcController to allow reading parent and second parent surrogate keys without startDate and endDate.

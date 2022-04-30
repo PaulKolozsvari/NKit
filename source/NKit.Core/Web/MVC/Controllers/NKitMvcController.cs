@@ -733,6 +733,26 @@
             string searchParametersString,
             out string[] searchParameters,
             out string searchText,
+            out Nullable<Guid> parentId)
+        {
+            searchText = string.Empty;
+            searchParameters = searchParametersString.Split('|');
+            parentId = null;
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 2)
+            {
+                searchText = searchParameters[0];
+                Guid entityIdGuid;
+                if (Guid.TryParse(searchParameters[1], out entityIdGuid))
+                {
+                    parentId = entityIdGuid;
+                }
+            }
+        }
+
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
             out Nullable<DateTime> startDate,
             out Nullable<DateTime> endDate,
             out Nullable<Guid> parentId)
@@ -796,6 +816,33 @@
                 if (Guid.TryParse(searchParameters[4], out entityIdGuid))
                 {
                     parentId = entityIdGuid;
+                }
+            }
+        }
+
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
+            out Nullable<Guid> parentId,
+            out Nullable<Guid> secondParentId)
+        {
+            searchText = string.Empty;
+            searchParameters = searchParametersString.Split('|');
+            parentId = null;
+            secondParentId = null;
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 3)
+            {
+                searchText = searchParameters[0];
+                Guid parentIdGuid;
+                if (Guid.TryParse(searchParameters[1], out parentIdGuid))
+                {
+                    parentId = parentIdGuid;
+                }
+                Guid secondParentIdGuid;
+                if (Guid.TryParse(searchParameters[2], out secondParentIdGuid))
+                {
+                    secondParentId = secondParentIdGuid;
                 }
             }
         }
