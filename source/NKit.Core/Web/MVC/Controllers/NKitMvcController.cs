@@ -754,12 +754,14 @@
             out string[] searchParameters,
             out string searchText,
             out Nullable<DateTime> startDate,
-            out Nullable<DateTime> endDate,
+            out Nullable<DateTime> endDate, 
+            out bool filterByDateRange,
             out Nullable<Guid> parentId)
         {
             searchText = string.Empty;
             startDate = null;
             endDate = null;
+            filterByDateRange = false;
             searchParameters = searchParametersString.Split('|');
             parentId = null;
             if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 4)
@@ -775,8 +777,12 @@
                 {
                     endDate = endDateParsed;
                 }
+                if (bool.TryParse(searchParameters[3], out bool filterByDateRangeParsed))
+                {
+                    filterByDateRange = filterByDateRangeParsed;
+                }
                 Guid entityIdGuid;
-                if (Guid.TryParse(searchParameters[3], out entityIdGuid))
+                if (Guid.TryParse(searchParameters[4], out entityIdGuid))
                 {
                     parentId = entityIdGuid;
                 }

@@ -50,6 +50,11 @@
         public Nullable<DateTime> EndDate { get; set; }
 
         /// <summary>
+        /// To be used when confirming for multiple entities in a data range i.e. whether to take the StartDate and EndDate into account.
+        /// </summary>
+        public bool FilterByDateRange { get; set; }
+
+        /// <summary>
         /// The confirmation message in the confirmation dialog to be presented to the user i.e. the question being asked.
         /// </summary>
         public string ConfirmationMessage { get; set; }

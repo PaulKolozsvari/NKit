@@ -39,6 +39,8 @@
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public Nullable<DateTime> EndDate { get; set; }
 
+        public bool FilterByDateRange { get; set; }
+
         #endregion //Properties
 
         #endregion //Constructors
