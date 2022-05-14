@@ -17,7 +17,6 @@
     using System.Data.Common;
     using Dapper;
     using System.Linq;
-    using Microsoft.Extensions.Logging;
 
     #endregion //Using Directives
 
@@ -932,12 +931,12 @@
             return false;
         }
 
-        public virtual bool LogExceptionToNKitLogEntry(Exception ex, Nullable<EventId> eventId, bool includeExceptionDetailsInErrorMessage)
+        public virtual bool LogExceptionToNKitLogEntry(Exception ex, bool includeExceptionDetailsInErrorMessage)
         {
             return false;
         }
 
-        public virtual bool LogWebActionActivityToNKitLogEntry(string source, string className, string actionName, string message, Nullable<EventId> eventId)
+        public virtual bool LogWebActionActivityToNKitLogEntry(string source, string className, string actionName, string message)
         {
             return false;
         }
