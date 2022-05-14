@@ -9,6 +9,7 @@
     using System.Diagnostics;
     using NKit.Data;
     using NKit.Utilities.SettingsFile;
+    using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives
 
@@ -28,29 +29,32 @@
             bool logToFile,
             bool logToWindowsEventLog,
             bool logToConsole,
+            bool logToDatabase,
             LoggingLevel loggingLevel, 
             string logFileName, 
             EventLog eventLog) : base(logToFile, logToConsole, loggingLevel, logFileName)
         {
-            Initialize(logToWindowsEventLog, eventLog);
+            Initialize(logToWindowsEventLog, logToDatabase, eventLog);
         }
 
         public LoggerWindows(
             bool logToFile,
             bool logToWindowsEventLog,
             bool logToConsole,
+            bool logToDatabase,
             LoggingLevel loggingLevel,
             string logFileName,  
             string eventSourceName, 
             string eventLogName) : base(logToFile, logToConsole, loggingLevel, logFileName)
         {
-            Initialize(logToWindowsEventLog, new EventLog() { Source = eventSourceName, Log = eventLogName });
+            Initialize(logToWindowsEventLog, logToDatabase, new EventLog() { Source = eventSourceName, Log = eventLogName });
         }
 
         #endregion //Constructors
 
         protected void Initialize(
             bool logToWindowsEventLog,
+            bool logToDatabase,
             EventLog eventLog)
         {
             _logToWindowsEventLog = logToWindowsEventLog;
@@ -75,11 +79,13 @@
                 }
                 System.Diagnostics.EventLog.CreateEventSource(_eventLog.Source, _eventLog.Log);
             }
+            _logToDatabase = logToDatabase;
         }
 
         #region Fields
 
         protected bool _logToWindowsEventLog;
+        protected bool _logToDatabase;
         protected EventLog _eventLog;
 
         #endregion //Fields
@@ -122,6 +128,11 @@
 
         public override void LogMessage(LogMessage logMessage)
         {
+            LogMessage(logMessage, null, source: null, className: null, functionName: null);
+        }
+
+        public void LogMessage(LogMessage logMessage, LinqEntityContextWindows database, string source, string className, string functionName)
+        {
             base.LogMessage(logMessage);
             if (_logToWindowsEventLog && (_eventLog != null))
             {
@@ -156,6 +167,10 @@
                     default:
                         break;
                 }
+            }
+            if(database != null && _logToDatabase)
+            {
+                database.LogMessageToNKitLogEntry(logMessage.Message, source, className, functionName, logMessage.LogMessageType.ToString());
             }
         }
 

@@ -14,6 +14,10 @@
     using NKit.Web.Service;
     using NKit.Data.DB.SQLServer;
     using NKit.Data.DB.LINQ.Logging;
+    using System.Data.Common;
+    using Dapper;
+    using System.Linq;
+    using Microsoft.Extensions.Logging;
 
     #endregion //Using Directives
 
@@ -897,7 +901,46 @@
             return result;
         }
 
+        public virtual bool SqlServerTableExists(string tableName)
+        {
+            string sqlQuery = $"SELECT COUNT(*) as Count FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{tableName}'";
+            DbConnection connection = DB.Connection;
+            if (connection == null)
+            {
+                return false;
+            }
+            int count = connection.Query<int>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
+            return (count > 0);
+        }
+
+        public virtual bool SqliteTableExists(string tableName)
+        {
+            string sqlQuery = $"SELECT name FROM sqlite_master WHERE type = 'table' AND name = '{tableName}'";
+            DbConnection connection = DB.Connection;
+            if (connection == null)
+            {
+                return false;
+            }
+            string queryResult = connection.Query<string>(sqlQuery).FirstOrDefault(); // Query method extension provided by Dapper library.
+            return !string.IsNullOrEmpty(queryResult) && queryResult.Equals(tableName);
+        }
+
         #endregion //Schema Query Methods
+
+        public virtual bool LogMessageToNKitLogEntry(string message, string source, string className, string functionName, string eventName)
+        {
+            return false;
+        }
+
+        public virtual bool LogExceptionToNKitLogEntry(Exception ex, Nullable<EventId> eventId, bool includeExceptionDetailsInErrorMessage)
+        {
+            return false;
+        }
+
+        public virtual bool LogWebActionActivityToNKitLogEntry(string source, string className, string actionName, string message, Nullable<EventId> eventId)
+        {
+            return false;
+        }
 
         #endregion //Methods
     }

@@ -55,27 +55,33 @@
         public bool LogToConsole { get; set; }
 
         /// <summary>
+        /// Whether or not to log to the NKitLogEntry database table.
+        /// </summary>
+        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "Whether or not to log to the NKitLogEntry database table.", CategorySequenceId = 3)]
+        public bool LogToDatabase { get; set; }
+
+        /// <summary>
         /// The name of the text log file to log to. The log file is written in the executing directory.
         /// </summary>
-        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The name of the text log file to log to. The log file is written in the executing directory.", CategorySequenceId = 3)]
+        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The name of the text log file to log to. The log file is written in the executing directory.", CategorySequenceId = 4)]
         public string LogFileName { get; set; }
 
         /// <summary>
         /// The name of the event source to use when logging to the Windows Event Log.
         /// </summary>
-        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The name of the event source to use when logging to the Windows Event Log.", CategorySequenceId = 4)]
+        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The name of the event source to use when logging to the Windows Event Log.", CategorySequenceId = 5)]
         public string EventSourceName { get; set; }
 
         /// <summary>
         /// The name of the Windows Event Log to log to.
         /// </summary>
-        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The name of the Windows Event Log to log to.", CategorySequenceId = 5)]
+        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The name of the Windows Event Log to log to.", CategorySequenceId = 6)]
         public string EventLogName { get; set; }
 
         /// <summary>
         /// The extent of messages being logged: None = logging is disabled, Minimum = logs server start/stop and exceptions, Normal = logs additional information messages, Maximum = logs all requests and responses to the server.
         /// </summary>
-        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The extent of messages being logged: None = logging is disabled, Minimum = logs server start/stop and exceptions, Normal = logs additional information messages, Maximum = logs all requests and responses to the server.", CategorySequenceId = 6)]
+        [SettingInfo("Logging", AutoFormatDisplayName = true, Description = "The extent of messages being logged: None = logging is disabled, Minimum = logs server start/stop and exceptions, Normal = logs additional information messages, Maximum = logs all requests and responses to the server.", CategorySequenceId = 7)]
         public LoggingLevel LoggingLevel { get; set; }
 
         #endregion //Logging        

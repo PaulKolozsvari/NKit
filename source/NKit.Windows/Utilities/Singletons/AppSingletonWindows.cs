@@ -79,6 +79,7 @@
                 s.LogToFile,
                 s.LogToWindowsEventLog,
                 s.LogToConsole,
+                s.LogToDatabase,
                 s.LoggingLevel,
                 s.LogFileName,
                 s.EventSourceName,
