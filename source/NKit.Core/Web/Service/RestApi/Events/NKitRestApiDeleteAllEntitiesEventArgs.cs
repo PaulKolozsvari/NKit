@@ -6,7 +6,6 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
-    using NKit.Core.Data.DB.LINQ;
 
     #endregion //Using Directives
 

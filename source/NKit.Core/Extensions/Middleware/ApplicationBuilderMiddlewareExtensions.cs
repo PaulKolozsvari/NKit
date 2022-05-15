@@ -6,7 +6,6 @@
     using System.Collections.Generic;
     using System.Text;
     using Microsoft.AspNetCore.Builder;
-    using NKit.Core.Data.DB.LINQ;
     using NKit.Data.DB.LINQ;
     using NKit.Web.Service.RestApi.Middleware;
 

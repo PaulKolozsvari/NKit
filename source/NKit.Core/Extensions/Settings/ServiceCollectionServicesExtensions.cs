@@ -10,7 +10,6 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using NKit.Core.Data.DB.LINQ;
     using NKit.Data;
     using NKit.Data.DB.LINQ;
     using NKit.Settings.Default;

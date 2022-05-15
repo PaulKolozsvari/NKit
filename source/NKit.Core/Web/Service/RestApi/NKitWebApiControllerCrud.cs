@@ -9,7 +9,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using NKit.Core.Data.DB.LINQ;
     using NKit.Data.DB.LINQ;
     using NKit.Settings.Default;
     using NKit.Utilities.Email;

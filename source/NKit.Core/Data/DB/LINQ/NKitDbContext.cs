@@ -1,4 +1,4 @@
-﻿namespace NKit.Core.Data.DB.LINQ
+﻿namespace NKit.Data.DB.LINQ
 {
     #region Using Directives
 
@@ -17,7 +17,6 @@
     using Microsoft.Data.Sqlite;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
-    using NKit.Core.Data.DB.LINQ;
     using NKit.Data;
     using NKit.Settings.Default;
     using NKit.Data.DB.LINQ;
@@ -30,6 +29,10 @@
     using NKit.Web.Service;
     using System.Threading;
     using NKit.Utilities.Email;
+    using NKit.Data.DB.SQLQuery;
+    using NKit.Web.MVC.ViewModels;
+    using System.Linq.Dynamic.Core;
+    using NKit.Web.MVC.CsvModels;
 
     #endregion //Using Directives
 
@@ -1404,56 +1407,6 @@
             return result;
         }
 
-        /// <summary>
-        /// Logs the Exception to the NKitLogEntry table if the table exists in the database.
-        /// A sql query is run against the database first to check that the table exists in the database before trying to insert a log entry to it.
-        /// To ensure that the table exists the NKitLogEntry model needs to registered by underlying DbContext as a DbSet in the application using the NKit.
-        /// </summary>
-        public virtual NKitLogEntry LogExceptionToNKitLogEntry(Exception ex, Nullable<EventId> eventId, bool includeExceptionDetailsInErrorMessage)
-        {
-            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlTableExists(nameof(NKitLogEntry)))
-            {
-                return null;
-            }
-            string message = ExceptionHandler.GetCompleteExceptionMessage(ex, includeExceptionDetailsInErrorMessage);
-            NKitLogEntry logEntry = new NKitLogEntry()
-            {
-                NKitLogEntryId = Guid.NewGuid(),
-                Message = message,
-                Source = ex.Source,
-                ClassName = ex.TargetSite != null ? ex.TargetSite.DeclaringType.FullName : null,
-                FunctionName = ex.TargetSite != null ? ex.TargetSite.Name : null,
-                StackTrace = ex.StackTrace != null ? ex.StackTrace : null,
-                EventId = eventId.HasValue ? eventId.Value.Id : 0,
-                EventName = eventId.HasValue ? eventId.Value.Name : null,
-                DateCreated = DateTime.Now
-            };
-            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId);
-            return logEntry;
-        }
-
-        public virtual NKitLogEntry LogWebActionActivityToNKitLogEntry(string className, string actionName, string message, Nullable<EventId> eventId)
-        {
-            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlTableExists(nameof(NKitLogEntry)))
-            {
-                return null;
-            }
-            NKitLogEntry logEntry = new NKitLogEntry()
-            {
-                NKitLogEntryId = Guid.NewGuid(),
-                Message = message,
-                Source = _generalSettings.ApplicationName,
-                ClassName = className,
-                FunctionName = actionName ?? "Request",
-                StackTrace = null,
-                EventId = eventId.HasValue ? eventId.Value.Id : 0,
-                EventName = eventId.HasValue ? eventId.Value.Name : null,
-                DateCreated = DateTime.Now
-            };
-            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId);
-            return logEntry;
-        }
-
         public virtual bool SqlTableExists(string tableName)
         {
             switch (_dbContextSettings.DatabaseProviderName)
@@ -2421,6 +2374,332 @@
         }
 
         #endregion //Methods to be implemented
+
+        #region Logging Methods
+
+        public virtual NKitLogEntry LogMessageToNKitLogEntry(string message, string source, string className, string functionName, string eventName)
+        {
+            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlTableExists(nameof(NKitLogEntry)))
+            {
+                return null;
+            }
+            NKitLogEntry logEntry = new NKitLogEntry()
+            {
+                NKitLogEntryId = Guid.NewGuid(),
+                Message = message,
+                Source = source,
+                ClassName = className,
+                FunctionName = functionName,
+                StackTrace = null,
+                EventId = 0,
+                EventName = eventName,
+                DateCreated = DateTime.Now
+            };
+            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId);
+            return logEntry;
+        }
+
+        /// <summary>
+        /// Logs the Exception to the NKitLogEntry table if the table exists in the database.
+        /// A sql query is run against the database first to check that the table exists in the database before trying to insert a log entry to it.
+        /// To ensure that the table exists the NKitLogEntry model needs to registered by underlying DbContext as a DbSet in the application using the NKit.
+        /// </summary>
+        public virtual NKitLogEntry LogExceptionToNKitLogEntry(Exception ex, Nullable<EventId> eventId, bool includeExceptionDetailsInErrorMessage)
+        {
+            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlTableExists(nameof(NKitLogEntry)))
+            {
+                return null;
+            }
+            string message = ExceptionHandler.GetCompleteExceptionMessage(ex, includeExceptionDetailsInErrorMessage);
+            NKitLogEntry logEntry = new NKitLogEntry()
+            {
+                NKitLogEntryId = Guid.NewGuid(),
+                Message = message,
+                Source = ex.Source,
+                ClassName = ex.TargetSite != null ? ex.TargetSite.DeclaringType.FullName : null,
+                FunctionName = ex.TargetSite != null ? ex.TargetSite.Name : null,
+                StackTrace = ex.StackTrace != null ? ex.StackTrace : null,
+                EventId = eventId.HasValue ? eventId.Value.Id : 0,
+                EventName = eventId.HasValue ? eventId.Value.Name : null,
+                DateCreated = DateTime.Now
+            };
+            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId);
+            return logEntry;
+        }
+
+        public virtual NKitLogEntry LogWebActionActivityToNKitLogEntry(string className, string actionName, string message, Nullable<EventId> eventId)
+        {
+            if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlTableExists(nameof(NKitLogEntry)))
+            {
+                return null;
+            }
+            NKitLogEntry logEntry = new NKitLogEntry()
+            {
+                NKitLogEntryId = Guid.NewGuid(),
+                Message = message,
+                Source = _generalSettings.ApplicationName,
+                ClassName = className,
+                FunctionName = actionName ?? "Request",
+                StackTrace = null,
+                EventId = eventId.HasValue ? eventId.Value.Id : 0,
+                EventName = eventId.HasValue ? eventId.Value.Name : null,
+                DateCreated = DateTime.Now
+            };
+            List<LinqFunnelChangeResult> changeResult = Insert<NKitLogEntry>(logEntry, logEntry.NKitLogEntryId);
+            return logEntry;
+        }
+
+        public void CreateNKitLogEntry(NKitLogEntry logEntry)
+        {
+            using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+            {
+                Set<NKitLogEntry>().Add(logEntry);
+                SaveChanges();
+                t.Complete();
+            }
+        }
+
+        public void SaveNKitLogEntry(NKitLogEntry e)
+        {
+            using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+            {
+                NKitLogEntry original = GetFirstEntity<NKitLogEntry>(p => p.NKitLogEntryId == e.NKitLogEntryId);
+                if (original != null)
+                {
+                    Set<NKitLogEntry>().Remove(original);
+                    SaveChanges();
+                }
+                Set<NKitLogEntry>().Add(e);
+                SaveChanges();
+                t.Complete();
+            }
+        }
+
+        public NKitLogEntry GetNKitLogEntry(Guid logEntryId, bool throwExceptionOnNotFound)
+        {
+            NKitLogEntry result = (from logEntry in Set<NKitLogEntry>()
+                                   where logEntry.NKitLogEntryId == logEntryId
+                                   select logEntry).FirstOrDefault();
+            if (result == null && throwExceptionOnNotFound)
+            {
+                throw new Exception($"Could not find {nameof(Models.NKitLogEntry)} with {nameof(Models.NKitLogEntry.NKitLogEntryId)} of '{logEntryId}'.");
+            }
+            return result;
+        }
+
+        public NKitLogEntryViewModel GetNKitLogEntryViewModel(Guid logEntryId, bool throwExceptionOnNotFound)
+        {
+            NKitLogEntry e = GetNKitLogEntry(logEntryId, throwExceptionOnNotFound);
+            if (e == null)
+            {
+                return null;
+            }
+            return new NKitLogEntryViewModel(e);
+        }
+
+        public int GetNKitLogEntriesDatasetRecordCount(
+            string searchFilter,
+            Nullable<DateTime> startDate,
+            Nullable<DateTime> endDate,
+            bool filterByDateRange)
+        {
+            bool searchOnDateRange = filterByDateRange && startDate.HasValue && endDate.HasValue;
+            int result = (from logEntry in Set<NKitLogEntry>()
+                          where
+                                (searchOnDateRange ? logEntry.DateCreated.Date >= startDate && logEntry.DateCreated.Date <= endDate : true) &&
+                                (logEntry.Message.ToLower().Contains(searchFilter) ||
+                                logEntry.Source.ToLower().Contains(searchFilter) ||
+                                logEntry.ClassName.ToLower().Contains(searchFilter) ||
+                                logEntry.FunctionName.ToLower().Contains(searchFilter) ||
+                                logEntry.StackTrace.ToLower().Contains(searchFilter) ||
+                                logEntry.EventId.ToString().ToLower().Contains(searchFilter) ||
+                                logEntry.EventName.ToLower().Contains(searchFilter))
+                          orderby logEntry.DateCreated descending
+                          select logEntry).Count();
+            return result;
+        }
+
+        public string FormatNKitLogEntryPageSortColumn(string sortColumn, SortDirectionTypeCore sortDirectionType)
+        {
+            string result = sortColumn;
+            if (string.IsNullOrEmpty(sortColumn))
+            {
+                result = $"{nameof(Models.NKitLogEntry.DateCreated)} {SortDirectionCore.DESCENDING_LONG}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.Message), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.Message)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.MessageShortened), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.Message)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.Source), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.Source)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.ClassName), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.ClassName)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.FunctionName), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.FunctionName)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.StackTrace), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.StackTrace)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.StackTraceShortened), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.StackTrace)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.EventId), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.EventId)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.EventName), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.EventName)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else if (sortColumn.Equals(nameof(NKitLogEntryViewModel.DateCreated), StringComparison.OrdinalIgnoreCase))
+            {
+                result = $"{nameof(Models.NKitLogEntry.DateCreated)} {SortDirectionCore.GetSortDirectionLong(sortDirectionType)}";
+            }
+            else
+            {
+                result = $"{nameof(Models.NKitLogEntry.DateCreated)} {SortDirectionCore.DESCENDING_LONG}";
+            }
+            return result;
+        }
+
+        public List<NKitLogEntry> GetNKitLogEntriesByPage(
+            string searchFilter,
+            int pageSize,
+            int pageIndex,
+            int numberOfRecordsToSkip,
+            string sortColumn,
+            SortDirectionTypeCore sortDirectionType,
+            Nullable<DateTime> startDate,
+            Nullable<DateTime> endDate,
+            bool filterByDateRange,
+            out int totalFullDatasetRecordCount)
+        {
+            searchFilter = GetSearchFilterLowered(searchFilter);
+            sortColumn = FormatNKitLogEntryPageSortColumn(sortColumn, sortDirectionType);
+            totalFullDatasetRecordCount = GetNKitLogEntriesDatasetRecordCount(searchFilter, startDate, endDate, filterByDateRange);
+            bool searchOnDateRange = filterByDateRange & startDate.HasValue && endDate.HasValue;
+            List<NKitLogEntry> result = (from logEntry in Set<NKitLogEntry>()
+                                         where
+                                               (searchOnDateRange ? logEntry.DateCreated.Date >= startDate && logEntry.DateCreated.Date <= endDate : true) &&
+                                               (logEntry.Message.ToLower().Contains(searchFilter) ||
+                                               logEntry.Source.ToLower().Contains(searchFilter) ||
+                                               logEntry.ClassName.ToLower().Contains(searchFilter) ||
+                                               logEntry.FunctionName.ToLower().Contains(searchFilter) ||
+                                               logEntry.StackTrace.ToLower().Contains(searchFilter) ||
+                                               logEntry.EventId.ToString().ToLower().Contains(searchFilter) ||
+                                               logEntry.EventName.ToLower().Contains(searchFilter))
+                                         orderby logEntry.DateCreated descending
+                                         select logEntry).OrderBy(sortColumn).Skip(numberOfRecordsToSkip).Take(pageSize).ToList();
+            return result;
+        }
+
+        public List<NKitLogEntryViewModel> GetNKitLogEntryViewModelsByPage(
+            string searchFilter,
+            int pageSize,
+            int pageIndex,
+            int numberOfRecordsToSkip,
+            string sortColumn,
+            SortDirectionTypeCore sortDirectionType,
+            Nullable<DateTime> startDate,
+            Nullable<DateTime> endDate,
+            bool filterByDateRange,
+            out int totalFullDatasetRecordCount)
+        {
+            List<NKitLogEntry> logEntries = GetNKitLogEntriesByPage(searchFilter, pageSize, pageIndex, numberOfRecordsToSkip, sortColumn, sortDirectionType, startDate, endDate, filterByDateRange, out totalFullDatasetRecordCount);
+            List<NKitLogEntryViewModel> result = new List<NKitLogEntryViewModel>();
+            foreach (NKitLogEntry logEntry in logEntries)
+            {
+                NKitLogEntryViewModel model = new NKitLogEntryViewModel(logEntry);
+                result.Add(model);
+            }
+            return result;
+        }
+
+        public List<NKitLogEntry> GetNKitLogEntriesByFilter(
+            string searchFilter,
+            Nullable<DateTime> startDate,
+            Nullable<DateTime> endDate,
+            bool filterByDateRange)
+        {
+            searchFilter = GetSearchFilterLowered(searchFilter);
+            bool searchOnDateRange = filterByDateRange & startDate.HasValue && endDate.HasValue;
+            return (from logEntry in Set<NKitLogEntry>()
+                    where
+                        (searchOnDateRange ? logEntry.DateCreated.Date >= startDate && logEntry.DateCreated.Date <= endDate : true) &&
+                        (logEntry.Message.ToLower().Contains(searchFilter) ||
+                        logEntry.Source.ToLower().Contains(searchFilter) ||
+                        logEntry.ClassName.ToLower().Contains(searchFilter) ||
+                        logEntry.FunctionName.ToLower().Contains(searchFilter) ||
+                        logEntry.StackTrace.ToLower().Contains(searchFilter) ||
+                        logEntry.EventId.ToString().ToLower().Contains(searchFilter) ||
+                        logEntry.EventName.ToLower().Contains(searchFilter))
+                    orderby logEntry.DateCreated descending
+                    select logEntry).ToList();
+        }
+
+        public List<NKitLogEntryViewModel> GetNKitLogEntryViewModelsByFilter(
+            string searchFilter,
+            Nullable<DateTime> startDate,
+            Nullable<DateTime> endDate,
+            bool filterByDateRange)
+        {
+            List<NKitLogEntry> logEntries = GetNKitLogEntriesByFilter(searchFilter, startDate, endDate, filterByDateRange);
+            List<NKitLogEntryViewModel> result = new List<NKitLogEntryViewModel>();
+            foreach (NKitLogEntry logEntry in logEntries)
+            {
+                NKitLogEntryViewModel model = new NKitLogEntryViewModel(logEntry);
+                result.Add(model);
+            }
+            return result;
+        }
+
+        public List<NKitLogEntryCsvModel> GetNKitLogEntryCsvModelsByFilter(
+            string searchFilter,
+            Nullable<DateTime> startDate,
+            Nullable<DateTime> endDate,
+            bool filterByDateRange)
+        {
+            List<NKitLogEntry> logEntries = GetNKitLogEntriesByFilter(searchFilter, startDate, endDate, filterByDateRange);
+            List<NKitLogEntryCsvModel> result = new List<NKitLogEntryCsvModel>();
+            foreach (NKitLogEntry logEntry in logEntries)
+            {
+                NKitLogEntryCsvModel model = new NKitLogEntryCsvModel(logEntry);
+                result.Add(model);
+            }
+            return result;
+        }
+
+        public List<LinqFunnelChangeResult> DeleteNKitLogEntriesByFilter(
+            string searchFilter,
+            Nullable<DateTime> startDate,
+            Nullable<DateTime> endDate,
+            bool filterByDateRange)
+        {
+            List<LinqFunnelChangeResult> result = new List<LinqFunnelChangeResult>();
+            using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+            {
+                List<NKitLogEntry> entities = GetNKitLogEntriesByFilter(searchFilter, startDate, endDate, filterByDateRange);
+                foreach (NKitLogEntry e in entities)
+                {
+                    result.AddRange(Delete<NKitLogEntry>(e, e.DateCreated));
+                }
+                t.Complete();
+            }
+            return result;
+        }
+
+        #endregion //Logging Methods
 
         #endregion //Methods
     }

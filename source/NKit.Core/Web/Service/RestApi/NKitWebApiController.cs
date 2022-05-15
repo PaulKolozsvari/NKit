@@ -25,7 +25,6 @@
     using NKit.Utilities.Serialization;
     using NKit.Utilities.Email;
     using NKit.Settings.Default;
-    using NKit.Core.Data.DB.LINQ;
 
     #endregion //Using Directives
 

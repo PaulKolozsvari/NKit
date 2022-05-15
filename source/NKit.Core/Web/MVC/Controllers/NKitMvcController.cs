@@ -10,7 +10,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using NKit.Core.Data.DB.LINQ;
     using NKit.Data;
     using NKit.Data.DB.LINQ.Models;
     using NKit.Settings.Default;
@@ -25,6 +24,7 @@
     using NKit.Web.MVC.Models;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Hosting;
+    using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives
 
@@ -175,6 +175,22 @@
         #endregion //Properties
 
         #region Methods
+
+        public bool IsRequestAuthenticated()
+        {
+            return (this.User != null) && (this.User.Identity != null) && this.User.Identity.IsAuthenticated;
+        }
+
+        protected virtual void SetViewBagSearchFieldIdentifier<T>(FilterModelCore<T> model) where T : class
+        {
+            ViewBag.SearchFieldIdentifier = model.SearchFieldIdentifier;
+        }
+
+        protected virtual RedirectToActionResult HandleException(Exception ex)
+        {
+            ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService);
+            return RedirectToError(ex.Message);
+        }
 
         public string GetAbsoluteFilePathFromRequest(string relativePath)
         {
@@ -785,6 +801,39 @@
                 if (Guid.TryParse(searchParameters[4], out entityIdGuid))
                 {
                     parentId = entityIdGuid;
+                }
+            }
+        }
+
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
+            out Nullable<DateTime> startDate,
+            out Nullable<DateTime> endDate,
+            out bool filterByDateRange)
+        {
+            searchText = string.Empty;
+            startDate = null;
+            endDate = null;
+            filterByDateRange = false;
+            searchParameters = searchParametersString.Split('|');
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 4)
+            {
+                searchText = searchParameters[0];
+                DateTime startDateParsed;
+                DateTime endDateParsed;
+                if (DateTime.TryParse(searchParameters[1], out startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+                if (DateTime.TryParse(searchParameters[2], out endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+                if (bool.TryParse(searchParameters[3], out bool filterByDateRangeParsed))
+                {
+                    filterByDateRange = filterByDateRangeParsed;
                 }
             }
         }

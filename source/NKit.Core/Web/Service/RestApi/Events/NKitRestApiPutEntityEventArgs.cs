@@ -8,7 +8,6 @@
     using System.Text;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
-    using NKit.Core.Data.DB.LINQ;
     using NKit.Data.DB.LINQ;
 
     #endregion //Using Directives

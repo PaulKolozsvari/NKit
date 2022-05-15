@@ -11,7 +11,6 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.EventLog;
-    using NKit.Core.Data.DB.LINQ;
     using NKit.Data;
     using NKit.Data.DB.LINQ;
     using NKit.Settings;

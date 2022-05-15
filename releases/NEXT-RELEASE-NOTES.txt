@@ -15,3 +15,7 @@
 
     -   Implemented SqlTableExists in LinqEntityContextWindows.
     -   Implemneted stubs in LinqEntityContextWindows for logging messages, actions and exceptions. These methods need to be implemented by sub classes.
+
+
+*   2022-05-15:
+    -   Implemented ViewModels, CsvModels, data queries for grid and paging in the NKitDbContext and a controller for NKitLogEntry models.
