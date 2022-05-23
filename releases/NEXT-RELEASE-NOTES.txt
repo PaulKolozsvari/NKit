@@ -19,3 +19,6 @@
 
 *   2022-05-15:
     -   Implemented ViewModels, CsvModels, data queries for grid and paging in the NKitDbContext and a controller for NKitLogEntry models.
+
+*   2022-05-23:
+    -   Implemented NKitLoggingManager which is a wrapper around an ILogger and also logs to the database.

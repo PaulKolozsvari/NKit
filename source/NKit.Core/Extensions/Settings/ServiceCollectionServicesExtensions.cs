@@ -36,7 +36,7 @@
             this IServiceCollection services,
             IConfiguration configuration) where D : NKitDbContext
         {
-            RegisterDefaultNKitServices<D>(services, configuration, true,  true, true);
+            RegisterDefaultNKitServices<D>(services, configuration, registerNKitDbContext: true, registerDefaultNKitEmailClient:  true, registerNKitLoggingManager: true, registerControllerInputFormatter: true);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@
             this IServiceCollection services,
             IConfiguration configuration) where D : NKitDbContext where E : NKitEmailClientService
         {
-            RegisterDefaultNKitServices<D, E>(services, configuration, true, true, true);
+            RegisterDefaultNKitServices<D, E>(services, configuration, registerNKitDbContext: true, registerDefaultNKitEmailClient: true, registerNKitLoggingManager: true, registerControllerInputFormatter: true);
         }
 
         /// <summary>
@@ -62,15 +62,17 @@
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
         /// <param name="registerNKitDbContext">Whether or not to register the NKitDbContext specified by D.</param>
         /// <param name="registerDefaultNKitEmailClient">Whether or not to register the default NKitEmailClient.</param>
+        /// <param name="registerNKitLoggingManager">Whether or not to register the default NKitLoggingManager.</param>
         /// <param name="registerControllerInputFormatter">Whether or not to register the controller formatters i.e. allowing POST/PUT inputs requests in the formats provided in the NKit MimeContentType class.</param>
         public static void RegisterDefaultNKitServices<D>(
             this IServiceCollection services,
             IConfiguration configuration,
             bool registerNKitDbContext,
             bool registerDefaultNKitEmailClient,
+            bool registerNKitLoggingManager,
             bool registerControllerInputFormatter) where D : NKitDbContext
         {
-            RegisterDefaultNKitServices<D, NKitEmailClientService>(services, configuration, registerNKitDbContext, registerDefaultNKitEmailClient, registerControllerInputFormatter);
+            RegisterDefaultNKitServices<D, NKitEmailClientService>(services, configuration, registerNKitDbContext, registerDefaultNKitEmailClient, registerNKitLoggingManager, registerControllerInputFormatter);
         }
 
         /// <summary>
@@ -82,12 +84,14 @@
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
         /// <param name="registerNKitDbContext">Whether or not to register the NKitDbContext specified by D.</param>
         /// <param name="registerDefaultNKitEmailClient">Whether or not to register the default NKitEmailClient.</param>
+        /// <param name="registerNKitLoggingManager">Whether or not to register the default NKitLoggingManager.</param>
         /// <param name="registerControllerInputFormatter">Whether or not to register the controller formatters i.e. allowing POST/PUT inputs requests in the formats provided in the NKit MimeContentType class.</param>
         public static void RegisterDefaultNKitServices<D, E>(
             this IServiceCollection services,
             IConfiguration configuration,
             bool registerNKitDbContext,
             bool registerDefaultNKitEmailClient,
+            bool registerNKitLoggingManager,
             bool registerControllerInputFormatter) where D : NKitDbContext where E : NKitEmailClientService
         {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
@@ -104,6 +108,10 @@
                 {
                     RegisterDefaultNKitEmailClient(services, configuration); //The NKitHttpExceptionHandlerMiddleware and other NKit components that make use of the NKitEmailClientService will not be able to resolve the custom (inherited) E type register in the above line. Therefore we need to register the base NKitEmailClient Service too.
                 }
+            }
+            if (registerNKitLoggingManager)
+            {
+                RegisterNKitLoggingManager<D, E>(services, configuration);
             }
             if (registerControllerInputFormatter)
             {
@@ -158,6 +166,18 @@
                 throw new NullReferenceException($"{nameof(NKitEmailClientServiceSettings)} not registered. Must configure {nameof(NKitEmailClientServiceSettings)} in the appsettings.json file and registered before calling {nameof(RegisterNKitEmailClient)}.");
             }
             services.AddTransient<E>();
+        }
+
+        public static void RegisterNKitLoggingManager<D, E>(this IServiceCollection services, IConfiguration configuration) where D : NKitDbContext where E : NKitEmailClientService
+        {
+            DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
+            DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(ServiceCollectionSettingsExtensions));
+            NKitLoggingSettings loggingSettings = NKitLoggingSettings.GetSettings(configuration);
+            if (loggingSettings == null)
+            {
+                throw new NullReferenceException($"{nameof(NKitLoggingSettings)} not registered. Must configure {nameof(NKitLoggingSettings)} in the appsettings.json file and registered before calling {nameof(RegisterNKitLoggingManager)}.");
+            }
+            services.AddTransient<NKitLoggingManager<D, E>>();
         }
 
         /// <summary>

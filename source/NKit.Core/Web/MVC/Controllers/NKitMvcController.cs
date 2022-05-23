@@ -188,7 +188,7 @@
 
         protected virtual RedirectToActionResult HandleException(Exception ex)
         {
-            ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService);
+            ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService, DbContext);
             return RedirectToError(ex.Message);
         }
 
@@ -963,7 +963,7 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService);
+                ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService, DbContext);
                 return GetJsonResult(false, ex.Message);
             }
         }
@@ -982,7 +982,7 @@
             }
             catch (Exception ex)
             {
-                ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService);
+                ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService, DbContext);
                 return GetJsonResult(false, ex.Message);
             }
         }

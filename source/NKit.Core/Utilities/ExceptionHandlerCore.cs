@@ -7,6 +7,7 @@
     using System.Text;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using NKit.Data.DB.LINQ;
     using NKit.Settings.Default;
     using NKit.Utilities.Email;
     using NKit.Utilities.Logging;
@@ -44,18 +45,20 @@
         public static bool HandleException(
             ILogger logger, 
             Exception exception,
-            NKitEmailClientService emailClientService)
+            NKitEmailClientService emailClientService,
+            NKitDbContext dbContext)
         {
-            return HandleException(logger, exception, eventDetailsMessage: null, true, out string emailErrorMessage, out string emailLogErrorMessage, null, emailClientService);
+            return HandleException(logger, exception, eventDetailsMessage: null, true, out string emailErrorMessage, out string emailLogErrorMessage, null, emailClientService, dbContext);
         }
 
         public static bool HandleException(
             ILogger logger, 
             Exception exception, 
             List<EmailNotificationRecipient> emailNotificationRecipients,
-            NKitEmailClientService emailClientService)
+            NKitEmailClientService emailClientService,
+            NKitDbContext dbContext)
         {
-            return HandleException(logger, exception, eventDetailsMessage: null, true, out string emailErrorMessage, out string emailLogErrorMessage, emailNotificationRecipients, emailClientService);
+            return HandleException(logger, exception, eventDetailsMessage: null, true, out string emailErrorMessage, out string emailLogErrorMessage, emailNotificationRecipients, emailClientService, dbContext);
         }
 
         public static bool HandleException(
@@ -64,9 +67,10 @@
             out string emailErrorMessage,
             out string emailLogMessageText,
             List<EmailNotificationRecipient> emailNotificationRecipients,
-            NKitEmailClientService emailClientService)
+            NKitEmailClientService emailClientService,
+            NKitDbContext dbContext)
         {
-            return HandleException(logger, exception, eventDetailsMessage: null, true, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients, emailClientService);
+            return HandleException(logger, exception, eventDetailsMessage: null, true, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients, emailClientService, dbContext);
         }
 
         public static bool HandleException(
@@ -76,9 +80,10 @@
             out string emailErrorMessage,
             out string emailLogMessageText,
             List<EmailNotificationRecipient> emailNotificationRecipients,
-            NKitEmailClientService emailClientService)
+            NKitEmailClientService emailClientService,
+            NKitDbContext dbContext)
         {
-            return HandleException(logger, exception, eventDetailsMessage: null, emailException, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients, emailClientService);
+            return HandleException(logger, exception, eventDetailsMessage: null, emailException, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients, emailClientService, dbContext);
         }
 
         public static bool HandleException(
@@ -88,9 +93,10 @@
             out string emailErrorMessage,
             out string emailLogMessageText,
             List<EmailNotificationRecipient> emailNotificationRecipients,
-            NKitEmailClientService emailClientService)
+            NKitEmailClientService emailClientService,
+            NKitDbContext dbContext)
         {
-            return HandleException(logger, exception, eventDetailsMessage, true, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients, emailClientService);
+            return HandleException(logger, exception, eventDetailsMessage, true, out emailErrorMessage, out emailLogMessageText, emailNotificationRecipients, emailClientService, dbContext);
         }
 
         public static bool HandleException(
@@ -101,7 +107,8 @@
             out string emailErrorMessage,
             out string emailLogMessageText,
             List<EmailNotificationRecipient> emailNotificationRecipients,
-            NKitEmailClientService emailClientService)
+            NKitEmailClientService emailClientService,
+            NKitDbContext dbContext)
         {
             try
             {
@@ -130,6 +137,10 @@
                     {
                     }
                     emailClientService.SendExceptionEmailNotification(exception, out emailErrorMessage, out emailLogMessageText, true, emailNotificationRecipients);
+                }
+                if (dbContext != null)
+                {
+                    dbContext.LogExceptionToNKitLogEntry(exception, null, true);
                 }
                 return closeApplication;
             }

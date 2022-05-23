@@ -2377,7 +2377,7 @@
 
         #region Logging Methods
 
-        public virtual NKitLogEntry LogMessageToNKitLogEntry(string message, string source, string className, string functionName, string eventName)
+        public virtual NKitLogEntry LogMessageToNKitLogEntry(string message, string source, string className, string functionName, string stackTrace, int eventId, string eventName)
         {
             if (!_loggingSettings.LogToNKitLogEntryDatabaseTable || !SqlTableExists(nameof(NKitLogEntry)))
             {
@@ -2390,8 +2390,8 @@
                 Source = source,
                 ClassName = className,
                 FunctionName = functionName,
-                StackTrace = null,
-                EventId = 0,
+                StackTrace = stackTrace,
+                EventId = eventId,
                 EventName = eventName,
                 DateCreated = DateTime.Now
             };

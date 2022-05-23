@@ -226,7 +226,7 @@
                 if (e != null)
                 {
                     model.Identifier = identifier;
-                    model.ConfirmationMessage = $"Delete NKitLogEntry '{e.DateCreated}'?";
+                    model.ConfirmationMessage = $"Delete Log Entry '{e.DateCreated}'?";
                 }
                 PartialViewResult result = PartialView(CONFIRMATION_DIALOG_PARTIAL_VIEW_NAME, model);
                 return result;
@@ -278,14 +278,12 @@
                     out searchText,
                     out Nullable<DateTime> startDate,
                     out Nullable<DateTime> endDate,
-                    out bool filterByDateRange,
-                    out Nullable<Guid> noticeFileId);
+                    out bool filterByDateRange);
                 model.SearchText = searchText;
                 model.ConfirmationMessage = $"Delete all Log Entries currently loaded?";
                 model.StartDate = startDate;
                 model.EndDate = endDate;
                 model.FilterByDateRange = filterByDateRange;
-                model.ParentId = noticeFileId;
                 PartialViewResult result = PartialView(CONFIRMATION_DIALOG_PARTIAL_VIEW_NAME, model);
                 return result;
             }

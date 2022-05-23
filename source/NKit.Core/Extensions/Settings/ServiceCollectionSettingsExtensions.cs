@@ -142,9 +142,9 @@
         /// <typeparam name="S"></typeparam>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        public static void RegisterNKitSettings<S>(this IServiceCollection services, IConfiguration configuration) where S : NKitSettings
+        public static S RegisterNKitSettings<S>(this IServiceCollection services, IConfiguration configuration) where S : NKitSettings
         {
-            NKitSettings.RegisterConfiguration<S>(configuration, services);
+            return NKitSettings.RegisterConfiguration<S>(configuration, services);
         }
 
         #endregion //Register Settings Methods
