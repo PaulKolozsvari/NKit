@@ -11,6 +11,7 @@
     using NKit.Data.DB.LINQ;
     using NKit.Settings.Default;
     using NKit.Utilities.Email;
+    using Microsoft.Extensions.DependencyInjection;
 
     #endregion //Using Directives
 
@@ -18,15 +19,16 @@
     {
         #region Constructors
 
-        public NKitLoggingManager(IOptions<NKitLoggingSettings> loggingOptions, ILogger<NKitLoggingManager<D, E>> logger, D dbContext, E emailClientService)
+        public NKitLoggingManager(
+            IServiceProvider serviceProvider,
+            IOptions<NKitLoggingSettings> loggingOptions,
+            E emailClientService)
         {
+            DataValidator.ValidateObjectNotNull(serviceProvider, nameof(serviceProvider), nameof(NKitLoggingManager<D, E>));
             DataValidator.ValidateObjectNotNull(loggingOptions, nameof(loggingOptions), nameof(NKitLoggingManager<D, E>));
-            DataValidator.ValidateObjectNotNull(logger, nameof(logger), nameof(NKitLoggingManager<D, E>));
-            DataValidator.ValidateObjectNotNull(dbContext, nameof(dbContext), nameof(NKitLoggingManager<D, E>));
             DataValidator.ValidateObjectNotNull(emailClientService, nameof(emailClientService), nameof(NKitLoggingManager<D, E>));
+            _serviceProvider = serviceProvider;
             _loggingSettings = loggingOptions.Value;
-            _dbContext = dbContext;
-            _logger = logger;
             _emailClientService = emailClientService;
         }
 
@@ -34,28 +36,22 @@
 
         #region Fields
 
+        private IServiceProvider _serviceProvider;
         private NKitLoggingSettings _loggingSettings;
-        private ILogger<NKitLoggingManager<D, E>> _logger;
-        private D _dbContext;
         private E _emailClientService;
 
         #endregion //Fields
 
         #region Properties
 
+        public IServiceProvider ServiceProvider
+        {
+            get { return _serviceProvider; }
+        }
+
         protected NKitLoggingSettings LoggingSettings
         {
             get { return _loggingSettings; }
-        }
-
-        public ILogger<NKitLoggingManager<D, E>> Logger
-        {
-            get { return _logger; }
-        }
-
-        public D DbContext
-        {
-            get { return _dbContext; }
         }
 
         public E EmailClientService
@@ -65,20 +61,34 @@
 
         #endregion //Properties
 
+
         #region Methods
 
+        protected ILogger CreateLogger(string category)
+        {
+            return NKitLoggingHelper.CreateLogger(category, _loggingSettings); ;
+        }
+
         public virtual void Log(
+            string category,
             string logMessage,
             LogMessageType logMessageType,
+            string source,
             string className,
             string functionName,
             string stackTrace,
             int eventId)
         {
-            _logger.LogInformation(logMessage);
-            if (_loggingSettings.LogToNKitLogEntryDatabaseTable && _dbContext != null)
+            CreateLogger(category).LogInformation(logMessage);
+            if (_loggingSettings.LogToNKitLogEntryDatabaseTable)
             {
-                _dbContext.LogMessageToNKitLogEntry(logMessage, Information.GetExecutingAssemblyName(), className, functionName, stackTrace, eventId, logMessageType.ToString());
+                using (IServiceScope scope = ServiceProvider.CreateScope())
+                {
+                    using(D dbContext = scope.ServiceProvider.GetService<D>())
+                    {
+                        dbContext.LogMessageToNKitLogEntry(logMessage, source, className, functionName, stackTrace, eventId, logMessageType.ToString());
+                    }
+                }
             }
         }
 

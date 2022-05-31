@@ -41,7 +41,8 @@
         //Gets the name of the current executing assembly.
         public static string GetExecutingAssemblyName()
         {
-            return Path.GetFileName(Assembly.GetCallingAssembly().GetName().CodeBase).Remove(0, 6);
+            //return Path.GetFileName(Assembly.GetCallingAssembly().GetName().CodeBase).Remove(0, 6);
+            return Path.GetFileName(Assembly.GetCallingAssembly().GetName().CodeBase);
         }
 
         //Gets the name of the current executing assembly.

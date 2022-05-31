@@ -22,3 +22,6 @@
 
 *   2022-05-23:
     -   Implemented NKitLoggingManager which is a wrapper around an ILogger and also logs to the database.
+
+*   2022-05-31:
+    -   Implemented minor fixes across multiple utilities.

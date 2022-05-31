@@ -308,7 +308,8 @@
             }
             catch (Exception ex)
             {
-                return HandleException(ex);
+                HandleException(ex);
+                return GetJsonResult(false, ex.Message);
             }
         }
 

@@ -94,6 +94,11 @@
         /// </summary>
         public string WaitDialogSuccessMessage { get; set; }
 
+        /// <summary>
+        /// Any other field that is being used to filter by.
+        /// </summary>
+        public string Other { get; set; }
+
         #endregion //Properties
     }
 }

@@ -133,14 +133,11 @@
                 }
                 if (emailException && (emailClientService != null))
                 {
-                    if (emailClientService != null)
-                    {
-                    }
                     emailClientService.SendExceptionEmailNotification(exception, out emailErrorMessage, out emailLogMessageText, true, emailNotificationRecipients);
                 }
                 if (dbContext != null)
                 {
-                    dbContext.LogExceptionToNKitLogEntry(exception, null, true);
+                    dbContext.LogExceptionToNKitLogEntry(exception, eventId: null, true);
                 }
                 return closeApplication;
             }

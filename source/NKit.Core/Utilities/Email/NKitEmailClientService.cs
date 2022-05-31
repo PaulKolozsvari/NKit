@@ -28,6 +28,19 @@
             IOptions<NKitEmailClientServiceSettings> emailOptions,
             IOptions<NKitLoggingSettings> loggingOptions,
             IOptions<NKitWebApiClientSettings> webApiClientOptions,
+            ILogger<NKitEmailClientService> logger) 
+            : this(httpContextAccessor, generalOptions, webApiControllerOptions, databaseOptions, emailOptions, loggingOptions, webApiClientOptions, logger, null)
+        {
+        }
+
+        public NKitEmailClientService(
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<NKitGeneralSettings> generalOptions,
+            IOptions<NKitWebApiControllerSettings> webApiControllerOptions,
+            IOptions<NKitDbContextSettings> databaseOptions,
+            IOptions<NKitEmailClientServiceSettings> emailOptions,
+            IOptions<NKitLoggingSettings> loggingOptions,
+            IOptions<NKitWebApiClientSettings> webApiClientOptions,
             ILogger<NKitEmailClientService> logger,
             IWebHostEnvironment environment) :
             base(emailOptions.Value.EmailNotificationsEnabled,

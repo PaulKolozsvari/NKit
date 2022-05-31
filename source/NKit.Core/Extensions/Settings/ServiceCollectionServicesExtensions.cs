@@ -47,11 +47,11 @@
         /// <typeparam name="E">The NKitEmailClientService to be used to send emails.</typeparam>
         /// <param name="services">The DI services container received in the Startup class.</param>
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
-        public static void RegisterDefaultNKitServices<D, E>(
+        public static void RegisterDefaultNKitServices<D, E, L>(
             this IServiceCollection services,
-            IConfiguration configuration) where D : NKitDbContext where E : NKitEmailClientService
+            IConfiguration configuration) where D : NKitDbContext where E : NKitEmailClientService where L : NKitLoggingManager<D, E>
         {
-            RegisterDefaultNKitServices<D, E>(services, configuration, registerNKitDbContext: true, registerDefaultNKitEmailClient: true, registerNKitLoggingManager: true, registerControllerInputFormatter: true);
+            RegisterDefaultNKitServices<D, E, L>(services, configuration, registerNKitDbContext: true, registerDefaultNKitEmailClient: true, registerNKitLoggingManager: true, registerControllerInputFormatter: true);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@
             bool registerNKitLoggingManager,
             bool registerControllerInputFormatter) where D : NKitDbContext
         {
-            RegisterDefaultNKitServices<D, NKitEmailClientService>(services, configuration, registerNKitDbContext, registerDefaultNKitEmailClient, registerNKitLoggingManager, registerControllerInputFormatter);
+            RegisterDefaultNKitServices<D, NKitEmailClientService, NKitLoggingManager<D, NKitEmailClientService>>(services, configuration, registerNKitDbContext, registerDefaultNKitEmailClient, registerNKitLoggingManager, registerControllerInputFormatter);
         }
 
         /// <summary>
@@ -80,19 +80,20 @@
         /// </summary>
         /// <typeparam name="D">The Entity Framework NKitDbContext to be used to manage the database.</typeparam>
         /// <typeparam name="E">The NKitEmailClientService to be used to send emails.</typeparam>
+        /// <typeparam name="L">The NKitLoggingManager to be used to manage logs.</typeparam>
         /// <param name="services">The DI services container received in the Startup class.</param>
         /// <param name="configuration">The IConfiguration received in the Startup class.</param>
         /// <param name="registerNKitDbContext">Whether or not to register the NKitDbContext specified by D.</param>
         /// <param name="registerDefaultNKitEmailClient">Whether or not to register the default NKitEmailClient.</param>
         /// <param name="registerNKitLoggingManager">Whether or not to register the default NKitLoggingManager.</param>
         /// <param name="registerControllerInputFormatter">Whether or not to register the controller formatters i.e. allowing POST/PUT inputs requests in the formats provided in the NKit MimeContentType class.</param>
-        public static void RegisterDefaultNKitServices<D, E>(
+        public static void RegisterDefaultNKitServices<D, E, L>(
             this IServiceCollection services,
             IConfiguration configuration,
             bool registerNKitDbContext,
             bool registerDefaultNKitEmailClient,
             bool registerNKitLoggingManager,
-            bool registerControllerInputFormatter) where D : NKitDbContext where E : NKitEmailClientService
+            bool registerControllerInputFormatter) where D : NKitDbContext where E : NKitEmailClientService where L : NKitLoggingManager<D, E>
         {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
             DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(ServiceCollectionSettingsExtensions));
@@ -111,7 +112,7 @@
             }
             if (registerNKitLoggingManager)
             {
-                RegisterNKitLoggingManager<D, E>(services, configuration);
+                RegisterNKitLoggingManager<D, E, L>(services, configuration);
             }
             if (registerControllerInputFormatter)
             {
@@ -168,7 +169,7 @@
             services.AddTransient<E>();
         }
 
-        public static void RegisterNKitLoggingManager<D, E>(this IServiceCollection services, IConfiguration configuration) where D : NKitDbContext where E : NKitEmailClientService
+        public static void RegisterNKitLoggingManager<D, E, L>(this IServiceCollection services, IConfiguration configuration) where D : NKitDbContext where E : NKitEmailClientService where L : NKitLoggingManager<D, E>
         {
             DataValidator.ValidateObjectNotNull(configuration, nameof(configuration), nameof(ServiceCollectionSettingsExtensions));
             DataValidator.ValidateObjectNotNull(services, nameof(services), nameof(ServiceCollectionSettingsExtensions));
@@ -177,7 +178,7 @@
             {
                 throw new NullReferenceException($"{nameof(NKitLoggingSettings)} not registered. Must configure {nameof(NKitLoggingSettings)} in the appsettings.json file and registered before calling {nameof(RegisterNKitLoggingManager)}.");
             }
-            services.AddTransient<NKitLoggingManager<D, E>>();
+            services.AddTransient<L>();
         }
 
         /// <summary>
