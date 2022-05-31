@@ -1232,7 +1232,7 @@
         /// <returns>Returns an entity with the specified type and surrogate key. Returns null if one is not found.</returns>
         public virtual object GetEntityBySurrogateKey(Type entityType, object keyValue, bool throwExceptionOnNotFound)
         {
-            MethodInfo methodDefinition = GetType().GetMethod("GetEntityBySurrogateKey", new Type[] { typeof(object), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
+            MethodInfo methodDefinition = GetType().GetMethod(nameof(GetEntityBySurrogateKey), new Type[] { typeof(object), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
             MethodInfo method = methodDefinition.MakeGenericMethod(entityType);
             return method.Invoke(this, new object[] { keyValue, throwExceptionOnNotFound });
         }
@@ -1280,7 +1280,11 @@
         /// <returns>Returns a list of entities of the specified type with the specified field/column and field value.</returns>
         public virtual List<object> GetEntitiesByField(Type entityType, string fieldName, object fieldValue)
         {
-            MethodInfo methodDefinition = GetType().GetMethod("GetEntitiesByField", new Type[] { typeof(string), typeof(object), typeof(bool) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
+            MethodInfo methodDefinition = GetType().GetMethod(nameof(GetEntitiesByField), new Type[] { typeof(string), typeof(object) }); //https://stackoverflow.com/questions/266115/pass-an-instantiated-system-type-as-a-type-parameter-for-a-generic-class
+            if (methodDefinition == null)
+            {
+                throw new NullReferenceException($"Could not find method {nameof(GetEntitiesByField)} with the required signarure.");
+            }
             MethodInfo method = methodDefinition.MakeGenericMethod(entityType);
             object queryResult = method.Invoke(this, new object[] { fieldName, fieldValue });
             System.Collections.IList genericList = (System.Collections.IList)queryResult;
