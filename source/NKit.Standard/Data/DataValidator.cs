@@ -114,7 +114,7 @@
             }
         }
 
-        public bool ValidateGuidNotEmpty(string fieldName, Guid fieldValue, string parentName)
+        public static bool ValidateGuidNotEmpty(string fieldName, Guid fieldValue, string parentName)
         {
             if (fieldValue == Guid.Empty)
             {

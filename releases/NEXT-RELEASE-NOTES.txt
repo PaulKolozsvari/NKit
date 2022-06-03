@@ -25,3 +25,6 @@
 *   2022-05-31:
     -   Implemented minor fixes across multiple utilities.
     -   Fixed the GetEntitiesByField in the NKitDbContext which was making a call to a method via reflection and using the wrong signature.
+
+*   2022-06-03:
+    -   Implemented fix for DataValidator where the ValidateGuidNotEmpty method was not set to static.
