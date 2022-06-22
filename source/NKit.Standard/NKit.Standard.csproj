@@ -114,7 +114,7 @@
 
   <ItemGroup>
     <PackageReference Include="Ical.Net" Version="4.1.11" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Renci.SshNet.Async" Version="1.4.0" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
