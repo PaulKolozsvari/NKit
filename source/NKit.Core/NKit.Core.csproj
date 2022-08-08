@@ -130,6 +130,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NKit.Standard\NKit.Standard.csproj" />
+    <ProjectReference Include="..\NKit.Windows\NKit.Windows.csproj" />
   </ItemGroup>
 
 </Project>

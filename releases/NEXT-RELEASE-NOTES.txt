@@ -28,3 +28,7 @@
 
 *   2022-06-03:
     -   Implemented fix for DataValidator where the ValidateGuidNotEmpty method was not set to static.
+
+*   2022-08-08:
+    -   Changed the Windows Exception Handler to allow providing a parameter to override the global setting for GOC.Instance.ShowMessageBoxOnException i.e. even if the global settings is set to false,
+        it can be overridden for a specific call to the ExceptionHandler to display an exception with a message box.
