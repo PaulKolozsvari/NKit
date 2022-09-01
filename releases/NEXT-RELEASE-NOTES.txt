@@ -32,3 +32,6 @@
 *   2022-08-08:
     -   Changed the Windows Exception Handler to allow providing a parameter to override the global setting for GOC.Instance.ShowMessageBoxOnException i.e. even if the global settings is set to false,
         it can be overridden for a specific call to the ExceptionHandler to display an exception with a message box.
+
+*   2022-09-01:
+    -   Added indexers to all EntityCaches and including integer based indexers on the generic entity cache where a dictionary is used.

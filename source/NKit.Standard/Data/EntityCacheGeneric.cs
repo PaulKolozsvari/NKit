@@ -133,6 +133,18 @@
             }
         }
 
+        public E this[int index]
+        {
+            get
+            {
+                if (index >= _entities.Values.Count)
+                {
+                    return null;
+                }
+                return _entities.Values.ElementAt(index);
+            }
+        }
+
         #endregion //Indexers Region
 
         #region Methods
