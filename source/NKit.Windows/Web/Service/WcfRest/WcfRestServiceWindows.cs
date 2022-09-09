@@ -541,6 +541,8 @@
         public virtual Stream PutEntity(string entityName, Stream inputStream)
         {
             LinqEntityContextWindows context = null;
+            Stream result = null;
+            string responseMessage = null;
             try
             {
                 string requestName = $"{nameof(PutEntity)} : Entity Name : {entityName}";
@@ -554,8 +556,16 @@
                 AuditRequest(requestName, serializedText);
                 if (OnBeforePut != null)
                 {
-                    OnBeforePut(this, new RestServicePutEntityEventArgsWindows(
-                        entityName, userId, userName, context, entityType, inputEntity));
+                    RestServicePutEntityEventArgsWindows e = new RestServicePutEntityEventArgsWindows(
+                        entityName, userId, userName, context, entityType, inputEntity);
+                    OnBeforePut(this, e);
+                    if (e.Cancel)
+                    {
+                        responseMessage = string.Format("{0} saving cancelled.", entityName);
+                        result = StreamHelper.GetStreamFromString(responseMessage, GOCWindows.Instance.Encoding);
+                        AuditResponse(requestName, responseMessage);
+                        return result;
+                    }
                 }
                 context.Save(
                     entityType,
@@ -568,8 +578,8 @@
                     OnAfterPut(this, new RestServicePutEntityEventArgsWindows(
                         entityName, userId, userName, context, entityType, inputEntity));
                 }
-                string responseMessage = string.Format("{0} saved successfully.", entityName);
-                Stream result = StreamHelper.GetStreamFromString(responseMessage, GOCWindows.Instance.Encoding);
+                responseMessage = string.Format("{0} saved successfully.", entityName);
+                result = StreamHelper.GetStreamFromString(responseMessage, GOCWindows.Instance.Encoding);
                 AuditResponse(requestName, responseMessage);
                 return result;
             }
@@ -591,6 +601,8 @@
         public virtual Stream PostEntity(string entityName, Stream inputStream)
         {
             LinqEntityContextWindows context = null;
+            string responseMessage = null;
+            Stream result = null;
             try
             {
                 string requestName = $"{nameof(PostEntity)} : Entity Name = {entityName}";
@@ -604,8 +616,16 @@
                 AuditRequest(requestName, serializedText);
                 if (OnBeforePost != null)
                 {
-                    OnBeforePost(this, new RestServicePostEntityEventArgsWindows(
-                        entityName, userId, userName, context, entityType, inputEntity));
+                    RestServicePostEntityEventArgsWindows e = new RestServicePostEntityEventArgsWindows(
+                        entityName, userId, userName, context, entityType, inputEntity);
+                    OnBeforePost(this, e);
+                    if (e.Cancel)
+                    {
+                        responseMessage = string.Format("{0} inserting cancelled.", entityName);
+                        result = StreamHelper.GetStreamFromString(responseMessage, GOCWindows.Instance.Encoding);
+                        AuditResponse(requestName, responseMessage);
+                        return result;
+                    }
                 }
                 context.Insert(
                     entityType,
@@ -618,8 +638,8 @@
                     OnAfterPost(this, new RestServicePostEntityEventArgsWindows(
                         entityName, userId, userName, context, entityType, inputEntity));
                 }
-                string responseMessage = string.Format("{0} saved successfully.", entityName);
-                Stream result = StreamHelper.GetStreamFromString(responseMessage, GOCWindows.Instance.Encoding);
+                responseMessage = string.Format("{0} insert successfully.", entityName);
+                result = StreamHelper.GetStreamFromString(responseMessage, GOCWindows.Instance.Encoding);
                 AuditResponse(requestName, responseMessage);
                 return result;
             }

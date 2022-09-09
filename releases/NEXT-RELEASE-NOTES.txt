@@ -35,3 +35,6 @@
 
 *   2022-09-01:
     -   Added indexers to all EntityCaches and including integer based indexers on the generic entity cache where a dictionary is used.
+
+*   2022-09-09:
+    -   Implemented a cancel feature on the Wcf rest service on the before put and before post action methods to allow the subscribers to the event to cancel the put or post.
