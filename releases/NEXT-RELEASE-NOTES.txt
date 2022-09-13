@@ -38,3 +38,6 @@
 
 *   2022-09-09:
     -   Implemented a cancel feature on the Wcf rest service on the before put and before post action methods to allow the subscribers to the event to cancel the put or post.
+
+*   2022-09-13:
+    -   Fixed issue where the .NET Core project was referencing the Windows project which it shouldn't have been. 
