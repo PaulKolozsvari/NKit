@@ -167,39 +167,39 @@
             }
             else if (typeToConvertTo.Equals(typeof(Int16)) || typeToConvertTo.Equals(typeof(Nullable<Int16>)))
             {
-                return Convert.ToInt16(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(Int16) : Convert.ToInt16(value);
             }
             else if (typeToConvertTo.Equals(typeof(Int32)) || typeToConvertTo.Equals(typeof(Nullable<Int32>)))
             {
-                return Convert.ToInt32(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(Int32) : Convert.ToInt32(value);
             }
             else if (typeToConvertTo.Equals(typeof(Int64)) || typeToConvertTo.Equals(typeof(Nullable<Int64>)))
             {
-                return Convert.ToInt64(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(Int64) : Convert.ToInt64(value);
             }
             else if (typeToConvertTo.Equals(typeof(UInt16)) || typeToConvertTo.Equals(typeof(Nullable<UInt16>)))
             {
-                return Convert.ToUInt16(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(UInt16) : Convert.ToUInt16(value);
             }
             else if (typeToConvertTo.Equals(typeof(UInt32)) || typeToConvertTo.Equals(typeof(Nullable<UInt32>)))
             {
-                return Convert.ToUInt32(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(UInt32) : Convert.ToUInt32(value);
             }
             else if (typeToConvertTo.Equals(typeof(UInt64)) || typeToConvertTo.Equals(typeof(Nullable<UInt64>)))
             {
-                return Convert.ToUInt64(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(UInt64) : Convert.ToUInt64(value);
             }
             else if (typeToConvertTo.Equals(typeof(Single)) || typeToConvertTo.Equals(typeof(Nullable<Single>)))
             {
-                return Convert.ToSingle(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(Single) : Convert.ToSingle(value);
             }
             else if (typeToConvertTo.Equals(typeof(Double)) || typeToConvertTo.Equals(typeof(Nullable<Double>)))
             {
-                return Convert.ToDouble(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(Double) : Convert.ToDouble(value);
             }
             else if (typeToConvertTo.Equals(typeof(Decimal)) || typeToConvertTo.Equals(typeof(Nullable<Decimal>)))
             {
-                return Convert.ToDecimal(value);
+                return value.GetType().Equals(typeof(string)) && string.IsNullOrEmpty(value.ToString()) ? default(Decimal) : Convert.ToDecimal(value);
             }
             else if (typeToConvertTo.Equals(typeof(DateTime)) || typeToConvertTo.Equals(typeof(Nullable<DateTime>)))
             {
