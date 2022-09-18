@@ -44,4 +44,4 @@
 
 *   2022-09-18:
     -   Changed the EntityReader ConvertValueTypeTo method to check if the input value is a string and null or empty. If it is, it returns the default
-        value type of the type that it needs to convert to. 
+        value type of the type that it needs to convert to.
