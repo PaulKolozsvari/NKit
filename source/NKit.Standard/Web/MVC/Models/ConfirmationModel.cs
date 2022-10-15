@@ -99,6 +99,11 @@
         /// </summary>
         public string Other { get; set; }
 
+        /// <summary>
+        /// Any other second field that is being used to filter by.
+        /// </summary>
+        public string SecondOther { get; set; }
+
         #endregion //Properties
     }
 }

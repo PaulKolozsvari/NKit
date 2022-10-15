@@ -29,7 +29,7 @@
             string controlId,
             string imageIconName)
         {
-            return LinkButtonForSubmit(helper, buttonText, javaScriptFunction, controlId, null, true, imageIconName);
+            return LinkButtonForSubmit(helper, buttonText, javaScriptFunction, controlId, null, includeImage: true, imageIconName);
         }
 
         public static MvcHtmlString LinkButtonForSubmit(
