@@ -49,3 +49,7 @@
 *   2022-10-15:
     -   Upgraded Newtonsoft.Json from version 12 to 13.
     -   Added an extra property SecondOther to the ConfirmationModel.
+
+*   2022-10-18:
+
+    -   Added MVC extension method for querying the application's version from the main assembly.

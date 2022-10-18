@@ -5,7 +5,9 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using System.Web;
+    using System.Web.Mvc;
 
     #endregion //Using Directives
 
@@ -30,6 +32,37 @@
             }
 
             throw new InvalidOperationException("We can only map an absolute back to a relative path if an HttpContext is available.");
+        }
+
+        public static HtmlString GetApplicationVersion(this HtmlHelper helper)
+        {
+            Assembly assembly = GetWebEntryAssembly();
+            Version version = assembly.GetName().Version;
+            AssemblyProductAttribute product = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), true).FirstOrDefault() as AssemblyProductAttribute;
+            return version != null && product != null ? new HtmlString($"<span>v{version.Major}.{version.Minor}.{version.Build} ({version.Revision})</span>") : new HtmlString("");
+        }
+
+        public static string GetApplicationVersionRawString(this HtmlHelper helper)
+        {
+            Assembly assembly = GetWebEntryAssembly();
+            Version version = assembly.GetName().Version;
+            AssemblyProductAttribute product = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), true).FirstOrDefault() as AssemblyProductAttribute;
+            return version != null && product != null ? $"v{version.Major}.{version.Minor}.{version.Build} ({version.Revision})" : string.Empty;
+        }
+
+        private static Assembly GetWebEntryAssembly()
+        {
+            if (System.Web.HttpContext.Current == null ||
+                System.Web.HttpContext.Current.ApplicationInstance == null)
+            {
+                return null;
+            }
+            Type type = System.Web.HttpContext.Current.ApplicationInstance.GetType();
+            while (type != null && type.Namespace == "ASP")
+            {
+                type = type.BaseType;
+            }
+            return type == null ? null : type.Assembly;
         }
 
         #endregion //Methods
