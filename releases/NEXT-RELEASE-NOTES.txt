@@ -53,3 +53,6 @@
 *   2022-10-18:
 
     -   Added MVC extension method for querying the application's version from the main assembly.
+
+*   2022-11-08:
+    -   Changed the NKit EmailClient to not send emails if there are no To email recipients specified on the call.

@@ -349,6 +349,12 @@
                 emailLogMessageText = string.Empty;
                 return false;
             }
+            if (emailRecipients == null || emailRecipients.Count < 1)
+            {
+                errorMessage = "No email recipients specified.";
+                emailLogMessageText = string.Empty;
+                return false;
+            }
             body = body ?? string.Empty;
             if (appendHostNameToEmailBody)
             {

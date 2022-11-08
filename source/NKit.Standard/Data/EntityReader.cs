@@ -203,7 +203,14 @@
             }
             else if (typeToConvertTo.Equals(typeof(DateTime)) || typeToConvertTo.Equals(typeof(Nullable<DateTime>)))
             {
-                return Convert.ToDateTime(value);
+                if (value.GetType().Equals(typeof(string)))
+                {
+                    return DateTime.Parse(value.ToString());
+                }
+                else
+                {
+                    return Convert.ToDateTime(value);
+                }
             }
             else if (typeToConvertTo.Equals(typeof(Boolean)) || typeToConvertTo.Equals(typeof(Nullable<Boolean>)))
             {
