@@ -80,6 +80,16 @@
         public string SecondParentCaption { get; set; }
 
         /// <summary>
+        /// The ID of the third parent i.e. to be used when a group of entities belonging to a parent is loaded and needs to be identified/deleted.
+        /// </summary>
+        public Nullable<Guid> ThirdParentId { get; set; }
+
+        /// <summary>
+        /// A description of the third parent to be used when a group of entities belonging to a second parent is loaded and needs to be identified/deleted.
+        /// </summary>
+        public string ThirdParentCaption { get; set; }
+
+        /// <summary>
         /// Whether or not to display a wait dialog while posting back to the PostBackControllerAction.
         /// </summary>
         public bool ShowWaitDialog { get; set; }

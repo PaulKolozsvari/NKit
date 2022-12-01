@@ -644,6 +644,18 @@
             return guid;
         }
 
+        /// <summary>
+        /// Checks if the given guid is set has the value of an empty Guid and if so, returns null, otherwise returns the passed in Guid unchanged.
+        /// </summary>
+        public static string ConvertEmptyGuidToNull(string guidString)
+        {
+            if (!string.IsNullOrEmpty(guidString) && guidString == Guid.Empty.ToString())
+            {
+                guidString = null;
+            }
+            return guidString;
+        }
+
         #endregion //Methods
     }
 }
