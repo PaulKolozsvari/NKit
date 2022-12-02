@@ -66,3 +66,4 @@
 *   2022-12-02:
 
     -   Fixed the GenerateSimplePassword in DataShaperWindows which was not using the correct password length parameter.
+    -   Fixed the GenerateSimplePassword in DataShaperWindows to not append special characters if it's set to 0.

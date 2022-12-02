@@ -70,8 +70,12 @@
         /// </summary>
         public static string GenerateSimplePassword(int passwordLength, int numberOfExtraSpecialCharacters)
         {
-            string result = GeneratePassword(passwordLength, 1);
+            string result = GeneratePassword(passwordLength, 0);
             result = Regex.Replace(result, @"[^a-zA-Z0-9]", m => "9");
+            if (numberOfExtraSpecialCharacters < 1)
+            {
+                return result;
+            }
             string specialCharacters = GeneratePassword(passwordLength, numberOfExtraSpecialCharacters);
             return string.Concat(result, specialCharacters);
         }
