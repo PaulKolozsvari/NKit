@@ -62,3 +62,7 @@
     -   Added extra overloads to the GetConfirmationModelFromSearchParametersString in the NKitMvcController to be able to pull other fields from searcg strings.
     -   Added extra third parent fields to the ConfirmationDialog.
     -   Added extra ConvertEmptyGuidToNull overload to allow converting a string that contains an empty GUID to null.
+
+*   2022-12-02:
+
+    -   Fixed the GenerateSimplePassword in DataShaperWindows which was not using the correct password length parameter.
