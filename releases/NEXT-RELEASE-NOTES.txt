@@ -67,3 +67,7 @@
 
     -   Fixed the GenerateSimplePassword in DataShaperWindows which was not using the correct password length parameter.
     -   Fixed the GenerateSimplePassword in DataShaperWindows to not append special characters if it's set to 0.
+
+*   2022-12-06:
+
+    -   Added method in DataShaper to replace new lines in text.

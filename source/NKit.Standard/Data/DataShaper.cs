@@ -656,6 +656,11 @@
             return guidString;
         }
 
+        public static string ReplaceNewlines(string text, string replaceWith)
+        {
+            return text.Replace("\r\n", replaceWith).Replace("\n", replaceWith).Replace("\r", replaceWith);
+        }
+
         #endregion //Methods
     }
 }
