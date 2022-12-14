@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Security.Cryptography;
+    using System.Text;
     using System.Text.RegularExpressions;
 
     #endregion //Using Directives
@@ -225,6 +226,25 @@
         public static string GetAlphaPartOfString(string input)
         {
             return Regex.Match(input, ALPHA_REGEX_PATTERN).Value;
+        }
+
+        /// <summary>
+        /// Concatenates a list of strings into a single CSV string.
+        /// </summary>
+        public static string GetCsvOfStringList(List<string> strings)
+        {
+            StringBuilder result = new StringBuilder();
+            int count = strings.Count;
+            int lastIndex = count - 1;
+            for (int i = 0; i < count; i++)
+            {
+                result.Append(strings[i]);
+                if (i < lastIndex)
+                {
+                    result.Append(',');
+                }
+            }
+            return result.ToString();
         }
 
         #endregion //Methods
