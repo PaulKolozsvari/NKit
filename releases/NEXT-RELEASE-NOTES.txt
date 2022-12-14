@@ -71,3 +71,8 @@
 *   2022-12-06:
 
     -   Added method in DataShaper to replace new lines in text.
+
+*   2022-12-14:
+
+    -   Added method ParseEmailAddressesFromText to DataShaperWindows and DataShaperCore to read email addresses from an input text.
+    -   Added method ParsePhoneNumbersFromText to DataShaperWindows and DataShaperCore to read phone numbers from an input text.

@@ -12,6 +12,33 @@
 
     public class DataShaperCore : DataShaper
     {
+        #region Constants
+
+        /// <summary>
+        /// https://uibakery.io/regex-library/email-regex-csharp
+        /// </summary>
+        private static List<Regex> EMAIL_ADDRESS_REGEX_INDICATORS = new List<Regex>()
+        {
+            new Regex("^\\S+@\\S+\\.\\S+$"), //The basic validation.
+            new Regex("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$"), //The more complex email regex: This C# regular expression will match 99% of valid email addresses and will not pass validation for email addresses that have, for instance: Dots in the beginning, Multiple dots at the end, But at the same time it will allow part after @ to be IP address.
+            new Regex("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])"), //RFC 5322 compliant regex: This C# regular expression is compliant to RFC 5322 standard which allows for the most complete validation. Usually, you should not use it because it is an overkill. In most cases apps are not able to handle all emails that this regex allows.
+
+        };
+
+        /// <summary>
+        /// https://uibakery.io/regex-library/phone-number-csharp
+        /// </summary>
+        private static List<Regex> PHONE_NUMBER_REGEX_INDICATORS = new List<Regex>()
+        {
+            new Regex("^\\+?[1-9][0-9]{7,14}$"), //A simple regex to validate string against a valid international phone number format without delimiters and with an optional plus sign.
+            new Regex("^\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$"), //This regular expression will match phone numbers entered with delimiters (spaces, dots, brackets, etc.)
+        };
+
+        private static Regex VALID_EMAIL_REGEX = CreateValidEmailRegex();
+        private static readonly char[] PUNCTUATIONS = "!@#$%^&*()_-+=[{]};:>|./?".ToCharArray();
+
+        #endregion //Constants
+
         #region Methods
 
         public static bool IsValidPhoneNumber(string phoneNumber, out string formattedPhoneNumber)
@@ -19,7 +46,35 @@
             return new PhoneNumberValidator().IsValidPhoneNumber(phoneNumber, out formattedPhoneNumber);
         }
 
-        static Regex ValidEmailRegex = CreateValidEmailRegex();
+        /// <summary>
+        /// Reads an input text and runs regex expressions on it to read phone numbers inside the text.
+        /// Returns a list of phone numbers.
+        /// https://uibakery.io/regex-library/email-regex-csharp
+        /// </summary>
+        public static List<string> ParsePhoneNumbersFromText(string inputText)
+        {
+            List<string> result = new List<string>();
+            string[] words = inputText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            foreach (string word in words)
+            {
+                string cleanedText = word.Trim().Replace(" ", string.Empty);
+                cleanedText = Regex.Replace(cleanedText, " {2,}", string.Empty); //Remove all whitespaces
+                cleanedText = Regex.Replace(cleanedText, "[^0-9]", string.Empty); //Remove all non numeric characters
+                foreach (Regex regex in PHONE_NUMBER_REGEX_INDICATORS)
+                {
+                    MatchCollection matches = regex.Matches(cleanedText);
+                    foreach (Match match in matches)
+                    {
+                        string value = match.Value;
+                        if (!string.IsNullOrEmpty(match.Value) && match.Success && IsValidPhoneNumber(value, out string formattedPhoneNumber))
+                        {
+                            result.Add(formattedPhoneNumber);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
 
         /// <summary>
         /// Taken from http://haacked.com/archive/2007/08/21/i-knew-how-to-validate-an-email-address-until-i.aspx
@@ -36,10 +91,9 @@
 
         public static bool IsValidEmail(string emailAddress)
         {
-            if (
-                string.IsNullOrEmpty(emailAddress) ||
+            if (string.IsNullOrEmpty(emailAddress) ||
                 !(new EmailAddressAttribute().IsValid(emailAddress)) ||
-                !ValidEmailRegex.IsMatch(emailAddress) ||
+                !VALID_EMAIL_REGEX.IsMatch(emailAddress) ||
                 emailAddress.EndsWith("."))
             {
                 return false;
@@ -55,7 +109,34 @@
             }
         }
 
-        private static readonly char[] Punctuations = "!@#$%^&*()_-+=[{]};:>|./?".ToCharArray();
+        /// <summary>
+        /// Reads an input text and runs regex expressions on it to read email addresses inside the text.
+        /// Returns a list of email addresses.
+        /// https://uibakery.io/regex-library/email-regex-csharp
+        /// </summary>
+        public static List<string> ParseEmailAddressesFromText(string inputText)
+        {
+            List<string> result = new List<string>();
+            string[] words = inputText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            foreach (string word in words)
+            {
+                string cleanedText = word.Trim().Replace(" ", string.Empty);
+                cleanedText = Regex.Replace(cleanedText, " {2,}", string.Empty); // Remove all whitespaces
+                foreach (Regex regex in EMAIL_ADDRESS_REGEX_INDICATORS)
+                {
+                    MatchCollection matches = regex.Matches(cleanedText);
+                    foreach (Match match in matches)
+                    {
+                        string value = match.Value;
+                        if (!string.IsNullOrEmpty(match.Value) && match.Success && IsValidEmail(value))
+                        {
+                            result.Add(value);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
 
         /// <summary>
         /// Generates password with special characters.
@@ -93,7 +174,7 @@
                     }
                     else
                     {
-                        characterBuffer[iter] = Punctuations[i - 62];
+                        characterBuffer[iter] = PUNCTUATIONS[i - 62];
                         count++;
                     }
                 }
@@ -111,7 +192,7 @@
                         k = rand.Next(0, passwordLength);
                     }
                     while (!char.IsLetterOrDigit(characterBuffer[k]));
-                    characterBuffer[k] = Punctuations[rand.Next(0, Punctuations.Length)];
+                    characterBuffer[k] = PUNCTUATIONS[rand.Next(0, PUNCTUATIONS.Length)];
                 }
                 return new string(characterBuffer);
             }

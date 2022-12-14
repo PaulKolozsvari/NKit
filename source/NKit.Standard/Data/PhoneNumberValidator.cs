@@ -101,8 +101,8 @@
                     ErrorMessage = "Phone Number value should not be equivalent to null.";
                     return false;
                 }
-                phoneNumber = Regex.Replace(phoneNumber, " {2,}", string.Empty); // remove all whitespaces
-                phoneNumber = Regex.Replace(phoneNumber, "[^0-9]", string.Empty); // remove all non numeric characters
+                phoneNumber = Regex.Replace(phoneNumber, " {2,}", string.Empty); //Remove all whitespaces
+                phoneNumber = Regex.Replace(phoneNumber, "[^0-9]", string.Empty); //Remove all non numeric characters
 
                 var lastConsecutiveCharsInPhoneNumberStr = GetConsecutiveCharsInPhoneNumberStr(phoneNumber);
                 if (string.IsNullOrWhiteSpace(lastConsecutiveCharsInPhoneNumberStr))
