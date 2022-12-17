@@ -77,3 +77,7 @@
     -   Added method ParseEmailAddressesFromText to DataShaperWindows and DataShaperCore to read email addresses from an input text.
     -   Added method ParsePhoneNumbersFromText to DataShaperWindows and DataShaperCore to read phone numbers from an input text.
     -   Added method GetCsvOfStringList to DataShaperWindows and DataShaperCore to convert a list of strings to a single CSV string.
+
+*   2022-12-17:
+    -   Changed the AppSingletonWindows.InitializeLogger to initialize both the GOCWindows.Instance.Logger as well as the GOC.Instance.Logger
+        in order to apply the settings to both loggers depending on whether users are using GOC or GOCWindows.

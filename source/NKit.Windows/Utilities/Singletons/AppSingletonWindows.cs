@@ -84,8 +84,12 @@
                 s.LogFileName,
                 s.EventSourceName,
                 s.EventLogName);
+            GOC.Instance.Logger = new Logger(
+                s.LogToFile,
+                s.LogToConsole,
+                s.LoggingLevel,
+                s.LogFileName);
         }
-
         protected virtual void InitializeEmailClient(AppSettings s)
         {
             GOCWindows.Instance.EmailClient = new EmailClient(
