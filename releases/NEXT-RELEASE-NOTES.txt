@@ -81,3 +81,6 @@
 *   2022-12-17:
     -   Changed the AppSingletonWindows.InitializeLogger to initialize both the GOCWindows.Instance.Logger as well as the GOC.Instance.Logger
         in order to apply the settings to both loggers depending on whether users are using GOC or GOCWindows.
+
+*   2022-12-19:
+    -   Fixed the ParsePhoneNumbersFromText to split text by commas instead of spaces.

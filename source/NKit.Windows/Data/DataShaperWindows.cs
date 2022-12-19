@@ -52,10 +52,10 @@
         public static List<string> ParsePhoneNumbersFromText(string inputText)
         {
             List<string> result = new List<string>();
-            string[] words = inputText.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] words = inputText.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string word in words)
             {
-                string cleanedText = word.Trim().Replace(" ", string.Empty);
+                string cleanedText = word.Trim().Replace(" ", string.Empty).Replace("(", string.Empty).Replace(")", string.Empty).Replace("-", string.Empty);
                 cleanedText = Regex.Replace(cleanedText, " {2,}", string.Empty); //Remove all whitespaces
                 cleanedText = Regex.Replace(cleanedText, "[^0-9]", string.Empty); //Remove all non numeric characters
                 foreach (Regex regex in PHONE_NUMBER_REGEX_INDICATORS)
