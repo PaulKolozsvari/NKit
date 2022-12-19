@@ -129,7 +129,7 @@
                     foreach (Match match in matches)
                     {
                         string value = match.Value;
-                        if (!string.IsNullOrEmpty(match.Value) && match.Success && IsValidEmail(value))
+                        if (!string.IsNullOrEmpty(match.Value) && match.Success && IsValidEmail(value) && !result.Contains(value))
                         {
                             result.Add(value);
                         }

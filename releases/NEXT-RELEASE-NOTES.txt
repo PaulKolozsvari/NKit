@@ -83,4 +83,5 @@
         in order to apply the settings to both loggers depending on whether users are using GOC or GOCWindows.
 
 *   2022-12-19:
-    -   Fixed the ParsePhoneNumbersFromText to split text by commas instead of spaces.
+    -   Fixed the DataShaper.ParsePhoneNumbersFromText to split text by commas instead of spaces.
+    -   Fixed the DataShaper.ParseEmailAddressesFromText to not include duplicate email addresses.

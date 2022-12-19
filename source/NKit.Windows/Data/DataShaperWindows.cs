@@ -115,17 +115,22 @@
         /// </summary>
         public static List<string> ParseEmailAddressesFromText(string inputText)
         {
-            string cleanedText = inputText.Trim().Replace(" ", string.Empty);
             List<string> result = new List<string>();
-            foreach (Regex regex in EMAIL_ADDRESS_REGEX_INDICATORS)
+            string[] words = inputText.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string word in words)
             {
-                MatchCollection matches = regex.Matches(cleanedText);
-                foreach (Match match in matches)
+                string cleanedText = word.Trim().Replace(" ", string.Empty);
+                cleanedText = Regex.Replace(cleanedText, " {2,}", string.Empty); // Remove all whitespaces
+                foreach (Regex regex in EMAIL_ADDRESS_REGEX_INDICATORS)
                 {
-                    string value = match.Value;
-                    if (match.Success && IsValidEmail(value))
+                    MatchCollection matches = regex.Matches(cleanedText);
+                    foreach (Match match in matches)
                     {
-                        result.Add(value);
+                        string value = match.Value;
+                        if (!string.IsNullOrEmpty(match.Value) && match.Success && IsValidEmail(value) && !result.Contains(value))
+                        {
+                            result.Add(value);
+                        }
                     }
                 }
             }
