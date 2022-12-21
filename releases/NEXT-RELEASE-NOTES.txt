@@ -85,3 +85,11 @@
 *   2022-12-19:
     -   Fixed the DataShaper.ParsePhoneNumbersFromText to split text by commas instead of spaces.
     -   Fixed the DataShaper.ParseEmailAddressesFromText to not include duplicate email addresses.
+
+*   2022-12-20:
+    -   Fixed issue with PhoneNumberValidator.GetConsecutiveCharsInPhoneNumberStr to cater for phone numbers that are less than 10 or 11 characters long.
+
+*   2022-12-21:
+    -   Added methods GetAppVersionNumbersFromString and IsAppVersionGreaterThan to the DataShaper to extract the integer values out of an app version string
+        as well be able to compare two version strings. For method IsAppVersionGreaterThan: major, minor, build and revision of the versionString need to be greater 
+        than those of versionStringToCompare to in order for the result to be true.

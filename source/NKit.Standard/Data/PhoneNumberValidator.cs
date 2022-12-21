@@ -44,11 +44,17 @@
                 case 0:
                 case 10:
                     PhoneNumberDigits = 10;
+                    if (phoneNumber.Length < 10)
+                    {
+                        return null;
+                    }
                     return phoneNumber.Substring(phoneNumber.Length - 7);
-
                 case 11:
+                    if (phoneNumber.Length < 11)
+                    {
+                        return null;
+                    }
                     return phoneNumber.Substring(phoneNumber.Length - 8);
-
                 default:
                     return string.Empty;
             }

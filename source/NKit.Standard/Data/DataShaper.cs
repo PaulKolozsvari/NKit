@@ -1,5 +1,6 @@
 ﻿namespace NKit.Data
 {
+    using Renci.SshNet;
     #region Using Directives
 
     using System;
@@ -659,6 +660,70 @@
         public static string ReplaceNewlines(string text, string replaceWith)
         {
             return text.Replace("\r\n", replaceWith).Replace("\n", replaceWith).Replace("\r", replaceWith);
+        }
+
+        /// <summary>
+        /// Returns the Major, Minor, Build and Revision of an app version string.
+        /// 
+        /// The version of an assembly is Major.Minor. From the aforementioned link, Microsoft says, "Subsequent versions of an assembly that differ only by build or revision numbers are considered to be Hotfix updates of the prior version."
+        /// The Build represents a recompilation of the same source.
+        /// The Revision represents a code change, but one that is fully interchangable with other revisions of the same[Major.Minor] version.
+        /// But neither takes precedence over the other.
+        /// + Major
+        /// |
+        ///     +-+ Minor
+        ///     |
+        ///         +-+ Build
+        ///         |
+        ///         +-+ Revision
+        /// </summary>
+        public static void GetAppVersionNumbersFromString(
+            string versionString,
+            out int major,
+            out int minor,
+            out int build,
+            out int revision)
+        {
+            major = 0;
+            minor = 0;
+            build = 0;
+            revision = 0;
+
+            string[] versionParameters = versionString.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+            if (versionParameters.Length > 0 && !int.TryParse(versionParameters[0], out major))
+            {
+                throw new ArgumentException($"Could not convert {versionParameters[0]} to an integer to extract the Major version out of the version string {versionString}.");
+            }
+            if (versionParameters.Length > 1 && !int.TryParse(versionParameters[1], out minor))
+            {
+                throw new ArgumentException($"Could not convert {versionParameters[1]} to an integer to extract the Minor version out of the version string {versionString}.");
+            }
+            if (versionParameters.Length > 2 && !int.TryParse(versionParameters[2], out build))
+            {
+                throw new ArgumentException($"Could not convert {versionParameters[2]} to an integer to extract the Build version out of the version string {versionString}.");
+            }
+            if (versionParameters.Length > 3 && !int.TryParse(versionParameters[3], out revision))
+            {
+                throw new ArgumentException($"Could not convert {versionParameters[3]} to an integer to extract the Revision version out of the version string {versionString}.");
+            }
+        }
+
+        /// <summary>
+        /// Converts the version strings to integers and compares whether versionString integer values are greater than the versionStringToCompareTo integer values i.e.
+        /// major, minor, build and revision of the versionString need to be greater than those of versionStringToCompare to in order for the result to be true.
+        /// </summary>
+        public static bool IsAppVersionGreaterOrEqualTo(string versionString, string versionStringToCompareTo)
+        {
+            GetAppVersionNumbersFromString(versionString, out int major, out int minor, out int build, out int revision);
+            GetAppVersionNumbersFromString(versionStringToCompareTo, out int majorOther, out int minorOther, out int buildOther, out int revisionOther);
+            if ((major >= majorOther) && 
+                (minor >= minorOther) &&
+                (build >= buildOther) &&
+                (revision >= revisionOther))
+            {
+                return true;
+            }
+            return false;
         }
 
         #endregion //Methods
