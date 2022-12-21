@@ -681,13 +681,13 @@
             string versionString,
             out int major,
             out int minor,
-            out int build,
-            out int revision)
+            out int revision,
+            out int build)
         {
             major = 0;
             minor = 0;
-            build = 0;
             revision = 0;
+            build = 0;
 
             string[] versionParameters = versionString.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
             if (versionParameters.Length > 0 && !int.TryParse(versionParameters[0], out major))
@@ -698,13 +698,13 @@
             {
                 throw new ArgumentException($"Could not convert {versionParameters[1]} to an integer to extract the Minor version out of the version string {versionString}.");
             }
-            if (versionParameters.Length > 2 && !int.TryParse(versionParameters[2], out build))
+            if (versionParameters.Length > 2 && !int.TryParse(versionParameters[2], out revision))
             {
-                throw new ArgumentException($"Could not convert {versionParameters[2]} to an integer to extract the Build version out of the version string {versionString}.");
+                throw new ArgumentException($"Could not convert {versionParameters[2]} to an integer to extract the Revision version out of the version string {versionString}.");
             }
-            if (versionParameters.Length > 3 && !int.TryParse(versionParameters[3], out revision))
+            if (versionParameters.Length > 3 && !int.TryParse(versionParameters[3], out build))
             {
-                throw new ArgumentException($"Could not convert {versionParameters[3]} to an integer to extract the Revision version out of the version string {versionString}.");
+                throw new ArgumentException($"Could not convert {versionParameters[3]} to an integer to extract the Build version out of the version string {versionString}.");
             }
         }
 
@@ -715,11 +715,11 @@
         public static bool IsAppVersionGreaterOrEqualTo(string versionString, string versionStringToCompareTo)
         {
             GetAppVersionNumbersFromString(versionString, out int major, out int minor, out int build, out int revision);
-            GetAppVersionNumbersFromString(versionStringToCompareTo, out int majorOther, out int minorOther, out int buildOther, out int revisionOther);
+            GetAppVersionNumbersFromString(versionStringToCompareTo, out int majorOther, out int minorOther, out int revisionOther, out int buildOther);
             if ((major >= majorOther) && 
                 (minor >= minorOther) &&
-                (build >= buildOther) &&
-                (revision >= revisionOther))
+                (revision >= revisionOther) &&
+                (build >= buildOther))
             {
                 return true;
             }
