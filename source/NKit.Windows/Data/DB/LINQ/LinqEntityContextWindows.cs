@@ -47,6 +47,7 @@
                 userLinqToSqlType,
                 serverActionLinqToSqlType,
                 serverErrorLinqToSqlType,
+                false,
                 TransactionScopeOption.Required,
                 new TransactionOptions()
                 {
@@ -65,6 +66,7 @@
             Type userLinqToSqlType,
             Type serverActionLinqToSqlType,
             Type serverErrorLinqToSqlType,
+            bool useTransactionsOnCrudOperations,
             TransactionScopeOption transactionScopeOption,
             TransactionOptions transactionOptions,
             int transactionDeadlockRetryAttempts,
@@ -79,6 +81,7 @@
             _serverActionLinqToSqlType = serverActionLinqToSqlType;
             _serverErrorLinqtoSqlType = serverErrorLinqToSqlType;
 
+            _useTransactionsOnCrudOperations = useTransactionsOnCrudOperations;
             _transactionScopeOption = transactionScopeOption;
             _transactionOptions = transactionOptions;
             _transactionDeadlockRetryAttempts = transactionDeadlockRetryAttempts;
@@ -100,6 +103,7 @@
         protected Type _serverActionLinqToSqlType;
         protected Type _serverErrorLinqtoSqlType;
 
+        protected bool _useTransactionsOnCrudOperations;
         protected TransactionScopeOption _transactionScopeOption;
         protected TransactionOptions _transactionOptions;
         protected int _transactionDeadlockRetryAttempts;
@@ -161,13 +165,23 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            foreach (E e in entities)
+                            {
+                                base.Save<E>(e, null, saveChildren).ForEach(c => HandleChange(c, userId, userName));
+                            }
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         foreach (E e in entities)
                         {
                             base.Save<E>(e, null, saveChildren).ForEach(c => HandleChange(c, userId, userName));
                         }
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -205,13 +219,23 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            foreach (object e in entities)
+                            {
+                                base.Save(entityType, e, null, false).ForEach(c => HandleChange(c, userId, userName));
+                            }
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         foreach (object e in entities)
                         {
                             base.Save(entityType, e, null, false).ForEach(c => HandleChange(c, userId, userName));
                         }
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -248,13 +272,23 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            foreach (E e in entities)
+                            {
+                                base.Insert<E>(e, null, false).ForEach(c => HandleChange(c, userId, userName));
+                            }
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         foreach (E e in entities)
                         {
                             base.Insert<E>(e, null, false).ForEach(c => HandleChange(c, userId, userName));
                         }
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -292,13 +326,23 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            foreach (object e in entities)
+                            {
+                                base.Insert(entityType, e, null, false).ForEach(c => HandleChange(c, userId, userName));
+                            }
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         foreach (object e in entities)
                         {
                             base.Insert(entityType, e, null, false).ForEach(c => HandleChange(c, userId, userName));
                         }
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -334,13 +378,23 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            foreach (E e in entities)
+                            {
+                                base.Delete<E>(e, null).ForEach(c => HandleChange(c, userId, userName));
+                            }
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         foreach (E e in entities)
                         {
                             base.Delete<E>(e, null).ForEach(c => HandleChange(c, userId, userName));
                         }
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -377,13 +431,23 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            foreach (object e in entities)
+                            {
+                                base.Delete(e, null).ForEach(c => HandleChange(c, userId, userName));
+                            }
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         foreach (object e in entities)
                         {
                             base.Delete(e, null).ForEach(c => HandleChange(c, userId, userName));
                         }
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -419,13 +483,23 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            foreach (object keyValue in surrogateKeys)
+                            {
+                                base.DeleteBySurrogateKey<E>(keyValue, null).ForEach(c => HandleChange(c, userId, userName));
+                            }
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         foreach (object keyValue in surrogateKeys)
                         {
                             base.DeleteBySurrogateKey<E>(keyValue, null).ForEach(c => HandleChange(c, userId, userName));
                         }
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -462,13 +536,23 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            foreach (object key in surrogateKeys)
+                            {
+                                base.DeleteBySurrogateKey(key, null, entityType).ForEach(c => HandleChange(c, userId, userName));
+                            }
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         foreach (object key in surrogateKeys)
                         {
                             base.DeleteBySurrogateKey(key, null, entityType).ForEach(c => HandleChange(c, userId, userName));
                         }
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -503,10 +587,17 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            base.DeleteAll<E>().ForEach(c => HandleChange(c, userId, userName));
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         base.DeleteAll<E>().ForEach(c => HandleChange(c, userId, userName));
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }
@@ -542,10 +633,17 @@
             {
                 try
                 {
-                    using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                    if (_useTransactionsOnCrudOperations)
+                    {
+                        using (TransactionScope t = new TransactionScope(_transactionScopeOption, _transactionOptions))
+                        {
+                            base.DeleteAll(entityType).ForEach(c => HandleChange(c, userId, userName));
+                            t.Complete();
+                        }
+                    }
+                    else
                     {
                         base.DeleteAll(entityType).ForEach(c => HandleChange(c, userId, userName));
-                        t.Complete();
                     }
                     return new ServiceProcedureResult();
                 }

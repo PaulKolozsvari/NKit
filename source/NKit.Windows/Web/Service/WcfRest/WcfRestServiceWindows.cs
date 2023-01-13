@@ -329,6 +329,7 @@
                 GOCWindows.Instance.UserLinqToSqlType,
                 GOCWindows.Instance.ServerActionLinqToSqlType,
                 GOCWindows.Instance.ServerErrorLinqToSqlType,
+                GOCWindows.Instance.UseTransactionsOnCrudOperations,
                 GOCWindows.Instance.DatabaseTransactionScopeOption,
                 new System.Transactions.TransactionOptions()
                 {

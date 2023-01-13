@@ -71,6 +71,7 @@
         protected Assembly _linqToClassesAssembly;
         protected string _linqToSQLClassesNamespace;
         protected Type _linqToSqlDataContextType;
+        protected bool _useTransactionsOnCrudOperations;
         protected TransactionScopeOption _databaseTransactionScopeOption;
         protected IsolationLevel _databaseTransactionIsolationLevel;
         protected int _databaseTransactionTimeoutSeconds;
@@ -181,6 +182,12 @@
         {
             get { return _linqToSQLClassesNamespace; }
             set { _linqToSQLClassesNamespace = value; }
+        }
+
+        public bool UseTransactionsOnCrudOperations
+        {
+            get{return _useTransactionsOnCrudOperations; }
+            set { _useTransactionsOnCrudOperations = value; }
         }
 
         public TransactionScopeOption DatabaseTransactionScopeOption

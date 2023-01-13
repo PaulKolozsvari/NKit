@@ -58,6 +58,7 @@
             {
                 GOCWindows.Instance.ServerErrorLinqToSqlType = serverErrorLinqToSqlType;
             }
+            GOCWindows.Instance.UseTransactionsOnCrudOperations = settings.UseTransactionsOnCrudOperations;
             GOCWindows.Instance.DatabaseTransactionScopeOption = settings.DatabaseTransactionScopeOption;
             GOCWindows.Instance.DatabaseTransactionIsolationLevel = settings.DatabaseTransactionIsolationLevel;
             GOCWindows.Instance.DatabaseTransactionTimeoutSeconds = settings.DatabaseTransactionTimeoutSeconds;
