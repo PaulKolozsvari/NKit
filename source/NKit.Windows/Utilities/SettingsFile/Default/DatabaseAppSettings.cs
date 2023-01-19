@@ -58,9 +58,9 @@
         public string LinqToSQLClassesNamespace { get; set; }
 
         /// <summary>
-        /// Whether or not to wrap CRUD operations (Create, Read, Update, Delete) in transactions in the Linq context.
+        /// Whether or not to wrap CRUD operations (Create, Read, Update, Delete) in a transaction in the Linq context.
         /// </summary>
-        [SettingInfo("Database", AutoFormatDisplayName = true, Description = "Whether or not to wrap CRUD operations (Create, Read, Update, Delete) in transactions in the Linq context.", CategorySequenceId = 4)]
+        [SettingInfo("Database", AutoFormatDisplayName = true, Description = "Whether or not to wrap CRUD operations (Create, Read, Update, Delete) in a transaction in the Linq context.", CategorySequenceId = 4)]
         public bool UseTransactionsOnCrudOperations { get; set; }
 
         /// <summary>

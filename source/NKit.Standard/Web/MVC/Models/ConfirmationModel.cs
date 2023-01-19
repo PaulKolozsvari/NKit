@@ -30,9 +30,19 @@
         public string DialogDivId { get; set; }
 
         /// <summary>
-        /// To be used when confirming for a single entity.
+        /// To be used when confirming for a single entity that has a Guid surrogate key..
         /// </summary>
         public Guid Identifier { get; set; }
+
+        /// <summary>
+        /// To be used when confirming for a single entity that has an integer surrogate key.
+        /// </summary>
+        public int IdentifierInt { get; set; }
+
+        /// <summary>
+        /// To be used when confirming for a single entity that has a string surrogate key.
+        /// </summary>
+        public string IdentifierString { get; set; }
 
         /// <summary>
         /// It is the search text specified by the user. To be used when confirming for multiple entities. i.e. used to find the entities.

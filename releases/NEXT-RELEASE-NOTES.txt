@@ -97,3 +97,6 @@
 *   2023-01-13:
     -   Changed the LinqEntityContextWindows and settings file classes to allow for configuring of whether basic CRUD operations should run under transactions or not.
         Added setting UseTransactionsOnCrudOperations on the Database settings for this configuration.
+
+*   2023-01-19:
+    -   Added IdentifierInt and IdentifierString on the ConfirmationDialog for entities that have string and integer surrogate keys.
