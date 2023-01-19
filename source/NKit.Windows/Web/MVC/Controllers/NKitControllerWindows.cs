@@ -281,6 +281,16 @@
             return File(fileBytes, "text/plain", downloadFileName);
         }
 
+        protected virtual FileContentResult GetCsvFileResult<E>(EntityCacheGeneric<int, E> cache) where E : class
+        {
+            string filePath = Path.GetTempFileName();
+            cache.ExportToCsv(filePath, null, false, false);
+            string downloadFileName = string.Format("{0}-{1}.csv", typeof(E).Name, DateTime.Now);
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            System.IO.File.Delete(filePath);
+            return File(fileBytes, "text/plain", downloadFileName);
+        }
+
         protected virtual void GetConfirmationModelFromSearchParametersString(
             string searchParametersString,
             out string[] searchParameters,

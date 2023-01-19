@@ -100,3 +100,4 @@
 
 *   2023-01-19:
     -   Added IdentifierInt and IdentifierString on the ConfirmationDialog for entities that have string and integer surrogate keys.
+    -   Added GetCsvFileResult<E>(EntityCacheGeneric<int, E> cache) to NKitControllerWindows to allow converting an entity cache with integer surrogate keys to a csv file.
