@@ -906,6 +906,40 @@
             string searchParametersString,
             out string[] searchParameters,
             out string searchText,
+            out Nullable<Guid> parentId,
+            out Nullable<Guid> secondParentId,
+            out Nullable<Guid> thirdParentId)
+        {
+            searchText = string.Empty;
+            searchParameters = searchParametersString.Split('|');
+            parentId = null;
+            secondParentId = null;
+            thirdParentId = null;
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 3)
+            {
+                searchText = searchParameters[0];
+                Guid parentIdGuid;
+                if (Guid.TryParse(searchParameters[1], out parentIdGuid))
+                {
+                    parentId = parentIdGuid;
+                }
+                Guid secondParentIdGuid;
+                if (Guid.TryParse(searchParameters[2], out secondParentIdGuid))
+                {
+                    secondParentId = secondParentIdGuid;
+                }
+                Guid thirdParentIdGuid;
+                if (Guid.TryParse(searchParameters[3], out thirdParentIdGuid))
+                {
+                    thirdParentId = thirdParentIdGuid;
+                }
+            }
+        }
+
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
             out Nullable<DateTime> startDate,
             out Nullable<DateTime> endDate,
             out Nullable<Guid> parentId,

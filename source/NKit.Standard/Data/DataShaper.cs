@@ -715,7 +715,7 @@
         public static bool IsAppVersionGreaterOrEqualTo(string versionString, string versionStringToCompareTo)
         {
             GetAppVersionNumbersFromString(versionString, out int major, out int minor, out int build, out int revision);
-            GetAppVersionNumbersFromString(versionStringToCompareTo, out int majorOther, out int minorOther, out int revisionOther, out int buildOther);
+            GetAppVersionNumbersFromString(versionStringToCompareTo, out int majorOther, out int minorOther, out int buildOther, out int revisionOther);
             if ((major >= majorOther) && 
                 (minor >= minorOther) &&
                 (revision >= revisionOther) &&
