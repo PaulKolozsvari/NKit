@@ -104,3 +104,6 @@
 
 *   2023-04-10:
     -   Added overload to GetConfirmationModelFromSearchParametersString to parse thirdParentId.
+
+*   2023-05-11:
+    -   Added methods to DataShaper class to shape URL with or without a an http or https prefix.

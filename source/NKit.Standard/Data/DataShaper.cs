@@ -1,6 +1,5 @@
 ﻿namespace NKit.Data
 {
-    using Renci.SshNet;
     #region Using Directives
 
     using System;
@@ -9,6 +8,7 @@
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
+    using Renci.SshNet;
 
     #endregion //Using Directives
 
@@ -724,6 +724,47 @@
                 return true;
             }
             return false;
+        }
+
+        public const string HTTPS_PREFIX = "https://";
+        public const string HTTP_PREFIX = "http://";
+
+        public static bool UrlStartsWithHttpPrefix(string url, out string prefix)
+        {
+            string formattedUrl = url.ToLower().Trim();
+            if (formattedUrl.StartsWith(HTTPS_PREFIX))
+            {
+                prefix = HTTPS_PREFIX;
+                return true;
+            }
+            else if (formattedUrl.Contains(HTTP_PREFIX))
+            {
+                prefix = HTTP_PREFIX;
+                return true;
+            }
+            prefix = null;
+            return false;
+        }
+
+        public static string RemoveHttpPrefixFromUrl(string url)
+        {
+            if (UrlStartsWithHttpPrefix(url, out string prefix))
+            {
+                url = url.ToLower().Trim().Replace(prefix, string.Empty);
+            }
+            return url;
+        }
+
+        public static string AppendHttpPrefixToUrl(string url)
+        {
+            return url.Contains(HTTP_PREFIX) || url.Contains(HTTPS_PREFIX) ? url : $"{HTTP_PREFIX}{url}";
+        }
+
+        public static string GetClickableHtmlUrl(string url, string displayText)
+        {
+            url = AppendHttpPrefixToUrl(url);
+            displayText = displayText ?? url;
+            return $"<a href={url} target=_blank>{displayText}</a>";
         }
 
         #endregion //Methods
