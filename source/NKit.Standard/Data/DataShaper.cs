@@ -760,6 +760,11 @@
             return url.Contains(HTTP_PREFIX) || url.Contains(HTTPS_PREFIX) ? url : $"{HTTP_PREFIX}{url}";
         }
 
+        public static string AppendHttpsPrefixToUrl(string url)
+        {
+            return url.Contains(HTTP_PREFIX) || url.Contains(HTTPS_PREFIX) ? url : $"{HTTPS_PREFIX}{url}";
+        }
+
         public static string GetClickableHtmlUrl(string url, string displayText)
         {
             url = AppendHttpPrefixToUrl(url);
