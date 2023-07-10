@@ -110,3 +110,6 @@
 
 *   2023-06-12:
     -   Added AppendHttpsPrefixToUrl to shape URL with or without an http or https prefix.
+
+*   2023-07-10:
+    -   Fixed the EntityCache to do a null check if a en entity is null and if so it must exclude it from searching through it.

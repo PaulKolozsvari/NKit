@@ -213,6 +213,10 @@
             {
                 foreach (object e in _entities)
                 {
+                    if (e == null)
+                    {
+                        continue;
+                    }
                     bool include = true;
                     foreach (PropertyInfo p in propertyList)
                     {
@@ -246,6 +250,10 @@
             {
                 foreach (object e in _entities)
                 {
+                    if (e == null)
+                    {
+                        continue;
+                    }
                     bool include = true;
                     foreach (PropertyInfo p in propertyList)
                     {
@@ -305,6 +313,10 @@
             {
                 foreach (object e in _entities)
                 {
+                    if (e == null)
+                    {
+                        continue;
+                    }
                     bool include = false;
                     foreach (PropertyInfo p in propertyList)
                     {
@@ -325,6 +337,10 @@
             {
                 foreach (object e in _entities)
                 {
+                    if (e == null)
+                    {
+                        continue;
+                    }
                     bool include = false;
                     foreach (PropertyInfo p in propertyList)
                     {

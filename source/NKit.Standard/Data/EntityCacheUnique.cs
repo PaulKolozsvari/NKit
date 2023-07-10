@@ -258,6 +258,10 @@
                 foreach (Guid id in _entities.Keys)
                 {
                     object e = _entities[id];
+                    if (e == null)
+                    {
+                        continue;
+                    }
                     bool include = true;
                     foreach (PropertyInfo p in propertyList)
                     {
@@ -292,6 +296,10 @@
                 foreach (Guid id in _entities.Keys)
                 {
                     object e = _entities[id];
+                    if (e == null)
+                    {
+                        continue;
+                    }
                     bool include = true;
                     foreach (PropertyInfo p in propertyList)
                     {
@@ -378,6 +386,10 @@
             foreach (Guid id in entities.Keys)
             {
                 object e = entities[id];
+                if (e == null)
+                {
+                    continue;
+                }
                 DataRow row = EntityReader.PopulateDataRow(e, result.NewRow(), shapeColumnNames, _entityType);
                 if (includeEntityIdColumn)
                 {
