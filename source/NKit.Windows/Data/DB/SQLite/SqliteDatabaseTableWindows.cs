@@ -12,6 +12,7 @@
     using System.Xml.Serialization;
     using System.Data.SqlClient;
     using System.Data.SQLite;
+    using System.Transactions;
 
     #endregion //Using Directives
 
@@ -883,6 +884,7 @@
             {
                 if (p.PropertyType == typeof(IntPtr) ||
                     p.PropertyType == typeof(UIntPtr) ||
+                    p.PropertyType.IsGenericType ||
                     (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(List<>)))
                 {
                     continue;

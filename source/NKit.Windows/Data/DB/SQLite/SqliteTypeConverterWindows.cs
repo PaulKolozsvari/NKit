@@ -201,9 +201,6 @@
 
         public string GetSqlTypeNameFromDotNetType(Type dotNetType, bool isNullable)
         {
-			if (dotNetType == typeof(Guid)) {
-				int stop = 0;
-			}
             foreach (SqliteTypeConversionInfoWindows typeInfo in this)
             {
                 if (typeInfo.DotNetType == null)

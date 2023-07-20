@@ -113,3 +113,6 @@
 
 *   2023-07-10:
     -   Fixed the EntityCache to do a null check if a en entity is null and if so it must exclude it from searching through it.
+
+*   2023-07-20:
+    -   Fixed the SqliteDatabaseTableWindows.AddColumnsByEntityType method to exclude properties that that generics because cannot be converted to a Sqlite type.
