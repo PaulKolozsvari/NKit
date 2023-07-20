@@ -69,6 +69,10 @@
 
             if(!string.IsNullOrEmpty(columnName))
             {
+                if (columnValue is Guid)
+                {
+                    columnValue = columnValue.ToString(); //Sqlite cannot query by guid or uniqueidentifier, it will query those columns by a string.
+                }
                 StringBuilder whereClause = new StringBuilder();
                 whereClause.AppendLine("WHERE ");
                 whereClause.Append(string.Format("[{0}] = @{0}", columnName));
@@ -193,7 +197,8 @@
                 {
                     connection.Open();
                 }
-                using (SQLiteCommand command = new SQLiteCommand(sqlInsertCommand.ToString(), connection))
+                string sqlInsertCommandText = sqlInsertCommand.ToString();
+                using (SQLiteCommand command = new SQLiteCommand(sqlInsertCommandText, connection))
                 {
                     if (transaction != null)
                     {
@@ -884,16 +889,18 @@
             {
                 if (p.PropertyType == typeof(IntPtr) ||
                     p.PropertyType == typeof(UIntPtr) ||
-                    p.PropertyType.IsGenericType ||
                     (p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(List<>)))
+                {
+                    continue;
+                }
+                string sqlTypeName = SqliteTypeConverterWindows.Instance.GetSqlTypeNameFromDotNetType(p.PropertyType, EntityReader.IsTypeIsNullable(p.PropertyType), throwExceptionIfNotFound: false);
+                if (string.IsNullOrEmpty(sqlTypeName))
                 {
                     continue;
                 }
                 SqliteDatabaseTableColumnWindows c = new SqliteDatabaseTableColumnWindows();
                 c.ColumnName = p.Name;
-                c.DataType = SqliteTypeConverterWindows.Instance.GetSqlTypeNameFromDotNetType(
-                    p.PropertyType,
-                    EntityReader.IsTypeIsNullable(p.PropertyType));
+                c.DataType = sqlTypeName;
                 _columns.Add(c);
             }
         }

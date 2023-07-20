@@ -47,7 +47,26 @@
                         object value = null;
                         try
                         {
-                            value = reader[p.Name];
+                            //value = reader[p.Name];
+                            int columnIndex = reader.GetOrdinal(p.Name);
+                            Type readerFieldType = reader.GetFieldType(columnIndex);
+                            if (reader.IsDBNull(columnIndex))
+                            {
+                                value = null;
+                            }
+                            else if (readerFieldType == typeof(DateTime))
+                            {
+                                string dateStringValue = reader.GetString(columnIndex);
+                                if (string.IsNullOrEmpty(dateStringValue))
+                                {
+                                    value = null;
+                                }
+                                value = Convert.ToDateTime(dateStringValue);
+                            }
+                            else
+                            {
+                                value = reader[p.Name];
+                            }
                         }
                         catch (Exception ex)
                         {

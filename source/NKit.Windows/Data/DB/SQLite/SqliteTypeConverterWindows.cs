@@ -8,6 +8,8 @@
     using System.Text;
     using System.Data.SqlTypes;
     using System.Data;
+    using System.Reflection;
+    using System.Runtime.InteropServices;
 
     #endregion //Using Directives
 
@@ -43,7 +45,7 @@
             Add(new SqliteTypeConversionInfoWindows("bit", typeof(SqlBoolean), DbType.Int16, typeof(Boolean)));
             Add(new SqliteTypeConversionInfoWindows("char", typeof(SqlChars), DbType.String, typeof(char))); //this one may need work
             Add(new SqliteTypeConversionInfoWindows("cursor", null, DbType.Object, null));
-            Add(new SqliteTypeConversionInfoWindows("date", typeof(SqlDateTime), DbType.Date, typeof(DateTime)));
+            //Add(new SqliteTypeConversionInfoWindows("date", typeof(SqlDateTime), DbType.Date, typeof(DateTime)));
             Add(new SqliteTypeConversionInfoWindows("datetime", typeof(SqlDateTime), DbType.DateTime, typeof(DateTime)));
             Add(new SqliteTypeConversionInfoWindows("datetime2", typeof(SqlDateTime), DbType.DateTime2, typeof(DateTime)));
             Add(new SqliteTypeConversionInfoWindows("DATETIMEOFFSET", typeof(SqlDateTime), DbType.DateTimeOffset,typeof(DateTimeOffset)));
@@ -199,7 +201,7 @@
                 dotNetType.FullName));
         }
 
-        public string GetSqlTypeNameFromDotNetType(Type dotNetType, bool isNullable)
+        public string GetSqlTypeNameFromDotNetType(Type dotNetType, bool isNullable, bool throwExceptionIfNotFound)
         {
             foreach (SqliteTypeConversionInfoWindows typeInfo in this)
             {
@@ -217,10 +219,14 @@
                     return typeInfo.SqlTypeName;
                 }
             }
-            throw new ArgumentException(string.Format(
-                "Could not find {0} for .NET Type {1}.",
-                typeof(SqliteTypeConversionInfoWindows).FullName,
-                dotNetType.FullName));
+            if (throwExceptionIfNotFound)
+            {
+                throw new ArgumentException(string.Format(
+                    "Could not find {0} for .NET Type {1}.",
+                    typeof(SqliteTypeConversionInfoWindows).FullName,
+                    dotNetType.FullName));
+            }
+            return null;
         }
 
         public string GetSqlTypeNameFromSqlType(Type sqlType, bool isNullable)

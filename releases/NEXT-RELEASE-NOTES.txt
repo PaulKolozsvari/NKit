@@ -115,4 +115,6 @@
     -   Fixed the EntityCache to do a null check if a en entity is null and if so it must exclude it from searching through it.
 
 *   2023-07-20:
-    -   Fixed the SqliteDatabaseTableWindows.AddColumnsByEntityType method to exclude properties that that generics because cannot be converted to a Sqlite type.
+    -   Fixed the SqliteDatabaseTableWindows.AddColumnsByEntityType to exclude any properties for which it cannot find an equivalent Sqlite type.
+    -   Fixed the ParseReaderToEntities method of Sqlite to check if the type is DateTime and if it is it will pull the string out of the reader and then convert to DateTime.
+    -   Fixed the SqliteDatabaseTableWindows.Query method to convert the a Guid value to query by to a string because Sqlite cannot query by guid or uniqueidentifier, it will query those columns by a string.
