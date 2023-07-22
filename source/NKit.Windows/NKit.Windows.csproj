@@ -232,7 +232,10 @@
     <Compile Include="Data\DB\SQLite\SqliteDatabaseSchemaFileWindows.cs" />
     <Compile Include="Data\DB\SQLite\SqliteDatabaseTableGenericWindows.cs" />
     <Compile Include="Data\DB\SQLite\SqliteDatabaseTableColumnWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteEntityContext.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteIndexer.cs" />
     <Compile Include="Data\DB\SQLite\SqliteQueryWindows.cs" />
+    <Compile Include="Data\DB\SQLite\SqliteSettings.cs" />
     <Compile Include="Data\DB\SQLite\SqliteTypeConversionInfoWindows.cs" />
     <Compile Include="Data\DB\SQLite\SqliteTypeConverterWindows.cs" />
     <Compile Include="Data\DB\SQLQuery\QueryWindows.cs" />
