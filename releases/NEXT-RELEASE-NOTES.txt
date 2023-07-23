@@ -121,3 +121,8 @@
 
 *   2023-07-22:
     -   Added SqliteEntityContext, SqliteSettings and SqliteIndexer classes to perform basic CRUD operations on a Sqlite database based on entities.
+
+*   2023-07-23:
+    -   Added DateTimeHelper class in the standard library to try convert a a string to a DateTime based on a list of different date time formats.
+    -   Changed the DataHelperWindows.ParseReaderToEntities to use this DateTimeHelper to convert strings to DateTime.
+    -   Changed the SqliteEntityContext CreateTable, DropTable and CreateIndexers to use an existing connection and transaction when running the SQL instead of creating a new connection and transaction every time.

@@ -14,6 +14,7 @@
     using System.Diagnostics;
     using System.Data.SqlClient;
     using System.Data.Common;
+    using NKit.Utilities;
 
     #endregion //Using Directives
 
@@ -61,7 +62,7 @@
                                 {
                                     value = null;
                                 }
-                                value = Convert.ToDateTime(dateStringValue);
+                                value = DateTimeHelper.Parse(dateStringValue);
                             }
                             else
                             {

@@ -4,6 +4,8 @@
 
     using System;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
     using System.Data.SQLite;
     using System.IO;
     using System.Linq;
@@ -51,22 +53,22 @@
             }
         }
 
-        public int CreateTable<T>() where T : class
+        public int CreateTable<T>(SQLiteConnection connection, SQLiteTransaction transaction, bool disposeConnectionAfterExecute) where T : class
         {
             Type type = typeof(T);
             SqliteDatabaseTableWindows table = new SqliteDatabaseTableWindows(type.Name, _settings.ConnectionString);
             table.AddColumnsByEntityType<T>();
             //int resultCode = ExecuteNonQuery(table.GetSqlDropTableScript());
-            int resultCode = ExecuteNonQuery(table.GetSqlCreateTableScript());
+            int resultCode = ExecuteNonQuery(table.GetSqlCreateTableScript(), connection, transaction, disposeConnectionAfterExecute);
             return resultCode;
         }
 
-        public int DropTable<T>() where T : class
+        public int DropTable<T>(SQLiteConnection connection, SQLiteTransaction transaction, bool disposeConnectionAfterExecute) where T : class
         {
             Type type = typeof(T);
             SqliteDatabaseTableWindows table = new SqliteDatabaseTableWindows(type.Name, _settings.ConnectionString);
             table.AddColumnsByEntityType<T>();
-            int resultCode = ExecuteNonQuery(table.GetSqlDropTableScript());
+            int resultCode = ExecuteNonQuery(table.GetSqlDropTableScript(), connection, transaction, disposeConnectionAfterExecute);
             return resultCode;
         }
 
@@ -78,23 +80,12 @@
             }
         }
 
-        protected void CreateTableIndexers(List<SqliteIndexer> indexers)
+        protected void CreateTableIndexers(List<SqliteIndexer> indexers, SQLiteConnection connection, SQLiteTransaction transaction, bool disposeConnectionAfterExecute)
         {
-            using (SQLiteConnection connection = new SQLiteConnection(_settings.ConnectionString))
+            foreach (SqliteIndexer index in indexers)
             {
-                connection.Open();
-                foreach (SqliteIndexer index in indexers)
-                {
-                    string sqlScript = index.GetCreateSqlScript();
-                    using (SQLiteTransaction transaction = connection.BeginTransaction())
-                    {
-                        using (SQLiteCommand command = new SQLiteCommand(sqlScript, connection))
-                        {
-                            int result = command.ExecuteNonQuery();
-                        }
-                        transaction.Commit();
-                    }
-                }
+                string sqlScript = index.GetCreateSqlScript();
+                ExecuteNonQuery(sqlScript, connection, transaction, disposeConnectionAfterExecute);
             }
         }
 
@@ -102,15 +93,36 @@
 
         #region Execute Methods
 
-        public int ExecuteNonQuery(string sqlQueryString)
+        public int ExecuteNonQuery(string sqlQueryString, SQLiteConnection connection, SQLiteTransaction transaction, bool disposeConnectionAfterExecute)
         {
             int result = -1;
-            using (SQLiteConnection connection = new SQLiteConnection(_settings.ConnectionString))
+            try
             {
-                connection.Open();
+                if (connection == null)
+                {
+                    connection = new SQLiteConnection(_settings.ConnectionString);
+                }
+                if (connection.State != ConnectionState.Open)
+                {
+                    connection.Open();
+                }
+
                 using (SQLiteCommand command = new SQLiteCommand(sqlQueryString, connection))
                 {
+                    if (transaction != null)
+                    {
+                        command.Transaction = transaction;
+                    }
                     result = command.ExecuteNonQuery();
+                }
+            }
+            finally
+            {
+                if (disposeConnectionAfterExecute &&
+                    connection != null &
+                    connection.State != ConnectionState.Closed)
+                {
+                    connection.Dispose();
                 }
             }
             return result;
