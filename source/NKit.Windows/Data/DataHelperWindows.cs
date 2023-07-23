@@ -50,6 +50,10 @@
                         {
                             //value = reader[p.Name];
                             int columnIndex = reader.GetOrdinal(p.Name);
+                            if (columnIndex < 0)
+                            {
+                                throw new NullReferenceException($"Could not find column {p.Name} for entity {entityType.Name} on reader.");
+                            }
                             Type readerFieldType = reader.GetFieldType(columnIndex);
                             if (reader.IsDBNull(columnIndex))
                             {

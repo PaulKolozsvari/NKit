@@ -126,3 +126,4 @@
     -   Added DateTimeHelper class in the standard library to try convert a a string to a DateTime based on a list of different date time formats.
     -   Changed the DataHelperWindows.ParseReaderToEntities to use this DateTimeHelper to convert strings to DateTime.
     -   Changed the SqliteEntityContext CreateTable, DropTable and CreateIndexers to use an existing connection and transaction when running the SQL instead of creating a new connection and transaction every time.
+    -   Added more descriptive error message on DataHelperWindows.ParseReaderToEntities when we cannot find a column for on a reader: $"Could not find column {p.Name} for entity {entityType.Name} on reader."
