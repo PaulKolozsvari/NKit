@@ -56,6 +56,7 @@
             //Add(new SqlTypeConversionInfo("hierarchyid", typeof(SqlHierarchyId),typeof(null)));
             Add(new SqliteTypeConversionInfoWindows("image", typeof(SqlBytes), DbType.Binary, typeof(byte[])));
             Add(new SqliteTypeConversionInfoWindows("int", typeof(SqlInt32), DbType.Int32, typeof(Int32)));
+            Add(new SqliteTypeConversionInfoWindows("integer", typeof(SqlInt32), DbType.Int32, typeof(Int32)));
             Add(new SqliteTypeConversionInfoWindows("money", typeof(SqlMoney), DbType.Decimal, typeof(Decimal)));
 			Add(new SqliteTypeConversionInfoWindows("varchar", typeof(SqlString), DbType.String, typeof(string))); //this one may need work
 			Add(new SqliteTypeConversionInfoWindows("nchar", typeof(SqlChars), DbType.String, typeof(String)));

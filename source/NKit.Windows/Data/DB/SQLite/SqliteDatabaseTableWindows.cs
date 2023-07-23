@@ -154,6 +154,11 @@
                 {
                     continue;
                 }
+                SqliteDatabaseTableColumnWindows column = (SqliteDatabaseTableColumnWindows)_columns[p.Name];
+                if (column == null)
+                {
+                    continue;
+                }
                 if (!firstInsertColumn)
                 {
                     sqlInsertCommand.AppendLine(",");
@@ -163,7 +168,6 @@
                 {
                     value = DBNull.Value;
                 }
-                SqliteDatabaseTableColumnWindows column = (SqliteDatabaseTableColumnWindows)_columns[p.Name];
                 parameters.Add(new SQLiteParameter(string.Format("@{0}", p.Name), value)
                 {
                     DbType = column.SqlDbType
@@ -379,6 +383,10 @@
                         continue;
                     }
                     SqliteDatabaseTableColumnWindows column = (SqliteDatabaseTableColumnWindows)_columns[p.Name];
+                    if (column == null)
+                    {
+                        continue;
+                    }
                     if (!column.IsKey)
                     {
                         continue;
@@ -527,6 +535,10 @@
                     continue;
                 }
                 SqliteDatabaseTableColumnWindows column = (SqliteDatabaseTableColumnWindows)_columns[p.Name];
+                if (column == null)
+                {
+                    continue;
+                }
                 if (!firstUpdateColumn)
                 {
                     sqlUpdateCommand.AppendLine(",");
@@ -751,13 +763,6 @@
                     connection.Open();
                 }
                 _columns.Clear();
-                DataTable schema = connection.GetSchema("Columns", new string[] { null, null, _tableName, null });
-                List<DatabaseTableColumnWindows> tempColumns = new List<DatabaseTableColumnWindows>();
-                foreach (DataRow row in schema.Rows)
-                {
-                    tempColumns.Add(new SqliteDatabaseTableColumnWindows(row));
-                }
-                tempColumns.OrderBy(c => c.OrdinalPosition).ToList().ForEach(c => _columns.Add(c.ColumnName, c));
                 if (!(connection is SQLiteConnection))
                 {
                     throw new InvalidCastException(string.Format(
@@ -765,40 +770,48 @@
                         typeof(SQLiteConnection).FullName,
                         connection.GetType().FullName));
                 }
-                List<string> keyColumns = GetKeyColummnNames(connection, false);
-                if (keyColumns.Count < 0)
+                DataTable schema = connection.GetSchema("Columns", new string[] { null, null, _tableName, null });
+                List<DatabaseTableColumnWindows> tempColumns = new List<DatabaseTableColumnWindows>();
+                foreach (DataRow row in schema.Rows)
                 {
-                    throw new Exception(string.Format("Table {0} has no key columns.", _tableName));
+                    tempColumns.Add(new SqliteDatabaseTableColumnWindows(row)); //Key Columns are identified here.
                 }
-                foreach (string k in keyColumns)
-                {
-                    DatabaseTableColumnWindows c = _columns[k];
-                    if (c == null)
-                    {
-                        throw new NullReferenceException(string.Format(
-                            "Could not find key column {0} on table {1}.",
-                            k,
-                            _tableName));
-                    }
-                    c.IsKey = true;
-                }
-                SQLiteConnection sqliteConnection = connection as SQLiteConnection;
-                if (sqliteConnection == null)
-                {
-                    throw new InvalidCastException(string.Format("Expected connection to be a {0} in {1}.", typeof(SQLiteConnection).FullName, this.GetType().FullName));
-                }
-                EntityCacheGeneric<string, ForeignKeyInfoWindows> foreignKeys = sqliteConnection.GetTableForeignKeys(_tableName);
-                foreach (ForeignKeyInfoWindows f in foreignKeys)
-                {
-                    if (_columns.Exists(f.ChildTableForeignKeyName))
-                    {
-                        DatabaseTableColumnWindows c = _columns[f.ChildTableForeignKeyName];
-                        c.IsForeignKey = true;
-                        c.ParentTableName = f.ParentTableName;
-                        c.ParentTablePrimaryKeyName = f.ParentTablePrimaryKeyName;
-                        c.ConstraintName = f.ConstraintName;
-                    }
-                }
+                tempColumns.OrderBy(c => c.OrdinalPosition).ToList().ForEach(c => _columns.Add(c.ColumnName, c));
+
+                //List<string> keyColumns = GetKeyColummnNames(connection, false);
+                //if (keyColumns.Count < 0)
+                //{
+                //    throw new Exception(string.Format("Table {0} has no key columns.", _tableName));
+                //}
+                //foreach (string k in keyColumns)
+                //{
+                //    DatabaseTableColumnWindows c = _columns[k];
+                //    if (c == null)
+                //    {
+                //        throw new NullReferenceException(string.Format(
+                //            "Could not find key column {0} on table {1}.",
+                //            k,
+                //            _tableName));
+                //    }
+                //    c.IsKey = true;
+                //}
+                //SQLiteConnection sqliteConnection = connection as SQLiteConnection;
+                //if (sqliteConnection == null)
+                //{
+                //    throw new InvalidCastException(string.Format("Expected connection to be a {0} in {1}.", typeof(SQLiteConnection).FullName, this.GetType().FullName));
+                //}
+                //EntityCacheGeneric<string, ForeignKeyInfoWindows> foreignKeys = sqliteConnection.GetTableForeignKeys(_tableName);
+                //foreach (ForeignKeyInfoWindows f in foreignKeys)
+                //{
+                //    if (_columns.Exists(f.ChildTableForeignKeyName))
+                //    {
+                //        DatabaseTableColumnWindows c = _columns[f.ChildTableForeignKeyName];
+                //        c.IsForeignKey = true;
+                //        c.ParentTableName = f.ParentTableName;
+                //        c.ParentTablePrimaryKeyName = f.ParentTablePrimaryKeyName;
+                //        c.ConstraintName = f.ConstraintName;
+                //    }
+                //}
             }
             finally
             {

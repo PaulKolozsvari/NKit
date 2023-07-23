@@ -127,3 +127,10 @@
     -   Changed the DataHelperWindows.ParseReaderToEntities to use this DateTimeHelper to convert strings to DateTime.
     -   Changed the SqliteEntityContext CreateTable, DropTable and CreateIndexers to use an existing connection and transaction when running the SQL instead of creating a new connection and transaction every time.
     -   Added more descriptive error message on DataHelperWindows.ParseReaderToEntities when we cannot find a column for on a reader: $"Could not find column {p.Name} for entity {entityType.Name} on reader."
+    
+    -   Changed the SqliteDatabaseTableColumnWindows to read from the schema whether a column is a primary key or not.
+    -   Changed the SqliteDatabaseTableWindows to not call a sproc to determine whether columns are key or foreign keys.
+    -   Changed the SqliteEntityContext to load a SqliteDatabaseWindows and populate the columns from the schema to compare against columns added by entities.
+    -   Changed SqliteEntityContext to use the SqliteDatabaseTableWindows read from the schema before running CRUD queries to use the columns based on what exists in the database instead of properites from entities which may not exist in the database.
+    -   Changed the SqliteDatabaseTableWindows to ignore properties that exist on the entity but don't exist in the database.
+    -   Added Sqlite type "integer" to SqliteTypeConverterWindows because only "int" was understood previously.

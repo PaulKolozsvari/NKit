@@ -5,7 +5,6 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
-    using System.Data.SqlClient;
     using System.Data.SQLite;
     using System.IO;
     using System.Linq;
@@ -24,6 +23,7 @@
             DataValidator.ValidateObjectNotNull(settings, nameof(settings), nameof(SqliteEntityContext));
             _settings = settings;
             CreateDatabaseFile(settings.DatabaseFilePath);
+            _sqliteDatabase = new SqliteDatabaseWindows(_settings.ConnectionString, populateTablesFromSchema: true, createOrmAssembly: false, saveOrmAssembly: false, copyOrmAssembly: false, ormAssemblyCopyDirectory: null, overrideNameWithDatabaseNameFromSchema: false);
         }
 
         #endregion //Constructors
@@ -31,6 +31,7 @@
         #region Fields
 
         private SqliteSettings _settings;
+        private SqliteDatabaseWindows _sqliteDatabase; 
 
         #endregion //Fields
 
@@ -151,7 +152,12 @@
         {
             int resultCode;
             Type entityType = typeof(T);
-            SqliteDatabaseTableWindows table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
+            SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
+            if (table == null)
+            {
+                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
+                table.AddColumnsByEntityType<T>();
+            }
             resultCode = table.Update(entity, columnName, disposeConnectionAfterExecute, connection, transaction);
             transaction.Commit();
             return resultCode;
@@ -176,7 +182,12 @@
         {
             int resultCode;
             Type entityType = typeof(T);
-            SqliteDatabaseTableWindows table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
+            SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
+            if (table == null)
+            {
+                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
+                table.AddColumnsByEntityType<T>();
+            }
             resultCode = table.Delete(entity, columnName, disposeConnectionAfterExecute, connection, transaction);
             transaction.Commit();
             return resultCode;
@@ -201,8 +212,12 @@
         {
             int resultCode;
             Type entityType = typeof(T);
-            SqliteDatabaseTableWindows table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
-            table.AddColumnsByEntityType<T>();
+            SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
+            if (table == null)
+            {
+                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
+                table.AddColumnsByEntityType<T>();
+            }
             object columnValue = EntityReaderGeneric<object>.GetPropertyValue(columnName, e, true);
             T original = table.Query<T>(columnName, columnValue, null, false, connection, transaction).FirstOrDefault();
             if (original == null)
@@ -256,8 +271,12 @@
         {
             int resultCode;
             Type entityType = typeof(T);
-            SqliteDatabaseTableWindows table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
-            table.AddColumnsByEntityType<T>();
+            SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
+            if (table == null)
+            {
+                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
+                table.AddColumnsByEntityType<T>();
+            }
             resultCode = table.Insert(entity, disposeConnectionAfterExecute, connection, transaction);
             transaction.Commit();
             return resultCode;
@@ -309,7 +328,12 @@
         {
             Type entityType = typeof(T);
             List<T> entities;
-            SqliteDatabaseTableWindows table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
+            SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
+            if (table == null)
+            {
+                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
+                table.AddColumnsByEntityType<T>();
+            }
             entities = table.Query<T>(columName, columnValue, string.Empty, disposeConnectionAfterExecute: false, connection, transaction);
             return entities;
         }

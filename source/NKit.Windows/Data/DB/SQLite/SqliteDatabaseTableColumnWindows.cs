@@ -35,6 +35,8 @@
         public const string COLUMN_DEFAULT_SCHEMA_ATTRIBUTE = "column_default";
         public const string IS_NULLABLE_SCHEMA_ATTRIBUTE = "is_nullable";
         public const string DATA_TYPE_SCHEMA_ATTRIBUTE = "data_type";
+        public const string PRIMARY_KEY_SCHEMA_ATTRIBUTE = "PRIMARY_KEY";
+        public const string UNIQUE_SCHEMA_ATTRIBUTE = "UNIQUE";
 
         #endregion //Constants
 
@@ -64,6 +66,7 @@
             _isNullable = schemaRow[IS_NULLABLE_SCHEMA_ATTRIBUTE].ToString();
             _dataType = schemaRow[DATA_TYPE_SCHEMA_ATTRIBUTE].ToString();
             _sqlDbType = SqliteTypeConverterWindows.Instance.GetSqlDbType(_dataType);
+            _isKey = Convert.ToBoolean(schemaRow[PRIMARY_KEY_SCHEMA_ATTRIBUTE]);
         }
 
         #endregion //Methods
