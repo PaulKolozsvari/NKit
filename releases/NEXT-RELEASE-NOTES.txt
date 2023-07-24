@@ -137,3 +137,4 @@
 
 *   2023-07-24:
     -   Fixed the SqliteTypeConverterWindows to map uniqueidentifier and booleans to strings because Sqlite doesn't support those types.
+    -   Fixed the DataHelperWindows.ParseReaderToEntities to not throw exception an exception if a column doesn't exist on the DataReader, instead it will ignore it.
