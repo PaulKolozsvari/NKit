@@ -418,6 +418,10 @@
             {
                 whereClause.Append(string.Format("[{0}] = @{0}", columnName));
                 object value = EntityReaderGeneric<object>.GetPropertyValue(columnName, e, true);
+                if (value is Guid)
+                {
+                    value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
+                }
                 parameters.Add(new SQLiteParameter(string.Format("@{0}", columnName), value));
             }
             sqlDeleteCommand.AppendLine(whereClause.ToString());

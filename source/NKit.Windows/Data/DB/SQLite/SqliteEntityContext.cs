@@ -159,7 +159,6 @@
                 table.AddColumnsByEntityType<T>();
             }
             resultCode = table.Update(entity, columnName, disposeConnectionAfterExecute, connection, transaction);
-            transaction.Commit();
             return resultCode;
         }
 
@@ -189,7 +188,6 @@
                 table.AddColumnsByEntityType<T>();
             }
             resultCode = table.Delete(entity, columnName, disposeConnectionAfterExecute, connection, transaction);
-            transaction.Commit();
             return resultCode;
         }
 
@@ -278,7 +276,6 @@
                 table.AddColumnsByEntityType<T>();
             }
             resultCode = table.Insert(entity, disposeConnectionAfterExecute, connection, transaction);
-            transaction.Commit();
             return resultCode;
         }
 

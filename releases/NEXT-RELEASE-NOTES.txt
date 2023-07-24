@@ -138,3 +138,5 @@
 *   2023-07-24:
     -   Fixed the SqliteTypeConverterWindows to map uniqueidentifier and booleans to strings because Sqlite doesn't support those types.
     -   Fixed the DataHelperWindows.ParseReaderToEntities to not throw exception an exception if a column doesn't exist on the DataReader, instead it will ignore it.
+    -   Fixed the SqliteEntityContext Update and Delete to not commit transactions. Instead the callers of the methods should commit the transaction.
+    -   Fixed the SqliteDatabaseTableWindows Delete method convert Guid to strings when filtering by a column because Sqlite cannot query by a Guid or uniqueidentifier.
