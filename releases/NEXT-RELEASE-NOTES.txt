@@ -134,3 +134,6 @@
     -   Changed SqliteEntityContext to use the SqliteDatabaseTableWindows read from the schema before running CRUD queries to use the columns based on what exists in the database instead of properites from entities which may not exist in the database.
     -   Changed the SqliteDatabaseTableWindows to ignore properties that exist on the entity but don't exist in the database.
     -   Added Sqlite type "integer" to SqliteTypeConverterWindows because only "int" was understood previously.
+
+*   2023-07-24:
+    -   Fixed the SqliteTypeConverterWindows to map uniqueidentifier and booleans to strings because Sqlite doesn't support those types.

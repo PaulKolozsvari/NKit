@@ -42,7 +42,7 @@
         {
             Add(new SqliteTypeConversionInfoWindows("bigint", typeof(SqlInt64), DbType.Int64, typeof(Int64)));
             Add(new SqliteTypeConversionInfoWindows("binary", typeof(SqlBytes), DbType.Binary, typeof(Byte[])));
-            Add(new SqliteTypeConversionInfoWindows("bit", typeof(SqlBoolean), DbType.Int16, typeof(Boolean)));
+            Add(new SqliteTypeConversionInfoWindows("bit", typeof(SqlBoolean), DbType.String, typeof(Boolean)));
             Add(new SqliteTypeConversionInfoWindows("char", typeof(SqlChars), DbType.String, typeof(char))); //this one may need work
             Add(new SqliteTypeConversionInfoWindows("cursor", null, DbType.Object, null));
             //Add(new SqliteTypeConversionInfoWindows("date", typeof(SqlDateTime), DbType.Date, typeof(DateTime)));
@@ -75,7 +75,7 @@
             Add(new SqliteTypeConversionInfoWindows("time", null, DbType.Time, typeof(TimeSpan)));
             Add(new SqliteTypeConversionInfoWindows("timestamp", null, DbType.DateTime, null));
             Add(new SqliteTypeConversionInfoWindows("tinyint", typeof(SqlByte), DbType.Int16, typeof(Byte)));
-            Add(new SqliteTypeConversionInfoWindows("uniqueidentifier", typeof(SqlGuid), DbType.Guid, typeof(Guid)));
+            Add(new SqliteTypeConversionInfoWindows("uniqueidentifier", typeof(SqlGuid), DbType.String, typeof(Guid)));
             Add(new SqliteTypeConversionInfoWindows("varbinary", typeof(SqlBytes), DbType.Binary, typeof(Byte[])));
             Add(new SqliteTypeConversionInfoWindows("varbinary(1)", typeof(SqlBytes), DbType.Binary, typeof(byte)));
             Add(new SqliteTypeConversionInfoWindows("binary(1)", typeof(SqlBytes), DbType.Binary, typeof(byte)));

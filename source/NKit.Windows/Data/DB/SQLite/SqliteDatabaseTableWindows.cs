@@ -168,6 +168,10 @@
                 {
                     value = DBNull.Value;
                 }
+                if (value is Guid)
+                {
+                    value = value.ToString(); //Sqlite cannot use guid or uniqueidentifier, it should get saved as a string.
+                }
                 parameters.Add(new SQLiteParameter(string.Format("@{0}", p.Name), value)
                 {
                     DbType = column.SqlDbType
@@ -396,6 +400,10 @@
                     {
                         value = DBNull.Value;
                     }
+                    if (value is Guid)
+                    {
+                        value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
+                    }
                     SQLiteParameter parameter = new SQLiteParameter(string.Format("@{0}", p.Name), value) { DbType = column.SqlDbType };
                     parameters.Add(parameter);
                     if (!firstUpdateColumn)
@@ -547,6 +555,10 @@
                 if (value == null)
                 {
                     value = DBNull.Value;
+                }
+                if (value is Guid)
+                {
+                    value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
                 }
                 SQLiteParameter parameter = new SQLiteParameter(string.Format("@{0}", p.Name), value) { DbType = column.SqlDbType };
                 parameters.Add(parameter);
