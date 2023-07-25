@@ -41,7 +41,7 @@
         private SqliteTypeConverterWindows()
         {
             Add(new SqliteTypeConversionInfoWindows("bigint", typeof(SqlInt64), DbType.Int64, typeof(Int64)));
-            Add(new SqliteTypeConversionInfoWindows("binary", typeof(SqlBytes), DbType.Binary, typeof(Byte[])));
+            Add(new SqliteTypeConversionInfoWindows("blob", typeof(SqlBytes), DbType.Binary, typeof(Byte[])));
             Add(new SqliteTypeConversionInfoWindows("bit", typeof(SqlBoolean), DbType.String, typeof(Boolean)));
             Add(new SqliteTypeConversionInfoWindows("char", typeof(SqlChars), DbType.String, typeof(char))); //this one may need work
             Add(new SqliteTypeConversionInfoWindows("cursor", null, DbType.Object, null));

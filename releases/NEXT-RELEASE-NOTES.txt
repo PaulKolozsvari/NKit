@@ -145,3 +145,4 @@
 *   2023-07-25:
     -   Changed the SqliteEntityContext allow for reseting the SqliteDatabaseWindows from the outside in case the database schema changes.
     -   Fixed the SqliteEntityContext to check if a database table exists running any CRUD queries on it because run SQL scripts on a table that doesn't exist.
+    -   Changed Sqlite type "binary" to blob which is the correct type in Sqlite to store byte[].
