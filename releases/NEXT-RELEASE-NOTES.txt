@@ -141,3 +141,7 @@
     -   Fixed the SqliteEntityContext Update and Delete to not commit transactions. Instead the callers of the methods should commit the transaction.
     -   Fixed the SqliteDatabaseTableWindows Delete method convert Guid to strings when filtering by a column because Sqlite cannot query by a Guid or uniqueidentifier.
     -   Upgraded to System.Data.SQLite.Core package to 1.0.118 in the Windows version of NKit.
+
+*   2023-07-25:
+    -   Changed the SqliteEntityContext allow for reseting the SqliteDatabaseWindows from the outside in case the database schema changes.
+    -   Fixed the SqliteEntityContext to check if a database table exists running any CRUD queries on it because run SQL scripts on a table that doesn't exist.

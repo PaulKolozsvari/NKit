@@ -23,7 +23,7 @@
             DataValidator.ValidateObjectNotNull(settings, nameof(settings), nameof(SqliteEntityContext));
             _settings = settings;
             CreateDatabaseFile(settings.DatabaseFilePath);
-            _sqliteDatabase = new SqliteDatabaseWindows(_settings.ConnectionString, populateTablesFromSchema: true, createOrmAssembly: false, saveOrmAssembly: false, copyOrmAssembly: false, ormAssemblyCopyDirectory: null, overrideNameWithDatabaseNameFromSchema: false);
+            ResetSqliteDatabase();
         }
 
         #endregion //Constructors
@@ -31,7 +31,7 @@
         #region Fields
 
         private SqliteSettings _settings;
-        private SqliteDatabaseWindows _sqliteDatabase; 
+        private SqliteDatabaseWindows _sqliteDatabase;
 
         #endregion //Fields
 
@@ -42,9 +42,19 @@
             get { return _settings; }
         }
 
+        protected SqliteDatabaseWindows Database
+        {
+            get { return _sqliteDatabase; }
+        }
+
         #endregion //Properties
 
         #region Schema Methods
+
+        protected void ResetSqliteDatabase()
+        {
+            _sqliteDatabase = new SqliteDatabaseWindows(_settings.ConnectionString, populateTablesFromSchema: true, createOrmAssembly: false, saveOrmAssembly: false, copyOrmAssembly: false, ormAssemblyCopyDirectory: null, overrideNameWithDatabaseNameFromSchema: false);
+        }
 
         private void CreateDatabaseFile(string databaseFilePath)
         {
@@ -155,8 +165,7 @@
             SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
             if (table == null)
             {
-                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
-                table.AddColumnsByEntityType<T>();
+                return 0; //If the table doesn't exist we cannot update records on it.
             }
             resultCode = table.Update(entity, columnName, disposeConnectionAfterExecute, connection, transaction);
             return resultCode;
@@ -184,8 +193,7 @@
             SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
             if (table == null)
             {
-                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
-                table.AddColumnsByEntityType<T>();
+                return 0; //If the table doesn't exist we cannot delete records from it.
             }
             resultCode = table.Delete(entity, columnName, disposeConnectionAfterExecute, connection, transaction);
             return resultCode;
@@ -213,8 +221,7 @@
             SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
             if (table == null)
             {
-                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
-                table.AddColumnsByEntityType<T>();
+                return 0; //If the table doesn't exist we save records to it.
             }
             object columnValue = EntityReaderGeneric<object>.GetPropertyValue(columnName, e, true);
             T original = table.Query<T>(columnName, columnValue, null, false, connection, transaction).FirstOrDefault();
@@ -272,8 +279,7 @@
             SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
             if (table == null)
             {
-                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
-                table.AddColumnsByEntityType<T>();
+                return 0; //If the table doesn't exist we cannot insert records to it.
             }
             resultCode = table.Insert(entity, disposeConnectionAfterExecute, connection, transaction);
             return resultCode;
@@ -307,7 +313,6 @@
 
         public List<T> Read<T>(string columName, object columnValue) where T : class
         {
-            Type entityType = typeof(T);
             List<T> entities;
             using (SQLiteConnection connection = new SQLiteConnection(_settings.ConnectionString))
             {
@@ -328,8 +333,7 @@
             SqliteDatabaseTableWindows table = _sqliteDatabase.Tables[entityType.Name] as SqliteDatabaseTableWindows;
             if (table == null)
             {
-                table = new SqliteDatabaseTableWindows(entityType.Name, _settings.ConnectionString);
-                table.AddColumnsByEntityType<T>();
+                return new List<T>(); //If the table doesn't exist we cannot query from it.
             }
             entities = table.Query<T>(columName, columnValue, string.Empty, disposeConnectionAfterExecute: false, connection, transaction);
             return entities;
