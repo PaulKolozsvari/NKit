@@ -84,6 +84,12 @@
 
         #endregion //Constructors
 
+        #region Constants
+
+        public const string DEFAULT_DATE_TIME_FORMAT = "yyyy/MM/dd HH:mm:ss";
+
+        #endregion //Constants
+
         #region Methods
 
         public Type GetDotNetType(string sqlTypeName, bool isNullable)
@@ -321,6 +327,20 @@
                 "Could not find {0} for SQLs Type {1}.",
                 typeof(SqliteTypeConversionInfoWindows).FullName,
                 sqlType.FullName));
+        }
+
+        public static string ConvertDateTimeToDefaultStringFormat(Nullable<DateTime> dateTime)
+        {
+            if (!dateTime.HasValue)
+            {
+                return null;
+            }
+            return dateTime.Value.ToString(DEFAULT_DATE_TIME_FORMAT);
+        }
+
+        public static string ConvertDateTimeToDefaultStringFormat(DateTime dateTime)
+        {
+            return dateTime.ToString(DEFAULT_DATE_TIME_FORMAT);
         }
 
         #endregion //Methods

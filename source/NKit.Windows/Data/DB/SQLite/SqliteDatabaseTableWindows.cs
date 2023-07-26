@@ -168,13 +168,27 @@
                 {
                     value = DBNull.Value;
                 }
-                if (value is Guid)
+                else
                 {
-                    value = value.ToString(); //Sqlite cannot use guid or uniqueidentifier, it should get saved as a string.
+                    if (value is Guid || value is Nullable<Guid>)
+                    {
+                        value = value.ToString(); //Sqlite cannot use guid or uniqueidentifier, it should get saved as a string.
+                    }
+                    else if (value is DateTime)
+                    {
+                        DateTime dateTime = (DateTime)value;
+                        value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
+                    }
+                    else if (value is Nullable<DateTime>)
+                    {
+                        Nullable<DateTime> dateTime = (Nullable<DateTime>)value;
+                        value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
+                    }
                 }
                 parameters.Add(new SQLiteParameter(string.Format("@{0}", p.Name), value)
                 {
-                    DbType = column.SqlDbType
+                    //DbType = column.SqlDbType,
+                    TypeName = column.DataType
                 });
                 sqlInsertCommand.Append(string.Format("[{0}]", p.Name));
                 firstInsertColumn = false;
@@ -400,9 +414,22 @@
                     {
                         value = DBNull.Value;
                     }
-                    if (value is Guid)
+                    else
                     {
-                        value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
+                        if (value is Guid || value is Nullable<Guid>)
+                        {
+                            value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
+                        }
+                        else if (value is DateTime)
+                        {
+                            DateTime dateTime = (DateTime)value;
+                            value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
+                        }
+                        else if (value is Nullable<DateTime>)
+                        {
+                            Nullable<DateTime> dateTime = (Nullable<DateTime>)value;
+                            value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
+                        }
                     }
                     SQLiteParameter parameter = new SQLiteParameter(string.Format("@{0}", p.Name), value) { DbType = column.SqlDbType };
                     parameters.Add(parameter);
@@ -418,9 +445,19 @@
             {
                 whereClause.Append(string.Format("[{0}] = @{0}", columnName));
                 object value = EntityReaderGeneric<object>.GetPropertyValue(columnName, e, true);
-                if (value is Guid)
+                if (value is Guid || value is Nullable<Guid>)
                 {
                     value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
+                }
+                else if (value is DateTime)
+                {
+                    DateTime dateTime = (DateTime)value;
+                    value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
+                }
+                else if (value is Nullable<DateTime>)
+                {
+                    Nullable<DateTime> dateTime = (Nullable<DateTime>)value;
+                    value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
                 }
                 parameters.Add(new SQLiteParameter(string.Format("@{0}", columnName), value));
             }
@@ -560,9 +597,22 @@
                 {
                     value = DBNull.Value;
                 }
-                if (value is Guid)
+                else
                 {
-                    value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
+                    if (value is Guid || value is Nullable<Guid>)
+                    {
+                        value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
+                    }
+                    else if (value is DateTime)
+                    {
+                        DateTime dateTime = (DateTime)value;
+                        value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
+                    }
+                    else if (value is Nullable<DateTime>)
+                    {
+                        Nullable<DateTime> dateTime = (Nullable<DateTime>)value;
+                        value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
+                    }
                 }
                 SQLiteParameter parameter = new SQLiteParameter(string.Format("@{0}", p.Name), value) { DbType = column.SqlDbType };
                 parameters.Add(parameter);

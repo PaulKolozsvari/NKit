@@ -14,7 +14,8 @@
 
         private static List<string> SUPPORTED_DATE_TIME_FORMATS = new List<string>()
         {
-            "dd/MM/yyyy HH:mm:ss"
+            "dd/MM/yyyy HH:mm:ss",
+            "yyyy/MM/dd HH:mm:ss",
         };
 
         #endregion //Fields
