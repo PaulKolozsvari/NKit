@@ -187,7 +187,6 @@
                 }
                 parameters.Add(new SQLiteParameter(string.Format("@{0}", p.Name), value)
                 {
-                    //DbType = column.SqlDbType,
                     TypeName = column.DataType
                 });
                 sqlInsertCommand.Append(string.Format("[{0}]", p.Name));
@@ -431,7 +430,7 @@
                             value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
                         }
                     }
-                    SQLiteParameter parameter = new SQLiteParameter(string.Format("@{0}", p.Name), value) { DbType = column.SqlDbType };
+                    SQLiteParameter parameter = new SQLiteParameter(string.Format("@{0}", p.Name), value) { TypeName = column.DataType };
                     parameters.Add(parameter);
                     if (!firstUpdateColumn)
                     {
@@ -614,7 +613,7 @@
                         value = SqliteTypeConverterWindows.ConvertDateTimeToDefaultStringFormat(dateTime);
                     }
                 }
-                SQLiteParameter parameter = new SQLiteParameter(string.Format("@{0}", p.Name), value) { DbType = column.SqlDbType };
+                SQLiteParameter parameter = new SQLiteParameter(string.Format("@{0}", p.Name), value) { TypeName = column.DataType };
                 parameters.Add(parameter);
                 sqlUpdateCommand.Append(string.Format("[{0}] = @{0}", p.Name));
                 if (string.IsNullOrEmpty(columnName)) //Look up the record to update based on the key columns because no column name was specified.
