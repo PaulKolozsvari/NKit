@@ -153,3 +153,4 @@
 
 *   2023-07-29:
     -   Changed the SqliteDatabaseTableWindows to convert bool values to strings before saving or querying out of the Sqlite database. 
+    -   Changed the SqliteDatabaseTableWindows to convert char values to strings before saving or querying out of the Sqlite database.
