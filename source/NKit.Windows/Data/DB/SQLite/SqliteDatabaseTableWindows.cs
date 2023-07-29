@@ -69,7 +69,7 @@
 
             if(!string.IsNullOrEmpty(columnName))
             {
-                if (columnValue is Guid)
+                if (columnValue is Guid || columnValue is bool)
                 {
                     columnValue = columnValue.ToString(); //Sqlite cannot query by guid or uniqueidentifier, it will query those columns by a string.
                 }
@@ -170,7 +170,7 @@
                 }
                 else
                 {
-                    if (value is Guid || value is Nullable<Guid>)
+                    if (value is Guid || value is Nullable<Guid> || value is bool || value is Nullable<bool>)
                     {
                         value = value.ToString(); //Sqlite cannot use guid or uniqueidentifier, it should get saved as a string.
                     }
@@ -415,7 +415,7 @@
                     }
                     else
                     {
-                        if (value is Guid || value is Nullable<Guid>)
+                        if (value is Guid || value is Nullable<Guid> || value is bool || value is Nullable<bool>)
                         {
                             value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
                         }
@@ -444,7 +444,7 @@
             {
                 whereClause.Append(string.Format("[{0}] = @{0}", columnName));
                 object value = EntityReaderGeneric<object>.GetPropertyValue(columnName, e, true);
-                if (value is Guid || value is Nullable<Guid>)
+                if (value is Guid || value is Nullable<Guid> || value is bool || value is Nullable<bool>)
                 {
                     value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
                 }
@@ -598,7 +598,7 @@
                 }
                 else
                 {
-                    if (value is Guid || value is Nullable<Guid>)
+                    if (value is Guid || value is Nullable<Guid> || value is bool || value is Nullable<bool>)
                     {
                         value = value.ToString(); //Sqlite doesn't work with guids or uniqueidentifiers, it stores it as strings.
                     }

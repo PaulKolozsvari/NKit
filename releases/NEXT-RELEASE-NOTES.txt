@@ -150,3 +150,6 @@
 *   2023-07-26:
     -   Changed the SqliteDatabaseTableWindows to save datetime values to a a default string format (stored in SqliteTypeConverterWindows) to match Android apps with that format.
     -   Changed to set the TypeName of parameters to the DataType of a column instead of the DbType to the SqlDbType of the column.
+
+*   2023-07-29:
+    -   Changed the SqliteDatabaseTableWindows to convert bool values to strings before saving or querying out of the Sqlite database. 
