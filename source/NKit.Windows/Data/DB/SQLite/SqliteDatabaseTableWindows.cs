@@ -983,6 +983,23 @@
             }
         }
 
+        public override void AddColumn(string columnName, Type dotNetType)
+        {
+            if (_columns.Exists(columnName))
+            {
+                return;
+            }
+            string sqlTypeName = SqliteTypeConverterWindows.Instance.GetSqlTypeNameFromDotNetType(dotNetType, EntityReader.IsTypeIsNullable(dotNetType), throwExceptionIfNotFound: false);
+            if (string.IsNullOrEmpty(sqlTypeName))
+            {
+                return;
+            }
+            SqliteDatabaseTableColumnWindows c = new SqliteDatabaseTableColumnWindows();
+            c.ColumnName = columnName;
+            c.DataType = sqlTypeName;
+            _columns.Add(c);
+        }
+
         public override string GetSqlCreateTableScript()
         {
             StringBuilder result = new StringBuilder();

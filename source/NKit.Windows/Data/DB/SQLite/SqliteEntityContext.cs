@@ -66,9 +66,21 @@
 
         public int CreateTable<T>(SQLiteConnection connection, SQLiteTransaction transaction, bool disposeConnectionAfterExecute) where T : class
         {
+            return CreateTable<T>(connection, transaction, disposeConnectionAfterExecute, null);
+        }
+
+        public int CreateTable<T>(SQLiteConnection connection, SQLiteTransaction transaction, bool disposeConnectionAfterExecute, Dictionary<string, Type> extraColumns) where T : class
+        {
             Type type = typeof(T);
             SqliteDatabaseTableWindows table = new SqliteDatabaseTableWindows(type.Name, _settings.ConnectionString);
             table.AddColumnsByEntityType<T>();
+            if (extraColumns != null)
+            {
+                foreach (KeyValuePair<string, Type> column in extraColumns)
+                {
+                    table.AddColumn(column.Key, column.Value);
+                }
+            }
             //int resultCode = ExecuteNonQuery(table.GetSqlDropTableScript());
             int resultCode = ExecuteNonQuery(table.GetSqlCreateTableScript(), connection, transaction, disposeConnectionAfterExecute);
             return resultCode;

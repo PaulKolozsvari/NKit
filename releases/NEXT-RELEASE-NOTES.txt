@@ -152,5 +152,9 @@
     -   Changed to set the TypeName of parameters to the DataType of a column instead of the DbType to the SqlDbType of the column.
 
 *   2023-07-29:
-    -   Changed the SqliteDatabaseTableWindows to convert bool values to strings before saving or querying out of the Sqlite database. 
+    -   Changed the SqliteDatabaseTableWindows to convert bool values to strings before saving or querying out of the Sqlite database.
     -   Changed the SqliteDatabaseTableWindows to convert char values to strings before saving or querying out of the Sqlite database.
+
+*   2023-07-30:
+    -   Added method AddColumn to SqliteDatabaseTableWindows and SqlDatabaseTableWindows to be able tadd additional columns to a table that may not exist on an entity.
+    -   Added option on CreateTable method of SqliteEntityContext to be able to specify additional columns that are not on the entity.

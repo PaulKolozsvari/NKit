@@ -188,6 +188,8 @@
 
         public abstract void AddColumnsByEntityType(Type entityType);
 
+        public abstract void AddColumn(string columnName, Type dotNetType);
+
         public abstract string GetSqlCreateTableScript();
 
         public abstract string GetSqlDropTableScript();

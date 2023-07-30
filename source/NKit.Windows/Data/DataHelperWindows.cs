@@ -80,6 +80,10 @@
                                 reader.GetType().FullName),
                                 ex);
                         }
+                        if (entityType.Name.Equals("PodRocEquipmentDelivery"))
+                        {
+                            int stop = 0;
+                        }
                         p.SetValue(e, ChangeType(value, p.PropertyType), null);
                     }
                     result.Add(e);
