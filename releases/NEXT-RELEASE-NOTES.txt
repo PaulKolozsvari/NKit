@@ -158,3 +158,6 @@
 *   2023-07-30:
     -   Added method AddColumn to SqliteDatabaseTableWindows and SqlDatabaseTableWindows to be able tadd additional columns to a table that may not exist on an entity.
     -   Added option on CreateTable method of SqliteEntityContext to be able to specify additional columns that are not on the entity.
+
+*   2023-08-15:
+    -   Upgraded System.Linq.Dynamic.Core to 1.3.4.
