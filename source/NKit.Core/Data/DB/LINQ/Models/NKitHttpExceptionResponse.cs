@@ -88,10 +88,10 @@
         [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string InnerExceptionMessage { get; set; }
 
-        [StringLength(200)]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string ExceptionOriginatingClassName { get; set; }
 
-        [StringLength(200)]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string ExceptionOriginatingFunctionName { get; set; }
 
         [Required]
@@ -101,7 +101,7 @@
         [Required]
         public int EventId { get; set; }
 
-        [StringLength(200)]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string EventName { get; set; }
 
         [Required]

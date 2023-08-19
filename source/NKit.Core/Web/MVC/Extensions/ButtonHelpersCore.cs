@@ -142,7 +142,7 @@
             }
             if (!string.IsNullOrEmpty(onClickJavaScriptFunction))
             {
-                anchorTag.MergeAttribute("onclick", onClickJavaScriptFunction);
+                anchorTag.MergeAttribute("onclick", onClickJavaScriptFunction + " ;return false;");
             }
             else
             {

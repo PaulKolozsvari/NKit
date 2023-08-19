@@ -25,13 +25,13 @@
         [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string Message { get; set; }
 
-        [StringLength(200)]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string Source { get; set; }
 
-        [StringLength(200)]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string ClassName { get; set; }
 
-        [StringLength(200)]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string FunctionName { get; set; }
 
         [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
@@ -40,7 +40,7 @@
         [Required]
         public int EventId { get; set; }
 
-        [StringLength(200)]
+        [Column(TypeName = SQL_SERVER_VARCHAR_MAX)]
         public string EventName { get; set; }
 
         [Required]

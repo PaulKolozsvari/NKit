@@ -161,3 +161,6 @@
 
 *   2023-08-15:
     -   Upgraded System.Linq.Dynamic.Core to 1.3.4.
+
+*   2023-08-19:
+    -   Extended lengths of NKitLogEntry and NKitHttpExceptionResponse string field to varchar max.
