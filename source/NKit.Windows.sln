@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34004.107
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NKit.Standard", "NKit.Standard\NKit.Standard.csproj", "{D7DB37CB-2A0C-4E1C-8B03-20A092EA4D71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NKit.Windows", "NKit.Windows\NKit.Windows.csproj", "{634D7CA0-7D29-4D4A-9EEB-C79D03565A54}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NKit.Windows.Standalone", "NKit.Windows.Standalone\NKit.Windows.Standalone.csproj", "{96E25C71-9E61-4131-98E1-EBF04F5A6D02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{634D7CA0-7D29-4D4A-9EEB-C79D03565A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{634D7CA0-7D29-4D4A-9EEB-C79D03565A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{634D7CA0-7D29-4D4A-9EEB-C79D03565A54}.Release|Any CPU.Build.0 = Release|Any CPU
-		{96E25C71-9E61-4131-98E1-EBF04F5A6D02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{96E25C71-9E61-4131-98E1-EBF04F5A6D02}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{96E25C71-9E61-4131-98E1-EBF04F5A6D02}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{96E25C71-9E61-4131-98E1-EBF04F5A6D02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
