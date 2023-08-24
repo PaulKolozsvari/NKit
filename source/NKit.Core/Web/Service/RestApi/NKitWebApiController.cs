@@ -293,6 +293,16 @@
             return _httpContextAccessor.HttpContext.Request.GetDisplayUrl(); //You need to have a using statement to include the GetDisplayUrl extendion method in your file: using Microsoft.AspNetCore.Http.Extensions
         }
 
+        protected virtual string GetUserAgent()
+        {
+            return GetHeader("User-Agent", throwExceptionOnNotFound: false);
+        }
+
+        protected virtual string GetUserHostAddress()
+        {
+            return _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+        }
+
         /// <summary>
         /// Gets the current web request's method (verb) e.g. GET, PUT, POST, DELETE.
         /// </summary>

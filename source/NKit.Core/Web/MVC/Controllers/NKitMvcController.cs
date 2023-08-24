@@ -557,7 +557,7 @@
 
         protected virtual string GetUserAgent()
         {
-            return _httpContextAccessor.HttpContext.Request.Headers["User-Agent"].ToString();
+            return GetHeader("User-Agent", throwExceptionOnNotFound: false);
         }
 
         protected virtual string GetUserHostAddress()
