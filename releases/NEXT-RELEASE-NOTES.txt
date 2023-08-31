@@ -1,3 +1,7 @@
 *   2022-08-24:
 
-    - Added GetUserAgent GetUserHostAddress methods to the NKitWebApiController controller.
+    -   Added GetUserAgent GetUserHostAddress methods to the NKitWebApiController controller.
+
+-   2023-08-31:
+
+    -   Fixed the Put and Post methods on the NKitWebApiControllerCrud to call the correct Save and Insert methods on the DbContext.

@@ -279,7 +279,7 @@
                 object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
                 LogWebRequest(requestName, serializedText);
                 OnBeforePut?.Invoke(this, new NKitRestApiPutEntityEventArgs(entityName, userName, DbContext, entityType, inputEntity));
-                DbContext.Save(entityType, new List<object>() { inputEntity });
+                DbContext.Save(entityType, inputEntity, null);
                 OnAfterPut?.Invoke(this, new NKitRestApiPutEntityEventArgs(entityName, userName, DbContext, entityType, inputEntity));
                 string responseMessage = string.Format("{0} saved successfully.", entityName);
                 LogWebResponse(requestName, responseMessage);
@@ -317,7 +317,7 @@
                 object inputEntity = GetSerializer().DeserializeFromText(entityType, GetNKitSerializerModelTypes(), serializedText);
                 LogWebRequest(requestName, serializedText);
                 OnBeforePost?.Invoke(this, new NKitRestApiPostEntityEventArgs(entityName, userName, DbContext, entityType, inputEntity));
-                DbContext.Insert(entityType, new List<object>() { inputEntity });
+                DbContext.Insert(entityType, inputEntity, null);
                 OnAfterPost?.Invoke(this, new NKitRestApiPostEntityEventArgs(entityName, userName, DbContext, entityType, inputEntity));
                 string responseMessage = string.Format("{0} inserted successfully.", entityName);
                 LogWebResponse(requestName, responseMessage);
