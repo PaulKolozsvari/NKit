@@ -9,3 +9,4 @@
 -   2023-10-04:
 
     -   Added extra GetConfirmationModelFromSearchParametersString overload in the NKitMvcController.cs
+    -   Added all Nuget packages to repository because some are no longer available on online Nuget.
