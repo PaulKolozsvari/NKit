@@ -162,6 +162,39 @@
         #region Methods
 
         /// <summary>
+        /// Serializes an object to text using the current serializer.
+        /// </summary>
+        /// <param name="entity">Object to serialize</param>
+        /// <returns>Returns the serialized text.</returns>
+        protected string SerializeToText(object entity)
+        {
+            return GetSerializer().SerializeToText(entity, GetNKitSerializerModelTypes());
+        }
+
+        /// <summary>
+        /// Deserializes a given text to an object of the specified type.
+        /// </summary>
+        /// <param name="type">The type to deserialize to.</param>
+        /// <param name="text">The text to deserialize.</param>
+        /// <returns>Returns the object that has been deserialized.</returns>
+        protected object DeserializeFromText(Type type, string text)
+        {
+            return GetSerializer().DeserializeFromText(type, GetNKitSerializerModelTypes(), text);
+        }
+
+        /// <summary>
+        /// Logs a web request to the Logger as well as to the NKitLogEntry database table, including all parameters of the current web request
+        /// e.g. server hostname, request URI, number of threads running etc.
+        /// </summary>
+        /// <param name="actionName">The name of the action handing the current web request/response.</param>
+        /// <param name="requestEntity">The object received in the web request (if any).</param>
+        protected void LogWebRequest(string actionName, object requestEntity, out string requestMessage)
+        {
+            requestMessage = requestEntity != null ? GetSerializer().SerializeToText(requestEntity, GetNKitSerializerModelTypes()) : null;
+            LogWebRequest(actionName, requestMessage);
+        }
+
+        /// <summary>
         /// Logs a web request to the Logger as well as to the NKitLogEntry database table, including all parameters of the current web request
         /// e.g. server hostname, request URI, number of threads running etc.
         /// </summary>
@@ -189,6 +222,34 @@
             if (_dbContext != null && _webApiControllerSettings.LogRequestsInDatabaseNKitLogEntry)
             {
                 _dbContext.LogWebActionActivityToNKitLogEntry(nameof(NKitWebApiController<D>), actionName, logMessage, new EventId(27, "Request"));
+            }
+        }
+
+        /// <summary>
+        /// Logs a web response to the Logger as well as to the NKitLogEntry database table, including all parameters of the current web request
+        /// e.g. server hostname, request URI, number of threads running etc.
+        /// </summary>
+        /// <param name="actionName">The name of the action handing the current web request/response.</param>
+        /// <param name="responseEntity">The object being returned in the web response.</param>
+        protected void LogWebResponse(string actionName, object responseEntity, out string responseMessage)
+        {
+            LogWebResponse(actionName, responseEntity, setResponseContentType: true, out responseMessage);
+        }
+
+        /// <summary>
+        /// Logs a web response to the Logger as well as to the NKitLogEntry database table, including all parameters of the current web request
+        /// e.g. server hostname, request URI, number of threads running etc.
+        /// </summary>
+        /// <param name="actionName">The name of the action handing the current web request/response.</param>
+        /// <param name="responseEntity">The object being returned in the web response.</param>
+        /// <param name="setResponseContentType">Whether or not to set the response content type based on the ResponseContentType in the WebApiControllerSettings.</param>
+        protected void LogWebResponse(string actionName, object responseEntity, bool setResponseContentType, out string responseMessage)
+        {
+            responseMessage = responseEntity != null ? GetSerializer().SerializeToText(responseEntity, GetNKitSerializerModelTypes()) : null;
+            LogWebResponse(actionName, responseMessage);
+            if (setResponseContentType)
+            {
+                Response.ContentType = WebApiControllerSettings.ResponseContentType;
             }
         }
 

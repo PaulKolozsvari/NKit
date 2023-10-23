@@ -10,3 +10,8 @@
 
     -   Added extra GetConfirmationModelFromSearchParametersString overload in the NKitMvcController.cs
     -   Added all Nuget packages to repository because some are no longer available on online Nuget.
+
+-   2023-10-23:
+
+    -   Added additional overloads for serializing and deserializing objects in the NKitWebApiController.
+    -   Added additional overloads for logging web requests and responses in the NKitWebApiController.
