@@ -1,13 +1,5 @@
 ﻿namespace NKit.Data.DB.SQLQuery
 {
-    #region Using Directives
-
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-
-    #endregion //Using Directives
-
     /// <summary>
     /// The direction to sort by when running a query.
     /// </summary>

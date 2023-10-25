@@ -4,27 +4,24 @@
 
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Data.Common;
-    using System.Data.SqlClient;
-    using System.Linq;
+    using System.Data;
     using System.Reflection.Emit;
     using System.Text;
-    using System.Threading.Tasks;
-    using NKit.Data.DB.SQLServer;
+    using NKit.Data.DB;
 
     #endregion //Using Directives
 
-    public class OrmAssemblySqlWindows : OrmAssemblyWindows
+    public class OrmAssemblySqlCore : OrmAssemblyCore
     {
         #region Constructors
 
-        public OrmAssemblySqlWindows(string assemblyName, AssemblyBuilderAccess assemblyBuilderAccess) :
+        public OrmAssemblySqlCore(string assemblyName, AssemblyBuilderAccess assemblyBuilderAccess) :
             base(assemblyName, assemblyBuilderAccess)
         {
         }
 
-        public OrmAssemblySqlWindows(string assemblyName, string assemblyFileName, AssemblyBuilderAccess assemblyBuilderAccess) :
+        public OrmAssemblySqlCore(string assemblyName, string assemblyFileName, AssemblyBuilderAccess assemblyBuilderAccess) :
             base(assemblyName, assemblyFileName, assemblyBuilderAccess)
         {
         }
@@ -42,13 +39,13 @@
 
         #region Methods
 
-        public OrmTypeWindows CreateOrmTypeFromSqlDataReader(
+        public OrmTypeCore CreateOrmTypeFromSqlDataReader(
             string typeName,
             DbDataReader reader,
             bool prefixWithAssemblyNamespace)
         {
             DataTable schemaTable = reader.GetSchemaTable();
-            OrmTypeWindows result = CreateOrmType(typeName, prefixWithAssemblyNamespace);
+            OrmTypeCore result = CreateOrmType(typeName, prefixWithAssemblyNamespace);
             foreach (DataRow r in schemaTable.Rows)
             {
                 string columnName = r[COLUMN_NAME_SCHEMA_ATTRIBUTE].ToString();
@@ -57,7 +54,7 @@
                 string dataTypeName = r[DATA_TYPE_NAME_SCHEMA_ATTRIBUTE].ToString();
                 result.CreateOrmProperty(
                     columnName,
-                    SqlTypeConverterWindows.Instance.GetDotNetType(dataTypeName, isNullable));
+                    SqlTypeConverterCore.Instance.GetDotNetType(dataTypeName, isNullable));
             }
             result.CreateType();
             return result;
