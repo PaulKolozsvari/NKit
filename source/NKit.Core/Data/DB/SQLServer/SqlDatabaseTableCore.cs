@@ -2,39 +2,37 @@
 {
     #region Using Directives
 
+    using Microsoft.EntityFrameworkCore.Metadata.Internal;
     using System;
-    using System.Linq;
     using System.Collections.Generic;
-    using System.Text;
-    using System.Reflection;
-    using NKit.Data.DB.SQLQuery;
-    using System.Data.SqlClient;
-    using System.Data;
     using System.Data.Common;
-    using NKit.Data.DB.SQLite;
+    using System.Data;
+    using System.Linq;
+    using System.Reflection;
+    using System.Text;
+    using System.Data.SqlClient;
 
     #endregion //Using Directives
 
-    [Serializable]
-    public class SqlDatabaseTableWindows : DatabaseTableWindows
+    public class SqlDatabaseTableCore : DatabaseTableCore
     {
         #region Constructors
 
-        public SqlDatabaseTableWindows() : base()
+        public SqlDatabaseTableCore() : base()
         {
         }
 
-        public SqlDatabaseTableWindows(string tableName, string connectionString) 
+        public SqlDatabaseTableCore(string tableName, string connectionString)
             : base(tableName, connectionString)
         {
         }
 
-        public SqlDatabaseTableWindows(DataRow schemaRow)
+        public SqlDatabaseTableCore(DataRow schemaRow)
             : base(schemaRow)
         {
         }
 
-        public SqlDatabaseTableWindows(DataRow schemaRow, string connectionString) 
+        public SqlDatabaseTableCore(DataRow schemaRow, string connectionString)
             : base(schemaRow, connectionString)
         {
         }
@@ -94,7 +92,7 @@
                     command.CommandType = System.Data.CommandType.Text;
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        result = DataHelperWindows.ParseReaderToEntities(reader, entityType, propertyNameFilter);
+                        result = DataHelperCore.ParseReaderToEntities(reader, entityType, propertyNameFilter);
                     }
                 }
             }
@@ -116,9 +114,9 @@
         }
 
         public int Insert(
-            object e, 
+            object e,
             bool disposeConnectionAfterExecute,
-            SqlConnection connection, 
+            SqlConnection connection,
             SqlTransaction transaction)
         {
             int result = -1;
@@ -157,7 +155,7 @@
                 {
                     value = DBNull.Value;
                 }
-                SqlDatabaseTableColumnWindows column = (SqlDatabaseTableColumnWindows)_columns[p.Name];
+                SqlDatabaseTableColumnCore column = (SqlDatabaseTableColumnCore)_columns[p.Name];
                 parameters.Add(new SqlParameter(string.Format("@{0}", p.Name), value) { SqlDbType = column.SqlDbType });
                 sqlInsertCommand.Append(string.Format("[{0}]", p.Name));
                 firstInsertColumn = false;
@@ -206,8 +204,8 @@
             }
             finally
             {
-                if (disposeConnectionAfterExecute && 
-                    connection != null && 
+                if (disposeConnectionAfterExecute &&
+                    connection != null &&
                     connection.State != ConnectionState.Closed)
                 {
                     connection.Dispose();
@@ -335,8 +333,8 @@
         }
 
         public int Delete(
-            object e, 
-            string columnName, 
+            object e,
+            string columnName,
             bool disposeConnectionAfterExecute,
             SqlConnection connection,
             SqlTransaction transaction)
@@ -368,7 +366,7 @@
                     {
                         continue;
                     }
-                    SqlDatabaseTableColumnWindows column = (SqlDatabaseTableColumnWindows)_columns[p.Name];
+                    SqlDatabaseTableColumnCore column = (SqlDatabaseTableColumnCore)_columns[p.Name];
                     if (!column.IsKey)
                     {
                         continue;
@@ -430,8 +428,8 @@
             }
             finally
             {
-                if (disposeConnectionAfterExecute && 
-                    connection != null && 
+                if (disposeConnectionAfterExecute &&
+                    connection != null &&
                     connection.State != ConnectionState.Closed)
                 {
                     connection.Dispose();
@@ -481,10 +479,10 @@
         }
 
         public int Update(
-            object e, 
-            string columnName, 
-            bool disposeConnectionAfterExecute, 
-            SqlConnection connection, 
+            object e,
+            string columnName,
+            bool disposeConnectionAfterExecute,
+            SqlConnection connection,
             SqlTransaction transaction)
         {
             int result = -1;
@@ -516,7 +514,7 @@
                 {
                     continue;
                 }
-                SqlDatabaseTableColumnWindows column = (SqlDatabaseTableColumnWindows)_columns[p.Name];
+                SqlDatabaseTableColumnCore column = (SqlDatabaseTableColumnCore)_columns[p.Name];
                 if (!firstUpdateColumn)
                 {
                     sqlUpdateCommand.AppendLine(",");
@@ -720,10 +718,10 @@
         public override void PopulateColumnsFromSchema(DataTable columnsSchema)
         {
             _columns.Clear();
-            List<DatabaseTableColumnWindows> tempColumns = new List<DatabaseTableColumnWindows>();
+            List<DatabaseTableColumnCore> tempColumns = new List<DatabaseTableColumnCore>();
             foreach (DataRow row in columnsSchema.Rows)
             {
-                tempColumns.Add(new SqlDatabaseTableColumnWindows(row));
+                tempColumns.Add(new SqlDatabaseTableColumnCore(row));
             }
             tempColumns.OrderBy(c => c.OrdinalPosition).ToList().ForEach(c => _columns.Add(c.ColumnName, c));
         }
@@ -742,10 +740,10 @@
                 }
                 _columns.Clear();
                 DataTable schema = connection.GetSchema("Columns", new string[] { null, null, _tableName, null });
-                List<DatabaseTableColumnWindows> tempColumns = new List<DatabaseTableColumnWindows>();
+                List<DatabaseTableColumnCore> tempColumns = new List<DatabaseTableColumnCore>();
                 foreach (DataRow row in schema.Rows)
                 {
-                    tempColumns.Add(new SqlDatabaseTableColumnWindows(row));
+                    tempColumns.Add(new SqlDatabaseTableColumnCore(row));
                 }
                 tempColumns.OrderBy(c => c.OrdinalPosition).ToList().ForEach(c => _columns.Add(c.ColumnName, c));
                 if (!(connection is SqlConnection))
@@ -762,7 +760,7 @@
                 }
                 foreach (string k in keyColumns)
                 {
-                    DatabaseTableColumnWindows c = _columns[k];
+                    DatabaseTableColumnCore c = _columns[k];
                     if (c == null)
                     {
                         throw new NullReferenceException(string.Format(
@@ -777,12 +775,12 @@
                 {
                     throw new InvalidCastException(string.Format("Expected connection to be a {0} in {1}.", typeof(SqlConnection).FullName, this.GetType().FullName));
                 }
-                EntityCacheGeneric<string, ForeignKeyInfoWindows> foreignKeys = sqlConnection.GetTableForeignKeys(_tableName);
-                foreach (ForeignKeyInfoWindows f in foreignKeys)
+                EntityCacheGeneric<string, ForeignKeyInfoCore> foreignKeys = sqlConnection.GetTableForeignKeys(_tableName);
+                foreach (ForeignKeyInfoCore f in foreignKeys)
                 {
                     if (_columns.Exists(f.ChildTableForeignKeyName))
                     {
-                        DatabaseTableColumnWindows c = _columns[f.ChildTableForeignKeyName];
+                        DatabaseTableColumnCore c = _columns[f.ChildTableForeignKeyName];
                         c.IsForeignKey = true;
                         c.ParentTableName = f.ParentTableName;
                         c.ParentTablePrimaryKeyName = f.ParentTablePrimaryKeyName;
@@ -883,9 +881,9 @@
                 {
                     continue;
                 }
-                SqlDatabaseTableColumnWindows c = new SqlDatabaseTableColumnWindows();
+                SqlDatabaseTableColumnCore c = new SqlDatabaseTableColumnCore();
                 c.ColumnName = p.Name;
-                c.DataType = SqlTypeConverterWindows.Instance.GetSqlTypeNameFromDotNetType(
+                c.DataType = SqlTypeConverterCore.Instance.GetSqlTypeNameFromDotNetType(
                     p.PropertyType,
                     EntityReader.IsTypeIsNullable(p.PropertyType));
                 _columns.Add(c);
@@ -898,12 +896,12 @@
             {
                 return;
             }
-            string sqlTypeName = SqlTypeConverterWindows.Instance.GetSqlTypeNameFromDotNetType(dotNetType, EntityReader.IsTypeIsNullable(dotNetType));
+            string sqlTypeName = SqlTypeConverterCore.Instance.GetSqlTypeNameFromDotNetType(dotNetType, EntityReader.IsTypeIsNullable(dotNetType));
             if (string.IsNullOrEmpty(sqlTypeName))
             {
                 return;
             }
-            SqlDatabaseTableColumnWindows c = new SqlDatabaseTableColumnWindows();
+            SqlDatabaseTableColumnCore c = new SqlDatabaseTableColumnCore();
             c.ColumnName = columnName;
             c.DataType = sqlTypeName;
             _columns.Add(c);
@@ -914,7 +912,7 @@
             StringBuilder result = new StringBuilder();
             string tableScript = string.Format("CREATE TABLE IF NOT EXISTS {0}(", _tableName);
             result.AppendLine(tableScript);
-            foreach (SqlDatabaseTableColumnWindows column in _columns)
+            foreach (SqlDatabaseTableColumnCore column in _columns)
             {
                 string columnScript = string.Format("{0} {1},", column.ColumnName, column.DataType);
                 result.AppendLine(columnScript);
@@ -941,7 +939,7 @@
             result.AppendLine(sqlScript);
             int i = 0;
             int columnsCount = _columns.Count;
-            foreach (SqlDatabaseTableColumnWindows column in _columns)
+            foreach (SqlDatabaseTableColumnCore column in _columns)
             {
                 string columnScript = column.ColumnName;
                 if (i < (columnsCount - 1))
@@ -960,7 +958,7 @@
             List<string> result = new List<string>();
             int i = 0;
             int columnsCount = _columns.Count;
-            foreach (SqlDatabaseTableColumnWindows column in _columns)
+            foreach (SqlDatabaseTableColumnCore column in _columns)
             {
                 string sqlScript = $"CREATE INDEX {column.ColumnName}Index ON {_tableName} ({column.ColumnName});";
                 result.Add(sqlScript);
