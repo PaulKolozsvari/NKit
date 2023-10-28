@@ -10,6 +10,7 @@
     using System.Text;
     using NKit.Data.ORM;
     using NKit.Data.DB.SQLQuery;
+    using NKit.Data.DB.SQLServer;
 
     #endregion //Using Directives
 

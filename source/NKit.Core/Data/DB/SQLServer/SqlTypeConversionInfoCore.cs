@@ -1,4 +1,4 @@
-﻿namespace NKit.Data.DB
+﻿namespace NKit.Data.DB.SQLServer
 {
     #region Using Directives
 

@@ -23,3 +23,7 @@
 -   2023-10-26:
 
     -   Porting over dynamic Sql Server classses related to tables, and columns and reflection from NKit.Windows to NKit.Core.
+
+-   2023-10-28:
+
+    -   Ported over Sqlite classes related to tables, columns and reflection from NKit.Windows to NKit.Core.

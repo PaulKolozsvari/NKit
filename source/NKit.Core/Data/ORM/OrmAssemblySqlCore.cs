@@ -8,7 +8,7 @@
     using System.Data;
     using System.Reflection.Emit;
     using System.Text;
-    using NKit.Data.DB;
+    using NKit.Data.DB.SQLServer;
 
     #endregion //Using Directives
 
