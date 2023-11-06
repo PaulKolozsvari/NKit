@@ -5,6 +5,7 @@
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -39,8 +40,9 @@
             IOptions<NKitLoggingSettings> loggingOptions,
             IOptions<NKitWebApiClientSettings> webApiClientOptions,
             NKitEmailClientService emailClientService,
-            ILogger logger) :
-            base(dbContext, httpContextAccessor, generalOptions, webApiControllerOptions, databaseOptions, emailOptions, loggingOptions, webApiClientOptions, emailClientService, logger)
+            ILogger logger,
+            IWebHostEnvironment environment) :
+            base(dbContext, httpContextAccessor, generalOptions, webApiControllerOptions, databaseOptions, emailOptions, loggingOptions, webApiClientOptions, emailClientService, logger, environment)
         {
         }
 

@@ -25,6 +25,9 @@
     using NKit.Utilities.Serialization;
     using NKit.Utilities.Email;
     using NKit.Settings.Default;
+    using NKit.Web.MVC.Models;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Hosting;
 
     #endregion //Using Directives
 
@@ -51,7 +54,8 @@
             IOptions<NKitLoggingSettings> loggingOptions,
             IOptions<NKitWebApiClientSettings> webApiClientOptions,
             NKitEmailClientService emailClientService,
-            ILogger logger)
+            ILogger logger,
+            IWebHostEnvironment environment)
         {
             DataValidator.ValidateObjectNotNull(dbContext, nameof(dbContext), nameof(NKitWebApiController<D>));
             DataValidator.ValidateObjectNotNull(httpContextAccessor, nameof(httpContextAccessor), nameof(NKitWebApiController<D>));
@@ -77,6 +81,8 @@
 
             _emailClientService = emailClientService;
             _logger = logger;
+
+            _environment = environment;
         }
 
         #endregion //Constructors
@@ -87,6 +93,7 @@
 
         private readonly NKitEmailClientService _emailClientService;
         private readonly ILogger _logger;
+        private readonly IWebHostEnvironment _environment;
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly D _dbContext;
@@ -126,6 +133,11 @@
         /// The NKitDbContext which can be used to access data in the database.
         /// </summary>
         protected D DbContext { get { return _dbContext; } }
+
+        /// <summary>
+        /// Provides information about a web hosting environment the application is running in.
+        /// </summary>
+        public IWebHostEnvironment Environment { get { return _environment; } }
 
         /// <summary>
         /// The NKitGeneralSettings settings that were configured in the appsettings.json file.
@@ -180,6 +192,41 @@
         protected object DeserializeFromText(Type type, string text)
         {
             return GetSerializer().DeserializeFromText(type, GetNKitSerializerModelTypes(), text);
+        }
+
+        public bool IsRequestAuthenticated()
+        {
+            return (this.User != null) && (this.User.Identity != null) && this.User.Identity.IsAuthenticated;
+        }
+
+        protected virtual void HandleException(Exception ex)
+        {
+            ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService, DbContext);
+        }
+
+        public string GetAbsoluteFilePathFromRequest(string relativePath)
+        {
+            return Request.PathBase + relativePath[1..]; //https://stackoverflow.com/questions/50603901/asp-net-core-replacement-for-virtualpathutility
+        }
+
+        /// <summary>
+        /// Gets all the absolute file paths of all the files in the sub directory specified within the web root directory i.e. wwwroot.
+        /// </summary>
+        /// <param name="relativeDirectoryPath"></param>
+        /// <returns></returns>
+        public string[] GetAbsoluteFilesPathsInWebRootDirectory(string relativeDirectoryPath)
+        {
+            return Directory.GetFiles(Path.Combine(Environment.WebRootPath, relativeDirectoryPath));
+        }
+
+        /// <summary>
+        /// Gets the absolute file path of a file in the web root directory (i.e. wwwroot) given the relative file path.
+        /// </summary>
+        /// <param name="relativeFilePath"></param>
+        /// <returns></returns>
+        public string GetAbsoluteFilePathInWebRootDirectory(string relativeFilePath)
+        {
+            return Path.Combine(Environment.WebRootPath, relativeFilePath);
         }
 
         /// <summary>
@@ -354,6 +401,33 @@
             return _httpContextAccessor.HttpContext.Request.GetDisplayUrl(); //You need to have a using statement to include the GetDisplayUrl extendion method in your file: using Microsoft.AspNetCore.Http.Extensions
         }
 
+        protected virtual string GetCurrentActionName()
+        {
+            string result = this.ControllerContext.RouteData.Values["action"].ToString();
+            return result;
+        }
+
+        protected virtual string GetCurrentControllerName()
+        {
+            string result = this.ControllerContext.RouteData.Values["controller"].ToString();
+            return result;
+        }
+
+        protected virtual string GetWebRequestVerb()
+        {
+            return _httpContextAccessor.HttpContext.Request.Method;
+        }
+
+        protected virtual string GetFullRequestUrl()
+        {
+            return _httpContextAccessor.HttpContext.Request.GetDisplayUrl(); //You need to have a using statement to include the GetDisplayUrl extendion method in your file: using Microsoft.AspNetCore.Http.Extensions
+        }
+
+        protected virtual string GetFullRequestReferrerUrl()
+        {
+            return _httpContextAccessor.HttpContext.Request.Headers["Referer"].ToString();
+        }
+
         protected virtual string GetUserAgent()
         {
             return GetHeader("User-Agent", throwExceptionOnNotFound: false);
@@ -362,6 +436,11 @@
         protected virtual string GetUserHostAddress()
         {
             return _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
+        }
+
+        protected virtual string GetUserHostName()
+        {
+            return _httpContextAccessor.HttpContext.Request.Host.Host;
         }
 
         /// <summary>

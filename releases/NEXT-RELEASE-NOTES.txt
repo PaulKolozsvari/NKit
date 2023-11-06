@@ -27,3 +27,7 @@
 -   2023-10-28:
 
     -   Ported over Sqlite classes related to tables, columns and reflection from NKit.Windows to NKit.Core.
+
+-   2023-11-06:
+
+    -   Copied some of the methods from the NKIT MVC controller to the API controller for getting the current action, coller name, URL, host name etc.
