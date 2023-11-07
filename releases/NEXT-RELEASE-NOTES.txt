@@ -31,3 +31,7 @@
 -   2023-11-06:
 
     -   Copied some of the methods from the NKIT MVC controller to the API controller for getting the current action, coller name, URL, host name etc.
+
+-   2023-11-07:
+
+    -   Changed the NKitWebApiController.IsRequestAuthenticated, and .GetAbsoluteFilePathFromRequest and other methods from public to protected to avoid ambiguity and not confuse them with web service actions.

@@ -170,13 +170,13 @@
         /// <summary>
         /// Provides information about a web hosting environment the application is running in.
         /// </summary>
-        public IWebHostEnvironment Environment { get { return _environment; } }
+        protected IWebHostEnvironment Environment { get { return _environment; } }
 
         #endregion //Properties
 
         #region Methods
 
-        public bool IsRequestAuthenticated()
+        protected bool IsRequestAuthenticated()
         {
             return (this.User != null) && (this.User.Identity != null) && this.User.Identity.IsAuthenticated;
         }
@@ -192,7 +192,7 @@
             return RedirectToError(ex.Message);
         }
 
-        public string GetAbsoluteFilePathFromRequest(string relativePath)
+        protected string GetAbsoluteFilePathFromRequest(string relativePath)
         {
             return Request.PathBase + relativePath[1..]; //https://stackoverflow.com/questions/50603901/asp-net-core-replacement-for-virtualpathutility
         }
@@ -202,7 +202,7 @@
         /// </summary>
         /// <param name="relativeDirectoryPath"></param>
         /// <returns></returns>
-        public string[] GetAbsoluteFilesPathsInWebRootDirectory(string relativeDirectoryPath)
+        protected string[] GetAbsoluteFilesPathsInWebRootDirectory(string relativeDirectoryPath)
         {
             return Directory.GetFiles(Path.Combine(Environment.WebRootPath, relativeDirectoryPath));
         }
@@ -212,7 +212,7 @@
         /// </summary>
         /// <param name="relativeFilePath"></param>
         /// <returns></returns>
-        public string GetAbsoluteFilePathInWebRootDirectory(string relativeFilePath)
+        protected string GetAbsoluteFilePathInWebRootDirectory(string relativeFilePath)
         {
             return Path.Combine(Environment.WebRootPath, relativeFilePath);
         }
@@ -298,7 +298,7 @@
             return result.ToString();
         }
 
-        public async Task<string> GetRequestBodyAsync()
+        protected async Task<string> GetRequestBodyAsync()
         {
             string result = string.Empty;
             Request.EnableBuffering();
@@ -310,7 +310,7 @@
             return result;
         }
 
-        public string GetRequestBody()
+        protected string GetRequestBody()
         {
             string result = string.Empty;
             Request.EnableBuffering();

@@ -137,7 +137,7 @@
         /// <summary>
         /// Provides information about a web hosting environment the application is running in.
         /// </summary>
-        public IWebHostEnvironment Environment { get { return _environment; } }
+        protected IWebHostEnvironment Environment { get { return _environment; } }
 
         /// <summary>
         /// The NKitGeneralSettings settings that were configured in the appsettings.json file.
@@ -194,7 +194,7 @@
             return GetSerializer().DeserializeFromText(type, GetNKitSerializerModelTypes(), text);
         }
 
-        public bool IsRequestAuthenticated()
+        protected bool IsRequestAuthenticated()
         {
             return (this.User != null) && (this.User.Identity != null) && this.User.Identity.IsAuthenticated;
         }
@@ -204,7 +204,7 @@
             ExceptionHandlerCore.HandleException(Logger, ex, DbContext.GetErrorEmailNotificationRecipientsFailSafe(), EmailClientService, DbContext);
         }
 
-        public string GetAbsoluteFilePathFromRequest(string relativePath)
+        protected string GetAbsoluteFilePathFromRequest(string relativePath)
         {
             return Request.PathBase + relativePath[1..]; //https://stackoverflow.com/questions/50603901/asp-net-core-replacement-for-virtualpathutility
         }
@@ -214,7 +214,7 @@
         /// </summary>
         /// <param name="relativeDirectoryPath"></param>
         /// <returns></returns>
-        public string[] GetAbsoluteFilesPathsInWebRootDirectory(string relativeDirectoryPath)
+        protected string[] GetAbsoluteFilesPathsInWebRootDirectory(string relativeDirectoryPath)
         {
             return Directory.GetFiles(Path.Combine(Environment.WebRootPath, relativeDirectoryPath));
         }
@@ -224,7 +224,7 @@
         /// </summary>
         /// <param name="relativeFilePath"></param>
         /// <returns></returns>
-        public string GetAbsoluteFilePathInWebRootDirectory(string relativeFilePath)
+        protected string GetAbsoluteFilePathInWebRootDirectory(string relativeFilePath)
         {
             return Path.Combine(Environment.WebRootPath, relativeFilePath);
         }
