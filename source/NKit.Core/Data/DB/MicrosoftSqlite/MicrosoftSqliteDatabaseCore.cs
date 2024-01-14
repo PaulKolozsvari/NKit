@@ -1,4 +1,4 @@
-﻿namespace NKit.Data.DB.SQLite
+﻿namespace NKit.Data.DB.MicrosoftSqlite
 {
     #region Using Directives
 
@@ -6,28 +6,30 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Data;
-    using System.Reflection.Emit;
-    using System.Text;
-    using System.Xml.Linq;
-    using NKit.Data.DB.SQLQuery;
-    using System.Data.SQLite;
-    using NKit.Data.ORM;
-    using System.IO;
     using System.Linq;
-    using NKit.Utilities;
+    using System.Reflection.Emit;
+    using NKit.Data.DB.SQLQuery;
+    using NKit.Data.ORM;
+    using Microsoft.Data.Sqlite;
+    using System.IO;
+    using System.Xml.Linq;
+    using System.Data.SqlClient;
+    using Microsoft.EntityFrameworkCore.Metadata.Internal;
+    using Microsoft.EntityFrameworkCore.Diagnostics;
+    using System.ComponentModel.DataAnnotations;
 
     #endregion //Using Directives
 
     [Serializable]
-    public class SqliteDatabaseCore : DatabaseCore
+    public class MicrosoftSqliteDatabaseCore : DatabaseCore
     {
         #region Constructors
 
-        public SqliteDatabaseCore()
+        public MicrosoftSqliteDatabaseCore()
         {
         }
 
-        public SqliteDatabaseCore(
+        public MicrosoftSqliteDatabaseCore(
             string connectionString,
             bool populateTablesFromSchema,
             bool createOrmAssembly,
@@ -46,7 +48,7 @@
         {
         }
 
-        public SqliteDatabaseCore(
+        public MicrosoftSqliteDatabaseCore(
             string name,
             string connectionString,
             bool populateTablesFromSchema,
@@ -85,7 +87,7 @@
         {
             _tables = new EntityCacheGeneric<string, DatabaseTableCore>();
             _connectionString = connectionString;
-            using (SQLiteConnection connection = new SQLiteConnection(_connectionString, parseViaFramework: true))
+            using (SqliteConnection connection = new SqliteConnection(_connectionString))
             {
                 PublishFeedback(string.Format("Opening connection to {0} ...", _connectionString));
                 connection.Open();
@@ -104,28 +106,28 @@
                     PublishFeedback("Generating ORM assembly ...");
                     CreateOrmAssembly(saveOrmAssembly, ormAssemblyOutputDirectory);
                 }
-            }   
+            }
         }
 
-        public SqliteDatabaseTableGenericCore<E> GetSqlDatabaseTable<E>() where E : class
+        public MicrosoftSqliteDatabaseTableGenericCore<E> GetSqlDatabaseTable<E>() where E : class
         {
             return GetSqlDatabaseTable<E>(typeof(E).Name);
         }
 
-        public SqliteDatabaseTableGenericCore<E> GetSqlDatabaseTable<E>(string tableName) where E : class
+        public MicrosoftSqliteDatabaseTableGenericCore<E> GetSqlDatabaseTable<E>(string tableName) where E : class
         {
             if (!_tables.Exists(tableName))
             {
                 return null;
             }
-            SqliteDatabaseTableGenericCore<E> result = _tables[tableName] as SqliteDatabaseTableGenericCore<E>;
+            MicrosoftSqliteDatabaseTableGenericCore<E> result = _tables[tableName] as MicrosoftSqliteDatabaseTableGenericCore<E>;
             if (result == null)
             {
                 throw new InvalidCastException(string.Format(
                     "Unexpected table type in {0}. Could not type cast {1} to a {2}.",
                     this.GetType().FullName,
                     typeof(DatabaseCore).FullName,
-                    typeof(SqliteDatabaseTableGenericCore<E>).FullName));
+                    typeof(MicrosoftSqliteDatabaseTableGenericCore<E>).FullName));
             }
             return result;
         }
@@ -135,22 +137,22 @@
             _tables.Add(table);
         }
 
-        public SqliteDatabaseTableGenericCore<E> AddTable<E>() where E : class
+        public MicrosoftSqliteDatabaseTableGenericCore<E> AddTable<E>() where E : class
         {
             return AddTable<E>(typeof(E).Name);
         }
 
-        public SqliteDatabaseTableGenericCore<E> AddTable<E>(string tableName) where E : class
+        public MicrosoftSqliteDatabaseTableGenericCore<E> AddTable<E>(string tableName) where E : class
         {
             if (_tables.Exists(tableName))
             {
                 throw new Exception(string.Format(
                     "{0} with name {1} already added to {2}.",
-                    typeof(SqliteDatabaseTableGenericCore<E>).FullName,
+                    typeof(MicrosoftSqliteDatabaseTableGenericCore<E>).FullName,
                     tableName,
                     this.GetType().FullName));
             }
-            SqliteDatabaseTableGenericCore<E> table = new SqliteDatabaseTableGenericCore<E>(tableName, _connectionString);
+            MicrosoftSqliteDatabaseTableGenericCore<E> table = new MicrosoftSqliteDatabaseTableGenericCore<E>(tableName, _connectionString);
             _tables.Add(table);
             return table;
         }
@@ -184,13 +186,13 @@
                     AssemblyBuilderAccess.RunAndCollect));
             }
             List<object> result = null;
-            using (SQLiteConnection connection = new SQLiteConnection(_connectionString))
+            using (SqliteConnection connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
-                using (SQLiteCommand command = new SQLiteCommand(sqlQueryString, connection))
+                using (SqliteCommand command = new SqliteCommand(sqlQueryString, connection))
                 {
                     command.CommandType = System.Data.CommandType.Text;
-                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    using (SqliteDataReader reader = command.ExecuteReader())
                     {
                         ormCollecibleType = ormCollectibleAssembly.CreateOrmTypeFromSqlDataReader(typeName, reader, true);
                         result = DataHelperCore.ParseReaderToEntities(reader, ormCollecibleType.DotNetType, propertyNameFilter);
@@ -208,14 +210,14 @@
                 return new List<object>();
             }
             List<object> result = null;
-            using (SQLiteConnection connection = new SQLiteConnection(_connectionString))
+            using (SqliteConnection connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
-                using (SQLiteCommand command = new SQLiteCommand(query.SqlQueryString, connection))
+                using (SqliteCommand command = new SqliteCommand(query.SqlQueryString, connection))
                 {
                     query.SqlParameters.ForEach(p => command.Parameters.Add(p));
                     command.CommandType = System.Data.CommandType.Text;
-                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    using (SqliteDataReader reader = command.ExecuteReader())
                     {
                         result = DataHelperCore.ParseReaderToEntities(reader, entityType, propertyNameFilter);
                     }
@@ -235,7 +237,7 @@
             {
                 if (connection == null)
                 {
-                    connection = new SQLiteConnection(_connectionString);
+                    connection = new SqliteConnection(_connectionString);
                 }
                 if (connection == null)
                 {
@@ -250,14 +252,14 @@
                     throw new Exception($"Could not open connection to Sqlite: {_connectionString}");
                 }
                 string sqlQuery = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{tableName}';";
-                using (SQLiteCommand command = new SQLiteCommand(sqlQuery, (SQLiteConnection)connection))
+                using (SqliteCommand command = new SqliteCommand(sqlQuery, (SqliteConnection)connection))
                 {
                     if (transaction != null)
                     {
-                        command.Transaction = (SQLiteTransaction)transaction;
+                        command.Transaction = (SqliteTransaction)transaction;
                     }
                     command.CommandType = System.Data.CommandType.Text;
-                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    using (SqliteDataReader reader = command.ExecuteReader())
                     {
                         result = reader != null ? reader.Read() : false;
                     }
@@ -293,7 +295,7 @@
                 }
                 if (connection == null)
                 {
-                    connection = new SQLiteConnection(_connectionString);
+                    connection = new SqliteConnection(_connectionString);
                 }
                 if (connection == null)
                 {
@@ -307,15 +309,15 @@
                 {
                     throw new Exception($"Could not open connection to Sqlite: {_connectionString}");
                 }
-                using (SQLiteCommand command = new SQLiteCommand(query.SqlQueryString, (SQLiteConnection)connection))
+                using (SqliteCommand command = new SqliteCommand(query.SqlQueryString, (SqliteConnection)connection))
                 {
                     if (transaction != null)
                     {
-                        command.Transaction = (SQLiteTransaction)transaction;
+                        command.Transaction = (SqliteTransaction)transaction;
                     }
                     query.SqlParameters.ForEach(p => command.Parameters.Add(p));
                     command.CommandType = System.Data.CommandType.Text;
-                    using (SQLiteDataReader reader = command.ExecuteReader())
+                    using (SqliteDataReader reader = command.ExecuteReader())
                     {
                         result = DataHelperCore.ParseReaderToEntities(reader, entityType, propertyNameFilter);
                     }
@@ -341,7 +343,7 @@
             DbConnection connection,
             DbTransaction transaction) where E : class
         {
-            SqliteDatabaseTableGenericCore<E> table = GetSqlDatabaseTable<E>();
+            MicrosoftSqliteDatabaseTableGenericCore<E> table = GetSqlDatabaseTable<E>();
             if (table == null)
             {
                 throw new NullReferenceException(string.Format(
@@ -364,7 +366,7 @@
             DbConnection connection,
             DbTransaction transaction) where E : class
         {
-            SqliteDatabaseTableGenericCore<E> table = GetSqlDatabaseTable<E>();
+            MicrosoftSqliteDatabaseTableGenericCore<E> table = GetSqlDatabaseTable<E>();
             if (table == null)
             {
                 throw new NullReferenceException(string.Format(
@@ -382,10 +384,10 @@
         {
             int result = -1;
             List<DatabaseTableCore> tablesMentioned = GetTablesMentionedInQuery(query);
-            using (SQLiteConnection connection = new SQLiteConnection(_connectionString))
+            using (SqliteConnection connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
-                using (SQLiteCommand command = new SQLiteCommand(query.SqlQueryString, connection))
+                using (SqliteCommand command = new SqliteCommand(query.SqlQueryString, connection))
                 {
                     query.SqlParameters.ForEach(p => command.Parameters.Add(p));
                     result = command.ExecuteNonQuery();
@@ -396,7 +398,7 @@
 
         public DataTable GetSchema()
         {
-            using (SQLiteConnection connection = new SQLiteConnection(_connectionString))
+            using (SqliteConnection connection = new SqliteConnection(_connectionString))
             {
                 connection.Close();
                 return connection.GetSchema();
@@ -411,7 +413,7 @@
             {
                 if (connection == null)
                 {
-                    connection = new SQLiteConnection(_connectionString);
+                    connection = new SqliteConnection(_connectionString);
                 }
                 if (connection == null)
                 {
@@ -458,7 +460,7 @@
             {
                 if (connection == null)
                 {
-                    connection = new SQLiteConnection(_connectionString);
+                    connection = new SqliteConnection(_connectionString);
                 }
                 if (connection == null)
                 {
@@ -500,7 +502,7 @@
             {
                 if (connection == null)
                 {
-                    connection = new SQLiteConnection(_connectionString);
+                    connection = new SqliteConnection(_connectionString);
                 }
                 if (connection == null)
                 {
@@ -514,11 +516,16 @@
                 {
                     throw new Exception($"Could not open connection to Sqlite: {_connectionString}");
                 }
-                DataTable schema = connection.GetSchema("Tables");
+                /*
+                 * GetSchema: Not implemented on Microsoft.Data.Sqlite: https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/adonet-limitations
+                 * https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/metadata
+                 */
+                //DataTable schema = connection.GetSchema("Tables");
+                Dictionary<string, List<MicrosoftSqliteDatabaseTableColumnCore>> databaseSchema = GetSqliteDatabaseSchema(connection);
                 _tables.Clear();
-                foreach (DataRow row in schema.Rows)
+                foreach (string tableName in databaseSchema.Keys)
                 {
-                    SqliteDatabaseTableGenericCore<object> table = new SqliteDatabaseTableGenericCore<object>(row, _connectionString);
+                    MicrosoftSqliteDatabaseTableGenericCore<object> table = new MicrosoftSqliteDatabaseTableGenericCore<object>(tableName, _connectionString);
                     if (table.IsSystemTable)
                     {
                         continue;
@@ -527,15 +534,18 @@
                     {
                         throw new Exception(string.Format(
                             "{0} with name {1} already added to {2}.",
-                            typeof(SqliteDatabaseTableGenericCore<object>).FullName,
+                            typeof(MicrosoftSqliteDatabaseTableGenericCore<object>).FullName,
                             table.TableName,
                             this.GetType().FullName));
                     };
+                    if (includeColumns)
+                    {
+                        foreach (MicrosoftSqliteDatabaseTableColumnCore column in databaseSchema[tableName])
+                        {
+                            table.Columns.Add(column);
+                        }
+                    }
                     _tables.Add(table.TableName, table);
-                }
-                if (includeColumns)
-                {
-                    _tables.ToList().ForEach(t => t.PopulateColumnsFromSchema(connection, false));
                 }
                 PopulateChildrenTables();
             }
@@ -548,6 +558,49 @@
                     connection.Dispose();
                 }
             }
+        }
+
+        private Dictionary<string, List<MicrosoftSqliteDatabaseTableColumnCore>> GetSqliteDatabaseSchema(DbConnection connection)
+        {
+            //This query will retrieve metadata about all the columns in the database: https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/metadata
+            string sqlQueryString = @"SELECT t.name AS tbl_name, c.name, c.cid, c.type, c.dflt_value, c.pk FROM sqlite_master AS t, pragma_table_info(t.name) AS c WHERE t.type = 'table';";
+            Dictionary<string, List<MicrosoftSqliteDatabaseTableColumnCore>> result = new Dictionary<string, List<MicrosoftSqliteDatabaseTableColumnCore>>();
+            connection.Open();
+            using (SqliteCommand command = new SqliteCommand(sqlQueryString, (SqliteConnection)connection))
+            {
+                command.CommandType = System.Data.CommandType.Text;
+                using (SqliteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            string tableName = reader.GetString(0);
+                            string columnName = reader.GetString(1);
+                            short ordinalPosition = reader.GetInt16(2);
+                            string sqlTypeName = reader.GetString(3);
+                            DbType sqlDbType = MicrosoftSqliteTypeConverterCore.Instance.GetSqlDbType(sqlTypeName);
+                            SqliteType microsoftSqliteType = MicrosoftSqliteTypeConverterCore.Instance.GetMicrosoftSqliteType(sqlTypeName);
+                            if (!result.ContainsKey(tableName))
+                            {
+                                result.Add(tableName, null);
+                                result[tableName] = new List<MicrosoftSqliteDatabaseTableColumnCore>();
+                            }
+                            MicrosoftSqliteDatabaseTableColumnCore column = new MicrosoftSqliteDatabaseTableColumnCore()
+                            {
+                                ParentTableName = tableName,
+                                OrdinalPosition = ordinalPosition,
+                                ColumnName = columnName,
+                                SqlDbType = sqlDbType,
+                                MicrosoftSqliteType = microsoftSqliteType,
+                                ColumnDefault = null
+                            };
+                            result[tableName].Add(column);
+                        }
+                    }
+                }
+            }
+            return result;
         }
 
         private void PopulateChildrenTables()
@@ -577,10 +630,10 @@
         public override List<DatabaseTableKeyColumnsCore> GetTableKeyColumns()
         {
             List<DatabaseTableKeyColumnsCore> result = new List<DatabaseTableKeyColumnsCore>();
-            foreach (SqliteDatabaseTableCore t in _tables)
+            foreach (MicrosoftSqliteDatabaseTableCore t in _tables)
             {
                 DatabaseTableKeyColumnsCore tableKeyColumns = new DatabaseTableKeyColumnsCore(t.TableName);
-                foreach (SqliteDatabaseTableColumnCore c in t.Columns)
+                foreach (MicrosoftSqliteDatabaseTableColumnCore c in t.Columns)
                 {
                     if (c.IsKey)
                     {
@@ -595,7 +648,7 @@
         public override List<DatabaseTableForeignKeyColumnsCore> GetTableForeignKeyColumns()
         {
             List<DatabaseTableForeignKeyColumnsCore> result = new List<DatabaseTableForeignKeyColumnsCore>();
-            foreach (SqliteDatabaseTableCore t in _tables)
+            foreach (MicrosoftSqliteDatabaseTableCore t in _tables)
             {
                 DatabaseTableForeignKeyColumnsCore foreignKeyColumns = new DatabaseTableForeignKeyColumnsCore(t.TableName);
                 t.GetForeignKeyColumns().ToList().ForEach(c => foreignKeyColumns.ForeignKeys.Add(new ForeignKeyInfoCore()

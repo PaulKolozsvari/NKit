@@ -45,7 +45,7 @@
             //Add(new SqliteTypeConversionInfoCore("date", typeof(SqlDateTime), DbType.Date, typeof(DateTime)));
             Add(new SqliteTypeConversionInfoCore("datetime", typeof(SqlDateTime), DbType.DateTime, typeof(DateTime)));
             Add(new SqliteTypeConversionInfoCore("datetime2", typeof(SqlDateTime), DbType.DateTime2, typeof(DateTime)));
-            Add(new SqliteTypeConversionInfoCore("DATETIMEOFFSET", typeof(SqlDateTime), DbType.DateTimeOffset, typeof(DateTimeOffset)));
+            Add(new SqliteTypeConversionInfoCore("datetimeoffset", typeof(SqlDateTime), DbType.DateTimeOffset, typeof(DateTimeOffset)));
             Add(new SqliteTypeConversionInfoCore("decimal", typeof(SqlDecimal), DbType.Decimal, typeof(Decimal)));
             Add(new SqliteTypeConversionInfoCore("float", typeof(SqlDouble), DbType.Double, typeof(Double)));
             //Add(new SqlTypeConversionInfo("geography", typeof(SqlGeography),typeof(null)));
@@ -91,6 +91,7 @@
 
         public Type GetDotNetType(string sqlTypeName, bool isNullable)
         {
+            sqlTypeName = sqlTypeName != null ? sqlTypeName.ToLower() : string.Empty;
             if (!Exists(sqlTypeName))
             {
                 throw new ArgumentException(string.Format(
@@ -149,6 +150,7 @@
 
         public Type GetSqlType(string sqlTypeName, bool isNullable)
         {
+            sqlTypeName = sqlTypeName != null ? sqlTypeName.ToLower() : string.Empty;
             if (!Exists(sqlTypeName))
             {
                 throw new ArgumentException(string.Format(
@@ -258,6 +260,7 @@
 
         public DbType GetSqlDbType(string sqlTypeName)
         {
+            sqlTypeName = sqlTypeName != null ? sqlTypeName.ToLower() : string.Empty;
             if (!Exists(sqlTypeName))
             {
                 throw new ArgumentException(string.Format(

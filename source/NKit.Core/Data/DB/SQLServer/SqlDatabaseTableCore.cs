@@ -817,7 +817,7 @@
                     command.CommandType = System.Data.CommandType.StoredProcedure;
                     command.Parameters.Add(new SqlParameter("@table_name", _tableName) { Direction = ParameterDirection.Input });
                     //command.Parameters.Add(new SqlParameter("@table_owner", "dbo") { Direction = ParameterDirection.Input });
-                    //command.Parameters.Add(new SqlParameter("@table_qualifier", "DigisticsStoreDelivery") { Direction = ParameterDirection.Input });
+                    //command.Parameters.Add(new SqlParameter("@table_qualifier", "value") { Direction = ParameterDirection.Input });
                     //using (SqlDataReader reader = command.ExecuteReader(CommandBehavior.SchemaOnly | CommandBehavior.KeyInfo))
                     using (SqlDataReader reader = command.ExecuteReader())
                     {

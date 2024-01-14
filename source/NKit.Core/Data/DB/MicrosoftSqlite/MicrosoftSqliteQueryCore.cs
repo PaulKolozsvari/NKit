@@ -1,28 +1,28 @@
-﻿namespace NKit.Data.DB.SQLite
+﻿namespace NKit.Data.DB.MicrosoftSqlite
 {
     #region Using Directives
 
     using System;
     using System.Collections.Generic;
     using System.Text;
+    using Microsoft.Data.Sqlite;
     using NKit.Data.DB.SQLQuery;
-    using System.Data.SQLite;
 
     #endregion //Using Directives
 
-    public class SqliteQueryCore : QueryCore
+    public class MicrosoftSqliteQueryCore : QueryCore
     {
         #region Constructors
 
-        public SqliteQueryCore() : base()
+        public MicrosoftSqliteQueryCore() : base()
         {
         }
 
-        public SqliteQueryCore(SqlQueryKeyword keyword) : base(keyword)
+        public MicrosoftSqliteQueryCore(SqlQueryKeyword keyword) : base(keyword)
         {
         }
 
-        public SqliteQueryCore(string sqlQueryString) : base(sqlQueryString)
+        public MicrosoftSqliteQueryCore(string sqlQueryString) : base(sqlQueryString)
         {
         }
 
@@ -59,7 +59,7 @@
                     {
                         throw new Exception(string.Format("Parameter with name {0} already added for where column {1}.", whereColumnName));
                     }
-                    _sqlParameters.Add(new SQLiteParameter(parameterName, whereColumn.ColumnValue));
+                    _sqlParameters.Add(new SqliteParameter(parameterName, whereColumn.ColumnValue));
                     _sqlQueryString.Append(string.Format("[{0}] {1} {2}",
                         whereColumnName,
                         whereColumn.ComparisonOperator.ToString(),
