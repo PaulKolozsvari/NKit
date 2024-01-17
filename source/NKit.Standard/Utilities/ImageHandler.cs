@@ -10,6 +10,7 @@
     using System.Drawing.Imaging;
     using System.IO;
     using System.Drawing.Drawing2D;
+    using ZXing;
 
     #endregion //Using Directives
 
@@ -29,6 +30,13 @@
                 image.Save(ms, image.RawFormat);
                 return ms.ToArray();
             }
+        }
+
+        public static byte[] GetBytesFromImageUsingImageConverter(Image image)
+        {
+            ImageConverter converter = new ImageConverter();
+            byte[] result = (byte[])converter.ConvertTo(image, typeof(byte[]));
+            return result;
         }
 
         public static void RotateImageFile(

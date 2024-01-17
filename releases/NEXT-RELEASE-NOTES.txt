@@ -40,3 +40,7 @@
 
     -   Added classes to use Microsoft.Data.Sqlite (client for Sqlite built by Microsoft) instead of System.Data.SQLite (client for Sqlite built by Sqlite themeselves).
         The issue with System.Data.SQLite is that they don't provide a native library for ARM processors. So if running on an ARM processor, you should rather use the Microsoft classes targetting Microsoft.Data.Sqlite.
+
+-   2024-01-17:
+
+    -   Created BarcodeHelper to encode and decode barcodes using Zxing.Net library. This is available in the NKit.Standard library.
