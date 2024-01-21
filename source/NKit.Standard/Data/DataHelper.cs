@@ -40,6 +40,10 @@
             {
                 throw new ArgumentNullException("conversionType supplied to ChangeType may not be null.");
             }
+            if (value == null)
+            {
+                return null;
+            }
             if (value == DBNull.Value)
             {
                 return null;
@@ -52,6 +56,10 @@
                     return null;
                 }
                 conversionType = Nullable.GetUnderlyingType(conversionType);
+            }
+            if (value.GetType().Equals(typeof(string)) && conversionType.Equals(typeof(Guid)))
+            {
+                return Guid.Parse(value.ToString());
             }
             return Convert.ChangeType(value, conversionType, null);
         }

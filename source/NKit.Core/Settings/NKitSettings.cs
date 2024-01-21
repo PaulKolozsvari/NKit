@@ -41,6 +41,22 @@
         #region Methods
 
         /// <summary>
+        /// Returns the fully qualified file or directory path from a relative path.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public string GetFullyQualifiedFilePath(string filePath)
+        {
+            if (Path.IsPathFullyQualified(filePath))
+            {
+                return filePath;
+            }
+            string result = Path.Combine(Information.GetExecutingDirectory(), filePath);
+            result = Path.GetFullPath((new Uri(result)).LocalPath);
+            return result;
+        }
+
+        /// <summary>
         /// Gets the configuration builder from the appsettings.json file based on the current environment i.e. production, development etc.
         /// </summary>
         /// <returns></returns>
