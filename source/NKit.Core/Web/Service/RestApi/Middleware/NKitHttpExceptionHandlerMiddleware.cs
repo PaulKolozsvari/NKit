@@ -20,6 +20,7 @@
     using NKit.Utilities.Email;
     using NKit.Settings.Default;
     using System.IO;
+    using Microsoft.AspNetCore.Http.Features;
 
     #endregion //Using Directives
 
@@ -90,6 +91,7 @@
                 context.Response.Clear();
                 context.Response.StatusCode = httpStatusCode;
                 context.Response.ContentType = response.ContentType;
+                context.Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = ex.Message;
                 await context.Response.WriteAsync(responseText);
                 return;
             }

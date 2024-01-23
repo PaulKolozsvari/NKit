@@ -49,3 +49,7 @@
 
     -   Added method GetFullyQualifiedFilePath to NKitSettings to be able to convert a relative path to a fully qualified path.
     -   Changed the DataHelper.ChangeType method to handle cases where the value to convert is null and where the value is a string and needs to be converted to a Guid.
+
+-   2024-01-23:
+
+    -   Changed the NKitHttpExceptionHandlerMiddleware to write out the exception message to the HttpContext.ReasonPhrase for the client to be able to read why the HTTP request failed.
