@@ -53,3 +53,7 @@
 -   2024-01-23:
 
     -   Changed the NKitHttpExceptionHandlerMiddleware to write out the exception message to the HttpContext.ReasonPhrase for the client to be able to read why the HTTP request failed.
+
+-   2024-02-14:
+
+    -   Fixed the DataHelper.ParseReaderToEntities to read DateTime values without converting them to string first.
