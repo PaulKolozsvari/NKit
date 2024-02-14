@@ -55,12 +55,15 @@
                             }
                             else if (readerFieldType == typeof(DateTime))
                             {
-                                string dateStringValue = reader.GetString(columnIndex);
-                                if (string.IsNullOrEmpty(dateStringValue))
-                                {
-                                    value = null;
-                                }
-                                value = DateTimeHelper.Parse(dateStringValue);
+                                //Works with Sqlite.
+                                //string dateStringValue = reader.GetString(columnIndex);
+                                //if (string.IsNullOrEmpty(dateStringValue))
+                                //{
+                                //    value = null;
+                                //}
+                                //value = DateTimeHelper.Parse(dateStringValue);
+
+                                value = reader.GetDateTime(columnIndex);
                             }
                             else
                             {
