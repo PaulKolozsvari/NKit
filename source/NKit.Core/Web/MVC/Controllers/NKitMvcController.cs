@@ -678,7 +678,7 @@
 
         protected virtual RedirectToActionResult RedirectToLogin()
         {
-            return RedirectToAction("Index", "Login");
+            return RedirectToAction("Login", "Users");
         }
 
         protected virtual RedirectToActionResult RedirectToError(string message)
