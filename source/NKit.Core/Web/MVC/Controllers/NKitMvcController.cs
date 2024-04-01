@@ -676,6 +676,11 @@
             return RedirectToAction("Index", "Home");
         }
 
+        protected virtual RedirectToActionResult RedirectToLogin()
+        {
+            return RedirectToAction("Index", "Login");
+        }
+
         protected virtual RedirectToActionResult RedirectToError(string message)
         {
             return RedirectToAction("Error", "Information", new { errorMessage = message });
