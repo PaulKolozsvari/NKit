@@ -656,6 +656,11 @@
             ViewBag.ErrorMessage = errorMessage;
         }
 
+        public virtual void SetViewBagInformationMessage(string informationMessage)
+        {
+            ViewBag.InformationMessage = informationMessage;
+        }
+
         protected virtual JsonResult GetJsonResult(bool success)
         {
             return Json(new { Success = success, ErrorMsg = string.Empty });
