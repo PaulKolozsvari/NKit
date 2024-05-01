@@ -69,3 +69,4 @@
 *   2024-05-01:
 
     -   Fixed DataShaperCore.IsValidEmail to exclude check on VALID_EMAIL_REGEX.
+    -   Changed DataShaperCore.ParseEmailAddressesFromText to not check whether it's a valid email and to strip semicolons out of email matches.

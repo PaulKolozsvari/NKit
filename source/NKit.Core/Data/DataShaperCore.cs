@@ -154,9 +154,13 @@
                     foreach (Match match in matches)
                     {
                         string value = match.Value;
-                        if (!string.IsNullOrEmpty(match.Value) && match.Success && IsValidEmail(value) && !result.Contains(value))
+                        if (!string.IsNullOrEmpty(match.Value)
+                            && match.Success
+                            //&& IsValidEmail(value) 
+                            && !result.Contains(value))
                         {
-                            result.Add(value);
+                            string valueCleaned = value.Replace(";", string.Empty);
+                            result.Add(valueCleaned);
                         }
                     }
                 }
