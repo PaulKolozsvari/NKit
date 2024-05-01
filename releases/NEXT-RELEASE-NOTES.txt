@@ -65,3 +65,7 @@
 -   2024-03-04:
 
     -   Added method SetViewBagInformationMessage to NKitMvcController.
+
+*   2024-05-01:
+
+    -   Fixed DataShaperCore.IsValidEmail to exclude check on VALID_EMAIL_REGEX.

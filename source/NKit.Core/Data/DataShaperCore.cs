@@ -77,6 +77,31 @@
             return result;
         }
 
+        public static string ParseSaNumberFromText(string inputText)
+        {
+            StringBuilder builder = new StringBuilder();
+            char[] characters = inputText.Trim().Replace(" ", string.Empty).Replace("-", string.Empty).ToCharArray();
+            foreach (char c in characters)
+            {
+                if (c.Equals('0'))
+                {
+                    int stop = 0;
+                }
+                if (!char.IsNumber(c))
+                {
+                    builder.Clear(); //Number sequence has ended, so reset the builder.
+                    continue;
+                }
+                builder.Append(c);
+                if (builder.Length == 10)
+                {
+                    string result = builder.ToString();
+                    return result;
+                }
+            }
+            return string.Empty;
+        }
+
         /// <summary>
         /// Taken from http://haacked.com/archive/2007/08/21/i-knew-how-to-validate-an-email-address-until-i.aspx
         /// </summary>
@@ -94,7 +119,7 @@
         {
             if (string.IsNullOrEmpty(emailAddress) ||
                 !(new EmailAddressAttribute().IsValid(emailAddress)) ||
-                !VALID_EMAIL_REGEX.IsMatch(emailAddress) ||
+                //!VALID_EMAIL_REGEX.IsMatch(emailAddress) ||
                 emailAddress.EndsWith("."))
             {
                 return false;
