@@ -180,7 +180,7 @@
         /// <returns>Returns the serialized text.</returns>
         protected string SerializeToText(object entity)
         {
-            return GetSerializer().SerializeToText(entity, GetNKitSerializerModelTypes());
+            return entity != null ? GetSerializer().SerializeToText(entity, GetNKitSerializerModelTypes()) : null;
         }
 
         /// <summary>

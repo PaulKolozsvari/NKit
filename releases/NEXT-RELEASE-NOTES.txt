@@ -70,3 +70,8 @@
 
     -   Fixed DataShaperCore.IsValidEmail to exclude check on VALID_EMAIL_REGEX.
     -   Changed DataShaperCore.ParseEmailAddressesFromText to not check whether it's a valid email and to strip semicolons out of email matches.
+
+*   2024-06-06:
+
+    -   Changed DataShaperCore.ParseSaNumberFromText to return a phoneStartIndex result as an out parameter.
+    -   Changed NKitWebApiController.SerializeToText to check if the input entity is not null before trying to serialize.

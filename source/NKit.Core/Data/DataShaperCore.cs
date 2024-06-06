@@ -77,21 +77,21 @@
             return result;
         }
 
-        public static string ParseSaNumberFromText(string inputText)
+        public static string ParseSaNumberFromText(string inputText, out int phoneStartIndex)
         {
+            phoneStartIndex = -1;
             StringBuilder builder = new StringBuilder();
             char[] characters = inputText.Trim().Replace(" ", string.Empty).Replace("-", string.Empty).ToCharArray();
-            foreach (char c in characters)
+            for (int i = 0; i < characters.Length; i++)
             {
-                if (c.Equals('0'))
-                {
-                    int stop = 0;
-                }
+                char c = characters[i];
                 if (!char.IsNumber(c))
                 {
+                    phoneStartIndex = -1;
                     builder.Clear(); //Number sequence has ended, so reset the builder.
                     continue;
                 }
+                phoneStartIndex = i;
                 builder.Append(c);
                 if (builder.Length == 10)
                 {
@@ -99,6 +99,7 @@
                     return result;
                 }
             }
+            phoneStartIndex = -1;
             return string.Empty;
         }
 
