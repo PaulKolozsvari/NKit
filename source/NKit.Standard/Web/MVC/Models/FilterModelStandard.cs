@@ -141,6 +141,14 @@
 
         public string SearchFieldIdentifier { get; set; }
 
+        public string ExtraSearchText1 { get; set; }
+
+        public string ExtraSearchText2 { get; set; }
+
+        public string ExtraSearchText3 { get; set; }
+
+        public string ExtraSearchText4 { get; set; }
+
         public string Sort { get; set; }
 
         public string Sortdir { get; set; }

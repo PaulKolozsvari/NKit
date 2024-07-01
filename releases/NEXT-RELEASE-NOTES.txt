@@ -79,3 +79,4 @@
 *   2024-07-01:
 
     -   Added ExtraSearch1, 2, 3 and 4 on ConfirmationModel.
+    -   Added ExtraSearch1, 2, 3 and 4 on FilterModelStandard.

@@ -49,13 +49,13 @@
         /// </summary>
         public string SearchText { get; set; }
 
-        public string ExtraSearch1 { get; set; }
+        public string ExtraSearchText1 { get; set; }
 
-        public string ExtraSearch2 { get; set; }
+        public string ExtraSearchText2 { get; set; }
 
-        public string ExtraSearch3 { get; set; }
+        public string ExtraSearchText3 { get; set; }
 
-        public string ExtraSearch4 { get; set; }
+        public string ExtraSearchText4 { get; set; }
 
         /// <summary>
         /// To be used when confirming for multiple entities in a date range.
