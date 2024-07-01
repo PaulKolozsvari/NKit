@@ -75,3 +75,7 @@
 
     -   Changed DataShaperCore.ParseSaNumberFromText to return a phoneStartIndex result as an out parameter.
     -   Changed NKitWebApiController.SerializeToText to check if the input entity is not null before trying to serialize.
+
+*   2024-07-01:
+
+    -   Added ExtraSearch1, 2, 3 and 4 on ConfirmationModel.
