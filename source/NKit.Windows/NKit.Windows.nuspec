@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
     <title>$title$</title>
     <authors>Paul Kolozsvari</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -15,177 +15,89 @@
 		NKit.Core is the latest .NET Core compatible version of NKit.
 	</description>
     <releaseNotes>
-		*   2022-04-22:
+      *   2022-08-24:
 
-		-   Fixed the SqliteDatabaseWindows.TableExistsInDatabase to check if the reader is not null before reading.
-		-   Fixed the DatabaseWindows.GetTablesMentionedInQuery to return an empty list instead of throwing an exception.
-	
-	*   2022-04-03:
-	
-		-   Added overloads for NKitMvcController to allow reading parent and second parent surrogate keys without startDate and endDate.
-	
-	*   2022-05-12: 
-	
-		-   Implemented option on the NKitMvcController to select whether or not to filter by the date range and on the FilterModel etc.
-	
-	*   2022-05-14:
-	
-		-   Implemented SqlTableExists in LinqEntityContextWindows.
-		-   Implemneted stubs in LinqEntityContextWindows for logging messages, actions and exceptions. These methods need to be implemented by sub classes.
-	
-	*   2022-05-15:
-		-   Implemented ViewModels, CsvModels, data queries for grid and paging in the NKitDbContext and a controller for NKitLogEntry models.
-	
-	*   2022-05-23:
-		-   Implemented NKitLoggingManager which is a wrapper around an ILogger and also logs to the database.
-	
-	*   2022-05-31:
-		-   Implemented minor fixes across multiple utilities.
-		-   Fixed the GetEntitiesByField in the NKitDbContext which was making a call to a method via reflection and using the wrong signature.
-	
-	*   2022-06-03:
-		-   Implemented fix for DataValidator where the ValidateGuidNotEmpty method was not set to static.
-	
-	*   2022-08-08:
-		-   Changed the Windows Exception Handler to allow providing a parameter to override the global setting for GOC.Instance.ShowMessageBoxOnException i.e. even if the global settings is set to false,
-			it can be overridden for a specific call to the ExceptionHandler to display an exception with a message box.
-	
-	*   2022-09-01:
-		-   Added indexers to all EntityCaches and including integer based indexers on the generic entity cache where a dictionary is used.
-	
-	*   2022-09-09:
-		-   Implemented a cancel feature on the Wcf rest service on the before put and before post action methods to allow the subscribers to the event to cancel the put or post.
-	
-	*   2022-09-13:
-		-   Fixed issue where the .NET Core project was referencing the Windows project which it shouldn't have been.
-	
-	*   2022-09-18:
-		-   Changed the EntityReader ConvertValueTypeTo method to check if the input value is a string and null or empty. If it is, it returns the default
-			value type of the type that it needs to convert to.
-	
-	*   2022-10-15:
-		-   Upgraded Newtonsoft.Json from version 12 to 13.
-		-   Added an extra property SecondOther to the ConfirmationModel.
-	
-	*   2022-10-18:
-	
-		-   Added MVC extension method for querying the application's version from the main assembly.
-	
-	*   2022-11-08:
-		-   Changed the NKit EmailClient to not send emails if there are no To email recipients specified on the call.
-	
-	*   2022-11-30:
-	
-		-   Added extra overloads to the GetConfirmationModelFromSearchParametersString in the NKitMvcController to be able to pull other fields from searcg strings.
-		-   Added extra third parent fields to the ConfirmationDialog.
-		-   Added extra ConvertEmptyGuidToNull overload to allow converting a string that contains an empty GUID to null.
-	
-	*   2022-12-02:
-	
-		-   Fixed the GenerateSimplePassword in DataShaperWindows which was not using the correct password length parameter.
-		-   Fixed the GenerateSimplePassword in DataShaperWindows to not append special characters if it's set to 0.
-	
-	*   2022-12-06:
-	
-		-   Added method in DataShaper to replace new lines in text.
-	
-	*   2022-12-14:
-	
-		-   Added method ParseEmailAddressesFromText to DataShaperWindows and DataShaperCore to read email addresses from an input text.
-		-   Added method ParsePhoneNumbersFromText to DataShaperWindows and DataShaperCore to read phone numbers from an input text.
-		-   Added method GetCsvOfStringList to DataShaperWindows and DataShaperCore to convert a list of strings to a single CSV string.
-	
-	*   2022-12-17:
-		-   Changed the AppSingletonWindows.InitializeLogger to initialize both the GOCWindows.Instance.Logger as well as the GOC.Instance.Logger
-			in order to apply the settings to both loggers depending on whether users are using GOC or GOCWindows.
-	
-	*   2022-12-19:
-		-   Fixed the DataShaper.ParsePhoneNumbersFromText to split text by commas instead of spaces.
-		-   Fixed the DataShaper.ParseEmailAddressesFromText to not include duplicate email addresses.
-	
-	*   2022-12-20:
-		-   Fixed issue with PhoneNumberValidator.GetConsecutiveCharsInPhoneNumberStr to cater for phone numbers that are less than 10 or 11 characters long.
-	
-	*   2022-12-21:
-		-   Added methods GngetAppVersionNumbersFromString and IsAppVersionGreaterThan to the DataShaper to extract the integer values out of an app version string
-			as well be able to compare two version strings. For method IsAppVersionGreaterThan: major, minor, build and revision of the versionString need to be greater 
-			than those of versionStringToCompare to in order for the result to be true.
-	
-	*   2023-01-13:
-		-   Changed the LinqEntityContextWindows and settings file classes to allow for configuring of whether basic CRUD operations should run under transactions or not.
-			Added setting UseTransactionsOnCrudOperations on the Database settings for this configuration.
-	
-	*   2023-01-19:
-		-   Added IdentifierInt and IdentifierString on the ConfirmationDialog for entities that have string and integer surrogate keys.
-		-   Added GetCsvFileResult to NKitControllerWindows to allow converting an entity cache with integer surrogate keys to a csv file.
-	
-	*   2023-04-10:
-		-   Added overload to GetConfirmationModelFromSearchParametersString to parse thirdParentId.
-	
-	*   2023-05-11:
-		-   Added methods to DataShaper class to shape URL with or without an http or https prefix.
-	
-	*   2023-06-12:
-		-   Added AppendHttpsPrefixToUrl to shape URL with or without an http or https prefix.
-	
-	*   2023-07-10:
-		-   Fixed the EntityCache to do a null check if a en entity is null and if so it must exclude it from searching through it.
-	
-	*   2023-07-20:
-		-   Fixed the SqliteDatabaseTableWindows.AddColumnsByEntityType to exclude any properties for which it cannot find an equivalent Sqlite type.
-		-   Fixed the ParseReaderToEntities method of Sqlite to check if the type is DateTime and if it is it will pull the string out of the reader and then convert to DateTime.
-		-   Fixed the SqliteDatabaseTableWindows.Query method to convert the a Guid value to query by to a string because Sqlite cannot query by guid or uniqueidentifier, it will query those columns by a string.
-	
-	*   2023-07-22:
-		-   Added SqliteEntityContext, SqliteSettings and SqliteIndexer classes to perform basic CRUD operations on a Sqlite database based on entities.
-	
-	*   2023-07-23:
-		-   Added DateTimeHelper class in the standard library to try convert a a string to a DateTime based on a list of different date time formats.
-		-   Changed the DataHelperWindows.ParseReaderToEntities to use this DateTimeHelper to convert strings to DateTime.
-		-   Changed the SqliteEntityContext CreateTable, DropTable and CreateIndexers to use an existing connection and transaction when running the SQL instead of creating a new connection and transaction every time.
-		-   Added more descriptive error message on DataHelperWindows.ParseReaderToEntities when we cannot find a column for on a reader: $"Could not find column {p.Name} for entity {entityType.Name} on reader."
-		
-		-   Changed the SqliteDatabaseTableColumnWindows to read from the schema whether a column is a primary key or not.
-		-   Changed the SqliteDatabaseTableWindows to not call a sproc to determine whether columns are key or foreign keys.
-		-   Changed the SqliteEntityContext to load a SqliteDatabaseWindows and populate the columns from the schema to compare against columns added by entities.
-		-   Changed SqliteEntityContext to use the SqliteDatabaseTableWindows read from the schema before running CRUD queries to use the columns based on what exists in the database instead of properites from entities which may not exist in the database.
-		-   Changed the SqliteDatabaseTableWindows to ignore properties that exist on the entity but don't exist in the database.
-		-   Added Sqlite type "integer" to SqliteTypeConverterWindows because only "int" was understood previously.
-	
-	*   2023-07-24:
-		-   Fixed the SqliteTypeConverterWindows to map uniqueidentifier and booleans to strings because Sqlite doesn't support those types.
-		-   Fixed the DataHelperWindows.ParseReaderToEntities to not throw exception an exception if a column doesn't exist on the DataReader, instead it will ignore it.
-		-   Fixed the SqliteEntityContext Update and Delete to not commit transactions. Instead the callers of the methods should commit the transaction.
-		-   Fixed the SqliteDatabaseTableWindows Delete method convert Guid to strings when filtering by a column because Sqlite cannot query by a Guid or uniqueidentifier.
-		-   Upgraded to System.Data.SQLite.Core package to 1.0.118 in the Windows version of NKit.
-	
-	*   2023-07-25:
-		-   Changed the SqliteEntityContext allow for reseting the SqliteDatabaseWindows from the outside in case the database schema changes.
-		-   Fixed the SqliteEntityContext to check if a database table exists running any CRUD queries on it because run SQL scripts on a table that doesn't exist.
-		-   Changed Sqlite type "binary" to blob which is the correct type in Sqlite to store byte[].
-	
-	*   2023-07-26:
-		-   Changed the SqliteDatabaseTableWindows to save datetime values to a a default string format (stored in SqliteTypeConverterWindows) to match Android apps with that format.
-		-   Changed to set the TypeName of parameters to the DataType of a column instead of the DbType to the SqlDbType of the column.
-	
-	*   2023-07-29:
-		-   Changed the SqliteDatabaseTableWindows to convert bool values to strings before saving or querying out of the Sqlite database.
-		-   Changed the SqliteDatabaseTableWindows to convert char values to strings before saving or querying out of the Sqlite database.
-	
-	*   2023-07-30:
-		-   Added method AddColumn to SqliteDatabaseTableWindows and SqlDatabaseTableWindows to be able tadd additional columns to a table that may not exist on an entity.
-		-   Added option on CreateTable method of SqliteEntityContext to be able to specify additional columns that are not on the entity.
-	
-	*   2023-08-15:
-		-   Upgraded System.Linq.Dynamic.Core to 1.3.4.
-	
-	*   2023-08-19:
-		-   Extended lengths of NKitLogEntry and NKitHttpExceptionResponse string field to varchar max.
-	
-	*   2023-08-24:
-		-   Removed the NKit.Windows.Standalone project as it's never used.
-		-   Upgraded System.Drawing.Comming from 5.0.0 to 7.0.0 on NKit.Standard.
-	</releaseNotes>
+      -   Added GetUserAgent GetUserHostAddress methods to the NKitWebApiController controller.
+
+      -   2023-08-31:
+
+      -   Fixed the Put and Post methods on the NKitWebApiControllerCrud to call the correct Save and Insert methods on the DbContext.
+
+      -   2023-10-04:
+
+      -   Added extra GetConfirmationModelFromSearchParametersString overload in the NKitMvcController.cs
+      -   Added all Nuget packages to repository because some are no longer available on online Nuget.
+
+      -   2023-10-23:
+
+      -   Added additional overloads for serializing and deserializing objects in the NKitWebApiController.
+      -   Added additional overloads for logging web requests and responses in the NKitWebApiController.
+
+      -   2023-10-25:
+
+      -   Porting over dynamic Sql classses related to tables, and columns and reflection from NKit.Windows to NKit.Core.
+
+      -   2023-10-26:
+
+      -   Porting over dynamic Sql Server classses related to tables, and columns and reflection from NKit.Windows to NKit.Core.
+
+      -   2023-10-28:
+
+      -   Ported over Sqlite classes related to tables, columns and reflection from NKit.Windows to NKit.Core.
+
+      -   2023-11-06:
+
+      -   Copied some of the methods from the NKIT MVC controller to the API controller for getting the current action, coller name, URL, host name etc.
+
+      -   2023-11-07:
+
+      -   Changed the NKitWebApiController.IsRequestAuthenticated, and .GetAbsoluteFilePathFromRequest and other methods from public to protected to avoid ambiguity and not confuse them with web service actions.
+
+      -   2024-01-14:
+
+      -   Added classes to use Microsoft.Data.Sqlite (client for Sqlite built by Microsoft) instead of System.Data.SQLite (client for Sqlite built by Sqlite themeselves).
+      The issue with System.Data.SQLite is that they don't provide a native library for ARM processors. So if running on an ARM processor, you should rather use the Microsoft classes targetting Microsoft.Data.Sqlite.
+
+      -   2024-01-17:
+
+      -   Created BarcodeHelper to encode and decode barcodes using Zxing.Net library. This is available in the NKit.Standard library.
+
+      -   2024-01-21:
+
+      -   Added method GetFullyQualifiedFilePath to NKitSettings to be able to convert a relative path to a fully qualified path.
+      -   Changed the DataHelper.ChangeType method to handle cases where the value to convert is null and where the value is a string and needs to be converted to a Guid.
+
+      -   2024-01-23:
+
+      -   Changed the NKitHttpExceptionHandlerMiddleware to write out the exception message to the HttpContext.ReasonPhrase for the client to be able to read why the HTTP request failed.
+
+      -   2024-02-14:
+
+      -   Fixed the DataHelper.ParseReaderToEntities to read DateTime values without converting them to string first.
+
+      -   2024-04-01:
+
+      -   Added method RedirectToLogin to NKitMvcController.
+
+      -   2024-03-04:
+
+      -   Added method SetViewBagInformationMessage to NKitMvcController.
+
+      *   2024-05-01:
+
+      -   Fixed DataShaperCore.IsValidEmail to exclude check on VALID_EMAIL_REGEX.
+      -   Changed DataShaperCore.ParseEmailAddressesFromText to not check whether it's a valid email and to strip semicolons out of email matches.
+
+      *   2024-06-06:
+
+      -   Changed DataShaperCore.ParseSaNumberFromText to return a phoneStartIndex result as an out parameter.
+      -   Changed NKitWebApiController.SerializeToText to check if the input entity is not null before trying to serialize.
+
+      *   2024-07-01:
+
+      -   Added ExtraSearch1, 2, 3 and 4 on ConfirmationModel.
+      -   Added ExtraSearch1, 2, 3 and 4 on FilterModelStandard.
+    </releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>.NET Framework Toolkit</tags>
     <dependencies>
