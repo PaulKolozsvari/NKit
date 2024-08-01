@@ -80,3 +80,7 @@
 
     -   Added ExtraSearch1, 2, 3 and 4 on ConfirmationModel.
     -   Added ExtraSearch1, 2, 3 and 4 on FilterModelStandard.
+
+*   2024-08-01:
+
+    -   Changed the WebServiceClient to allow using NTLM credentials instead of BasicAuthentication.

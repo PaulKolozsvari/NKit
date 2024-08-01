@@ -63,6 +63,7 @@
         protected string _name;
         protected string _webServiceBaseUrl;
         protected NetworkCredential _networkCredential;
+        protected bool _useNtlmAuthentication;
 
         #endregion //Fields
 
@@ -94,6 +95,12 @@
         {
             get { return _networkCredential; }
             set { _networkCredential = value; }
+        }
+
+        public bool UseNTLMAuthentication
+        {
+            get { return _useNtlmAuthentication; }
+            set { _useNtlmAuthentication = value; }
         }
 
         #endregion //Properties
@@ -318,9 +325,19 @@
             }
             if (_networkCredential != null)
             {
-                request.UseDefaultCredentials = false;
-                request.Credentials = _networkCredential;
-                request.AllowAutoRedirect = true;
+                if (_useNtlmAuthentication)
+                {
+                    CredentialCache credentialCache = new CredentialCache();
+                    credentialCache.Add(new Uri(uri), "NTLM", _networkCredential);
+                    request.Credentials = credentialCache;
+                    request.AllowAutoRedirect = true;
+                }
+                else
+                {
+                    request.UseDefaultCredentials = false;
+                    request.Credentials = _networkCredential;
+                    request.AllowAutoRedirect = true;
+                }
             }
             if (!string.IsNullOrEmpty(postContentType))
             {
@@ -423,9 +440,19 @@
             }
             if (_networkCredential != null)
             {
-                request.UseDefaultCredentials = false;
-                request.Credentials = _networkCredential;
-                request.AllowAutoRedirect = true;
+                if (_useNtlmAuthentication)
+                {
+                    CredentialCache credentialCache = new CredentialCache();
+                    credentialCache.Add(new Uri(uri), "NTLM", _networkCredential);
+                    request.Credentials = credentialCache;
+                    request.AllowAutoRedirect = true;
+                }
+                else
+                {
+                    request.UseDefaultCredentials = false;
+                    request.Credentials = _networkCredential;
+                    request.AllowAutoRedirect = true;
+                }
             }
             request.ContentType = MimeContentType.BINARY;
             if (requestPostBytes != null && requestPostBytes.Length > 0)
