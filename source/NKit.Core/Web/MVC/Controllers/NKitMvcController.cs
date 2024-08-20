@@ -178,7 +178,8 @@
 
         protected bool IsRequestAuthenticated()
         {
-            return (this.User != null) && (this.User.Identity != null) && this.User.Identity.IsAuthenticated;
+            bool result = (this.User != null) && (this.User.Identity != null) && this.User.Identity.IsAuthenticated;
+            return result;
         }
 
         protected virtual void SetViewBagSearchFieldIdentifier<T>(FilterModelCore<T> model) where T : class

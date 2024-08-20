@@ -62,7 +62,8 @@
                 }
                 row = csv.GetNextRow();
             }
-            while ((row != null) && (row.Length == columnCount))
+            //while ((row != null) && (row.Length == columnCount))
+            while ((row != null)) //The expected column count does not neet to match the column count found in the file, we need to grab from the file what we can find.
             {
                 while (row.Length > table.Columns.Count)
                 {

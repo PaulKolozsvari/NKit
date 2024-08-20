@@ -10,7 +10,7 @@
 
     #endregion //Using Directives
 
-    public partial class WaitModel
+    public partial class WaitModel : NKitBaseViewModel
     {
         #region Properties
 

@@ -9,7 +9,7 @@
 
     #endregion //Using Directives
 
-    public partial class FilterModelStandard<T> where T : class
+    public partial class FilterModelStandard<T> : NKitBaseViewModel where T : class
     {
         #region Constructors
 

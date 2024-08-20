@@ -10,7 +10,7 @@
 
     #endregion //Using Directives
 
-    public partial class InformationModel
+    public partial class InformationModel : NKitBaseViewModel
     {
         #region Properties
 

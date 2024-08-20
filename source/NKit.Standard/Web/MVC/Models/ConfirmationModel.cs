@@ -10,7 +10,7 @@
 
     #endregion //Using Directives
 
-    public partial class ConfirmationModel
+    public partial class ConfirmationModel : NKitBaseViewModel
     {
         #region Properties
 

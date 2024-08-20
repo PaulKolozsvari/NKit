@@ -10,7 +10,7 @@
 
     #endregion //Using Directives
 
-    public abstract partial class NKitEntityModel<M, E>
+    public abstract partial class NKitEntityModel<M, E> : NKitBaseViewModel
         where M : class
         where E : class
     {
