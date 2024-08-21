@@ -48,14 +48,17 @@
         /// <summary>
         /// Whether or not to exception in an email to the default email recipients list specified in the NKitEmailServiceSettings.
         /// </summary>
-        [NKitSettingInfo("Email", AutoFormatDisplayName = true, Description = "Whether or not to send emails on exceptions handled by the Exception Handler.", CategorySequenceId = 5)]
+        [NKitSettingInfo("HTTP Exception Handler Middleware", AutoFormatDisplayName = true, Description = "Whether or not to send emails on exceptions handled by the Exception Handler.", CategorySequenceId = 5)]
         public bool SendEmailOnException { get; set; }
 
         /// <summary>
         /// Whether or not add a line to every exception email sent out that includes the hostname of the machine running this software and thereby initiating the email.
         /// </summary>
-        [NKitSettingInfo("Email", AutoFormatDisplayName = true, Description = "Whether or not add a line to every exception email sent out that includes the hostname of the machine running this software and thereby initiating the email.", CategorySequenceId = 6)]
+        [NKitSettingInfo("HTTP Exception Handler Middleware", AutoFormatDisplayName = true, Description = "Whether or not add a line to every exception email sent out that includes the hostname of the machine running this software and thereby initiating the email.", CategorySequenceId = 6)]
         public bool AppendHostNameToExceptionEmails { get; set; }
+
+        [NKitSettingInfo("HTTP Exception Handler Middleware", AutoFormatDisplayName = true, Description = "Whether or not to log all requests to the application.", CategorySequenceId = 7)]
+        public bool LogAllRequests { get; set; }
 
         #endregion //Properties
 

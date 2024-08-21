@@ -21,6 +21,7 @@
     using NKit.Settings.Default;
     using System.IO;
     using Microsoft.AspNetCore.Http.Features;
+    using Microsoft.AspNetCore.Http.Extensions;
 
     #endregion //Using Directives
 
@@ -68,7 +69,10 @@
         {
             try
             {
-                string requestBody = await GetRequestBody(context);
+                if (middlewareSettings != null && middlewareSettings.Value != null && middlewareSettings.Value.LogAllRequests)
+                {
+                    LogRequest(context, logger);
+                }
                 await _next(context);
             }
             catch (NKitHttpStatusCodeException ex)
@@ -102,6 +106,21 @@
                     dbContext.Dispose();
                 }
             }
+        }
+
+        private async void LogRequest(HttpContext context, ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger)
+        {
+            StringBuilder messageBuilder = new StringBuilder();
+
+            messageBuilder.AppendLine($"URI: {context.Request.GetDisplayUrl()}");
+            messageBuilder.AppendLine($"Host: {context.Request.Host.Host}");
+            string body = await GetRequestBody(context);
+            if (!string.IsNullOrEmpty(body))
+            {
+                messageBuilder.AppendLine($"{body}");
+            }
+            string message = messageBuilder.ToString();
+            logger.LogInformation(message);
         }
 
         private async Task<string> GetRequestBody(HttpContext context)

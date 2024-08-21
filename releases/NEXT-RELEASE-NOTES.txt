@@ -92,3 +92,7 @@
 *   2024-08-20:
 
     -   Added NKitBaseViewModel and inherited all the other view models from it to provide base properties such as context related fields.
+
+*   2024-08-21:
+
+    -   Addded ability on the middleware to log all requests based configuration in middleware settings.
