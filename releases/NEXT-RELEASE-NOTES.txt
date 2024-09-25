@@ -96,3 +96,8 @@
 *   2024-08-21:
 
     -   Addded ability on the middleware to log all requests based configuration in middleware settings.
+
+*   2024-09-25:
+
+    -   Fixed the DataShaper.GetCurrencyValueString to be able to wok with negative numbers.
+    -   Changed FilterModelStandard and ConfirmationModel to allow working with ExtraSearchText5.

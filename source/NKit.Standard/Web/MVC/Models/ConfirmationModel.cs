@@ -57,6 +57,8 @@
 
         public string ExtraSearchText4 { get; set; }
 
+        public string ExtraSearchText5 { get; set; }
+
         /// <summary>
         /// To be used when confirming for multiple entities in a date range.
         /// </summary>

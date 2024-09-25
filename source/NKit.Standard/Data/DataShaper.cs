@@ -103,6 +103,11 @@
         public static string GetCurrencyValueString(double currencyValue, string currencySymbol)
         {
             string result = null;
+            bool isNegative = currencyValue < 0;
+            if(isNegative)
+            {
+                currencyValue = currencyValue * -1; //Make it a positive
+            }
             if (!string.IsNullOrEmpty(currencySymbol))
             {
                 CultureInfo cultureInfo = CultureInfo.CurrentCulture;
@@ -114,7 +119,11 @@
             {
                 result = currencyValue.ToString("C2", CultureInfo.CurrentCulture);
             }
-            return result;
+            if (isNegative)
+            {
+                result = $"-{result}";
+            }
+            return result.Replace("(", string.Empty).Replace(")", string.Empty);
         }
 
         public static string GetCurrencyValueString(double currencyValue, bool includeWindowsRegionalCurrencySymbol)

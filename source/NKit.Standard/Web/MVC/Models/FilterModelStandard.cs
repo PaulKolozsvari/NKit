@@ -149,6 +149,8 @@
 
         public string ExtraSearchText4 { get; set; }
 
+        public string ExtraSearchText5 { get; set; }
+
         public string Sort { get; set; }
 
         public string Sortdir { get; set; }
