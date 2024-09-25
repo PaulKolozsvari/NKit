@@ -101,3 +101,4 @@
 
     -   Fixed the DataShaper.GetCurrencyValueString to be able to wok with negative numbers.
     -   Changed FilterModelStandard and ConfirmationModel to allow working with ExtraSearchText5.
+    -   Created SecureRandomNumberGenerator and RandomGenerator, different algorithms for generating a random number.

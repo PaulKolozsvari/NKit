@@ -8,6 +8,7 @@
     using System.Text;
     using NKit.Utilities;
     using System.Drawing;
+    using System.Security.Cryptography;
 
     #endregion //Using Directives
 
@@ -16,6 +17,12 @@
     /// </summary>
     public partial class Formula
     {
+        #region Fields
+
+        protected static Random _random = new Random();
+
+        #endregion //Fields
+
         #region Methods
 
         /// <summary>
@@ -227,6 +234,17 @@
         public static double GetPercentage(long value, long totalValue, int decimals)
         {
             return Math.Round((Convert.ToDouble(value) / totalValue) * 100, decimals);
+        }
+
+        /// <summary>
+        /// Uses the .NET Random class to generate a random number.
+        /// Rather use the SecureRandomNumberGenerator to generate a secure random number.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetBasicRandomInteger()
+        {
+            int result = _random.Next();
+            return result;
         }
 
         #endregion //Methods
