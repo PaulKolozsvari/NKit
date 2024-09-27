@@ -83,6 +83,7 @@
                 context.Response.Clear();
                 context.Response.StatusCode = (int)ex.StatusCode;
                 context.Response.ContentType = response.ContentType;
+                context.Response.ContentLength = responseText.Length;
                 await context.Response.WriteAsync(responseText);
                 return;
             }
@@ -95,6 +96,7 @@
                 context.Response.Clear();
                 context.Response.StatusCode = httpStatusCode;
                 context.Response.ContentType = response.ContentType;
+                context.Response.ContentLength = responseText.Length;
                 context.Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = ex.Message;
                 await context.Response.WriteAsync(responseText);
                 return;

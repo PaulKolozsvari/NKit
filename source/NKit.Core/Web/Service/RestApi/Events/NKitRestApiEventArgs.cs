@@ -36,6 +36,7 @@
         private string _userName;
         private NKitDbContext _dbContext;
         private Type _entityType;
+        private bool _cancel;
 
         #endregion //Fields
 
@@ -59,6 +60,12 @@
         public Type EntityType
         {
             get { return _entityType; }
+        }
+
+        public bool Cancel
+        {
+            get { return _cancel; }
+            set { _cancel = value; }
         }
 
         #endregion //Properties

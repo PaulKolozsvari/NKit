@@ -103,3 +103,7 @@
     -   Changed FilterModelStandard and ConfirmationModel to allow working with ExtraSearchText5.
     -   Created SecureRandomNumberGenerator and RandomGenerator, different algorithms for generating a random number.
         -   Changed the SecureRandomNumberGenerator to allow a list of exclusions.
+
+*   2024-09-27:
+
+    -   Changed the NKitWebApiControllerCrud to check if the onbefore events are cancelled by subscribers and cancel out of the event if that's the case.
