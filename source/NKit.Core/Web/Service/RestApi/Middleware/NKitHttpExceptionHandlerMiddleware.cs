@@ -22,6 +22,7 @@
     using System.IO;
     using Microsoft.AspNetCore.Http.Features;
     using Microsoft.AspNetCore.Http.Extensions;
+    using System.Linq;
 
     #endregion //Using Directives
 
@@ -71,9 +72,9 @@
             {
                 if (middlewareSettings != null && middlewareSettings.Value != null && middlewareSettings.Value.LogAllRequests)
                 {
-                    LogRequest(context, logger);
+                    LogRequest(context, logger, logHeaders: true, logRequestBody: false); //Don't log the request body because it causes reading the request and it needs to be read again by the controller when executing the request. This causes and exception below in a production environment where lots of requests are coming in concurrently.
                 }
-                await _next(context);
+                await _next(context); //Throws exception System.InvalidOperationException "Reading is already in progress." when reading the request body on the LogRequest methods above.
             }
             catch (NKitHttpStatusCodeException ex)
             {
@@ -110,16 +111,27 @@
             }
         }
 
-        private async void LogRequest(HttpContext context, ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger)
+        private async void LogRequest(HttpContext context, ILogger<NKitHttpExceptionHandlerMiddleware<D>> logger, bool logHeaders, bool logRequestBody)
         {
             StringBuilder messageBuilder = new StringBuilder();
-
             messageBuilder.AppendLine($"URI: {context.Request.GetDisplayUrl()}");
+            messageBuilder.AppendLine($"Method: {context.Request.Method}");
             messageBuilder.AppendLine($"Host: {context.Request.Host.Host}");
-            string body = await GetRequestBody(context);
-            if (!string.IsNullOrEmpty(body))
+            messageBuilder.AppendLine($"Port: {context.Request.Host.Port}");
+            if (logHeaders)
             {
-                messageBuilder.AppendLine($"{body}");
+                foreach (var header in context.Request.Headers)
+                {
+                    messageBuilder.AppendLine($"Header: {header.Key} : Value: {header.Value}");
+                }
+            }
+            if (logRequestBody)
+            {
+                string body = await GetRequestBody(context);
+                if (!string.IsNullOrEmpty(body))
+                {
+                    messageBuilder.AppendLine($"{body}");
+                }
             }
             string message = messageBuilder.ToString();
             logger.LogInformation(message);
@@ -134,7 +146,7 @@
             {
                 result = await stream.ReadToEndAsync();
             }
-            context.Request.Body.Seek(0, SeekOrigin.Begin);
+            context.Request.Body.Seek(0, SeekOrigin.Begin); //Return back to the beginning of the request body for the request to be passed off to the controller and executed.
             return result;
         }
 

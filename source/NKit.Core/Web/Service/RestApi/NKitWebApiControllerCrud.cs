@@ -241,7 +241,7 @@
                 Type entityType = GetEntityType(entityName);
                 if (OnBeforeGetEntities != null)
                 {
-                    var e = new NKitRestApiGetEntitiesEventArgs(entityName, userName, DbContext, entityType, null, null, null));
+                    var e = new NKitRestApiGetEntitiesEventArgs(entityName, userName, DbContext, entityType, null, null, null);
                     OnBeforeGetEntities(this, e);
                     if (e.Cancel)
                     {
