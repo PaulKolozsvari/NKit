@@ -111,3 +111,7 @@
 *   2024-09-28:
 
     -   Changed the exception handler middleware to not log the request body because it's causing issues reading the body in a stream twice i.e. once of logging and another by the Kestrel server when executing the request.
+
+*   2024-10-22:
+
+    -   Added DeleteAll method to MicrosoftSqliteEntityContextCore to delete all records from a specific table.

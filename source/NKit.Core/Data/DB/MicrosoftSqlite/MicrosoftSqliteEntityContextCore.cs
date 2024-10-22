@@ -208,6 +208,16 @@
             return resultCode;
         }
 
+
+        public int DeleteAll<T>(SqliteConnection connection, SqliteTransaction transaction, bool disposeConnectionAfterExecute)
+        {
+            int resultCode;
+            Type entityType = typeof(T);
+            MicrosoftSqliteDatabaseTableCore table = _sqliteDatabase.Tables[entityType.Name] as MicrosoftSqliteDatabaseTableCore;
+            resultCode = table.DeleteAll(disposeConnectionAfterExecute, connection, transaction);
+            return resultCode;
+        }
+
         public int Save<T>(T entity, string columnName) where T : class
         {
             int resultCode;
