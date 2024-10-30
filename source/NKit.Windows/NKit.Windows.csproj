@@ -530,9 +530,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="READ-ME.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\NKit.Standard\NKit.Standard.csproj">
       <Project>{dd87ecca-4ccb-476b-b2d4-aa30ade2421c}</Project>
       <Name>NKit.Standard</Name>
