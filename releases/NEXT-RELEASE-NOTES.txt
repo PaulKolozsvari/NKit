@@ -115,3 +115,7 @@
 *   2024-10-22:
 
     -   Added DeleteAll method to MicrosoftSqliteEntityContextCore to delete all records from a specific table.
+
+*   2024-10-30:
+
+    -   Added FourthParent properties on the ConfirmationModel.
