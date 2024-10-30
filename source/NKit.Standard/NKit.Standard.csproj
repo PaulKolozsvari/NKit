@@ -5,19 +5,19 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyName>NKit.Standard</AssemblyName>
     <RootNamespace>NKit</RootNamespace>
-    <Company>Binary Chef</Company>
+    <Company>BC</Company>
     <Product>NKit.Standard</Product>
-    <Authors>Paul Kolozsvari</Authors>
-    <RepositoryUrl>https://github.com/PaulKolozsvari/NKit</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/PaulKolozsvari/NKit</PackageProjectUrl>
+    <Authors>BC</Authors>
+    <RepositoryUrl></RepositoryUrl>
+    <PackageProjectUrl></PackageProjectUrl>
     <Description>
 		.NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications.
 		NKit.Standard is the .NET Standard compatible version of NKit.
 		NKit.Windows is the .NET Framework compatbile version of NKit.
 		NKit.Core is the latest .NET Core compatible version of NKit.
 	</Description>
-    <AssemblyVersion>1.4.2.0</AssemblyVersion>
-    <FileVersion>1.4.2.0</FileVersion>
+    <AssemblyVersion>1.4.3.1</AssemblyVersion>
+    <FileVersion>1.4.3.1</FileVersion>
     <PackageReleaseNotes>*   
     2022-08-24:
 
@@ -100,10 +100,50 @@
 *   2024-07-01:
 
     -   Added ExtraSearch1, 2, 3 and 4 on ConfirmationModel.
-    -   Added ExtraSearch1, 2, 3 and 4 on FilterModelStandard.</PackageReleaseNotes>
+    -   Added ExtraSearch1, 2, 3 and 4 on FilterModelStandard.
+    
+*   2024-08-01:
+
+    -   Changed the WebServiceClient to allow using NTLM credentials instead of BasicAuthentication.
+
+*   2024-08-15:
+
+    -   Changed the CsvParser to not require the expected column count to match the actual column count found in the CSV file. We need to grab from the file what we can find.
+
+*   2024-08-20:
+
+    -   Added NKitBaseViewModel and inherited all the other view models from it to provide base properties such as context related fields.
+
+*   2024-08-21:
+
+    -   Addded ability on the middleware to log all requests based configuration in middleware settings.
+
+*   2024-09-25:
+
+    -   Fixed the DataShaper.GetCurrencyValueString to be able to wok with negative numbers.
+    -   Changed FilterModelStandard and ConfirmationModel to allow working with ExtraSearchText5.
+    -   Created SecureRandomNumberGenerator and RandomGenerator, different algorithms for generating a random number.
+        -   Changed the SecureRandomNumberGenerator to allow a list of exclusions.
+
+*   2024-09-27:
+
+    -   Changed the NKitWebApiControllerCrud to check if the onbefore events are cancelled by subscribers and cancel out of the event if that's the case.
+
+*   2024-09-28:
+
+    -   Changed the exception handler middleware to not log the request body because it's causing issues reading the body in a stream twice i.e. once of logging and another by the Kestrel server when executing the request.
+
+*   2024-10-22:
+
+    -   Added DeleteAll method to MicrosoftSqliteEntityContextCore to delete all records from a specific table.
+
+*   2024-10-30:
+
+    -   Added FourthParent properties on the ConfirmationModel.
+  </PackageReleaseNotes>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>.NET Toolkit</PackageTags>
-    <Version>1.4.2</Version>
+    <Version>1.4.3.1</Version>
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
 

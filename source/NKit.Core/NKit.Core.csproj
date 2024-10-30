@@ -4,104 +4,145 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>NKit.Core</AssemblyName>
     <RootNamespace>NKit</RootNamespace>
-    <Company>Binary Chef</Company>
+    <Company>BC</Company>
     <Product>NKit.Core</Product>
-    <Authors>Paul Kolozsvari</Authors>
-    <RepositoryUrl>https://github.com/PaulKolozsvari/NKit</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/PaulKolozsvari/NKit</PackageProjectUrl>
+    <Authors>BC</Authors>
+    <RepositoryUrl></RepositoryUrl>
+    <PackageProjectUrl></PackageProjectUrl>
 	<Description>
 		.NET Toolkits (class libraries) containing reusable code for speeding up development of any .NET applications.
 		NKit.Standard is the .NET Standard compatible version of NKit.
 		NKit.Windows is the .NET Framework compatbile version of NKit.
 		NKit.Core is the latest .NET Core compatible version of NKit.
 	</Description>
-    <AssemblyVersion>1.4.2.0</AssemblyVersion>
-    <FileVersion>1.4.2.0</FileVersion>
-	<PackageReleaseNotes>*   2022-08-24:
+    <AssemblyVersion>1.4.3.1</AssemblyVersion>
+    <FileVersion>1.4.3.1</FileVersion>
+	<PackageReleaseNotes>
+    *   2022-08-24:
 
     -   Added GetUserAgent GetUserHostAddress methods to the NKitWebApiController controller.
 
--   2023-08-31:
+    -   2023-08-31:
 
     -   Fixed the Put and Post methods on the NKitWebApiControllerCrud to call the correct Save and Insert methods on the DbContext.
 
--   2023-10-04:
+    -   2023-10-04:
 
     -   Added extra GetConfirmationModelFromSearchParametersString overload in the NKitMvcController.cs
     -   Added all Nuget packages to repository because some are no longer available on online Nuget.
 
--   2023-10-23:
+    -   2023-10-23:
 
     -   Added additional overloads for serializing and deserializing objects in the NKitWebApiController.
     -   Added additional overloads for logging web requests and responses in the NKitWebApiController.
 
--   2023-10-25:
+    -   2023-10-25:
 
     -   Porting over dynamic Sql classses related to tables, and columns and reflection from NKit.Windows to NKit.Core.
 
--   2023-10-26:
+    -   2023-10-26:
 
     -   Porting over dynamic Sql Server classses related to tables, and columns and reflection from NKit.Windows to NKit.Core.
 
--   2023-10-28:
+    -   2023-10-28:
 
     -   Ported over Sqlite classes related to tables, columns and reflection from NKit.Windows to NKit.Core.
 
--   2023-11-06:
+    -   2023-11-06:
 
     -   Copied some of the methods from the NKIT MVC controller to the API controller for getting the current action, coller name, URL, host name etc.
 
--   2023-11-07:
+    -   2023-11-07:
 
     -   Changed the NKitWebApiController.IsRequestAuthenticated, and .GetAbsoluteFilePathFromRequest and other methods from public to protected to avoid ambiguity and not confuse them with web service actions.
 
--   2024-01-14:
+    -   2024-01-14:
 
     -   Added classes to use Microsoft.Data.Sqlite (client for Sqlite built by Microsoft) instead of System.Data.SQLite (client for Sqlite built by Sqlite themeselves).
-        The issue with System.Data.SQLite is that they don't provide a native library for ARM processors. So if running on an ARM processor, you should rather use the Microsoft classes targetting Microsoft.Data.Sqlite.
+    The issue with System.Data.SQLite is that they don't provide a native library for ARM processors. So if running on an ARM processor, you should rather use the Microsoft classes targetting Microsoft.Data.Sqlite.
 
--   2024-01-17:
+    -   2024-01-17:
 
     -   Created BarcodeHelper to encode and decode barcodes using Zxing.Net library. This is available in the NKit.Standard library.
 
--   2024-01-21:
+    -   2024-01-21:
 
     -   Added method GetFullyQualifiedFilePath to NKitSettings to be able to convert a relative path to a fully qualified path.
     -   Changed the DataHelper.ChangeType method to handle cases where the value to convert is null and where the value is a string and needs to be converted to a Guid.
 
--   2024-01-23:
+    -   2024-01-23:
 
     -   Changed the NKitHttpExceptionHandlerMiddleware to write out the exception message to the HttpContext.ReasonPhrase for the client to be able to read why the HTTP request failed.
 
--   2024-02-14:
+    -   2024-02-14:
 
     -   Fixed the DataHelper.ParseReaderToEntities to read DateTime values without converting them to string first.
 
--   2024-04-01:
+    -   2024-04-01:
 
     -   Added method RedirectToLogin to NKitMvcController.
 
--   2024-03-04:
+    -   2024-03-04:
 
     -   Added method SetViewBagInformationMessage to NKitMvcController.
 
-*   2024-05-01:
+    *   2024-05-01:
 
     -   Fixed DataShaperCore.IsValidEmail to exclude check on VALID_EMAIL_REGEX.
     -   Changed DataShaperCore.ParseEmailAddressesFromText to not check whether it's a valid email and to strip semicolons out of email matches.
 
-*   2024-06-06:
+    *   2024-06-06:
 
     -   Changed DataShaperCore.ParseSaNumberFromText to return a phoneStartIndex result as an out parameter.
     -   Changed NKitWebApiController.SerializeToText to check if the input entity is not null before trying to serialize.
 
-*   2024-07-01:
+    *   2024-07-01:
 
     -   Added ExtraSearch1, 2, 3 and 4 on ConfirmationModel.
-    -   Added ExtraSearch1, 2, 3 and 4 on FilterModelStandard.</PackageReleaseNotes>
+    -   Added ExtraSearch1, 2, 3 and 4 on FilterModelStandard.
+
+    *   2024-08-01:
+
+    -   Changed the WebServiceClient to allow using NTLM credentials instead of BasicAuthentication.
+
+    *   2024-08-15:
+
+    -   Changed the CsvParser to not require the expected column count to match the actual column count found in the CSV file. We need to grab from the file what we can find.
+
+    *   2024-08-20:
+
+    -   Added NKitBaseViewModel and inherited all the other view models from it to provide base properties such as context related fields.
+
+    *   2024-08-21:
+
+    -   Addded ability on the middleware to log all requests based configuration in middleware settings.
+
+    *   2024-09-25:
+
+    -   Fixed the DataShaper.GetCurrencyValueString to be able to wok with negative numbers.
+    -   Changed FilterModelStandard and ConfirmationModel to allow working with ExtraSearchText5.
+    -   Created SecureRandomNumberGenerator and RandomGenerator, different algorithms for generating a random number.
+    -   Changed the SecureRandomNumberGenerator to allow a list of exclusions.
+
+    *   2024-09-27:
+
+    -   Changed the NKitWebApiControllerCrud to check if the onbefore events are cancelled by subscribers and cancel out of the event if that's the case.
+
+    *   2024-09-28:
+
+    -   Changed the exception handler middleware to not log the request body because it's causing issues reading the body in a stream twice i.e. once of logging and another by the Kestrel server when executing the request.
+
+    *   2024-10-22:
+
+    -   Added DeleteAll method to MicrosoftSqliteEntityContextCore to delete all records from a specific table.
+
+    *   2024-10-30:
+
+    -   Added FourthParent properties on the ConfirmationModel.
+  </PackageReleaseNotes>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>.NET Toolkit</PackageTags>
-    <Version>1.4.2</Version>
+    <Version>1.4.3.1</Version>
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
 
