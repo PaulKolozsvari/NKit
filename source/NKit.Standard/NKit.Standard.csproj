@@ -16,8 +16,8 @@
 		NKit.Windows is the .NET Framework compatbile version of NKit.
 		NKit.Core is the latest .NET Core compatible version of NKit.
 	</Description>
-    <AssemblyVersion>1.4.3.1</AssemblyVersion>
-    <FileVersion>1.4.3.1</FileVersion>
+    <AssemblyVersion>1.4.3.2</AssemblyVersion>
+    <FileVersion>1.4.3.2</FileVersion>
     <PackageReleaseNotes>*   
     2022-08-24:
 
@@ -143,7 +143,7 @@
   </PackageReleaseNotes>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>.NET Toolkit</PackageTags>
-    <Version>1.4.3.1</Version>
+    <Version>1.4.3.2</Version>
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
 
