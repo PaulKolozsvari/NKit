@@ -119,3 +119,7 @@
 *   2024-10-30:
 
     -   Added FourthParent properties on the ConfirmationModel.
+
+*   2024-11-07:
+
+    -   Fixed the MicrosoftSqliteDatabaseCore to close the connection on every call and release the handle to the database.

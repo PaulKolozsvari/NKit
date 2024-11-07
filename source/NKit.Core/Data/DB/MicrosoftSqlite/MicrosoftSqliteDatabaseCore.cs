@@ -106,6 +106,11 @@
                     PublishFeedback("Generating ORM assembly ...");
                     CreateOrmAssembly(saveOrmAssembly, ormAssemblyOutputDirectory);
                 }
+                if (connection.State != ConnectionState.Closed)
+                {
+                    connection.Close();
+                }
+                SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
             }
         }
 
@@ -198,6 +203,11 @@
                         result = DataHelperCore.ParseReaderToEntities(reader, ormCollecibleType.DotNetType, propertyNameFilter);
                     }
                 }
+                if (connection.State != ConnectionState.Closed)
+                {
+                    connection.Close();
+                }
+                SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
             }
             return result;
         }
@@ -222,6 +232,11 @@
                         result = DataHelperCore.ParseReaderToEntities(reader, entityType, propertyNameFilter);
                     }
                 }
+                if (connection.State != ConnectionState.Closed)
+                {
+                    connection.Close();
+                }
+                SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
             }
             return result;
         }
@@ -271,6 +286,8 @@
                     connection != null &&
                     connection.State != ConnectionState.Closed)
                 {
+                    connection.Close();
+                    SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
                     connection.Dispose();
                 }
             }
@@ -329,6 +346,8 @@
                     connection != null &&
                     connection.State != ConnectionState.Closed)
                 {
+                    connection.Close();
+                    SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
                     connection.Dispose();
                 }
             }
@@ -392,17 +411,28 @@
                     query.SqlParameters.ForEach(p => command.Parameters.Add(p));
                     result = command.ExecuteNonQuery();
                 }
+                if (connection.State != ConnectionState.Closed)
+                {
+                    connection.Close();
+                }
+                SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
             }
             return result;
         }
 
         public DataTable GetSchema()
         {
+            DataTable result = null;
             using (SqliteConnection connection = new SqliteConnection(_connectionString))
             {
-                connection.Close();
-                return connection.GetSchema();
+                result = connection.GetSchema();
+                if (connection.State != ConnectionState.Closed)
+                {
+                    connection.Close();
+                }
+                SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
             }
+            return result;
         }
 
         public override string GetDatabaseNameFromSchema(
@@ -446,6 +476,8 @@
                     connection != null &&
                     connection.State != ConnectionState.Closed)
                 {
+                    connection.Close();
+                    SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
                     connection.Dispose();
                 }
             }
@@ -482,6 +514,8 @@
                     connection != null &&
                     connection.State != ConnectionState.Closed)
                 {
+                    connection.Close();
+                    SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
                     connection.Dispose();
                 }
             }
@@ -555,6 +589,8 @@
                     connection != null &&
                     connection.State != ConnectionState.Closed)
                 {
+                    connection.Close();
+                    SqliteConnection.ClearAllPools(); //This removes the handle the the process has on the database file allowing us to delete the file after this: https://github.com/dotnet/efcore/issues/27139
                     connection.Dispose();
                 }
             }

@@ -15,8 +15,8 @@
 		NKit.Windows is the .NET Framework compatbile version of NKit.
 		NKit.Core is the latest .NET Core compatible version of NKit.
 	</Description>
-    <AssemblyVersion>1.4.3.3</AssemblyVersion>
-    <FileVersion>1.4.3.3</FileVersion>
+    <AssemblyVersion>1.4.3.4</AssemblyVersion>
+    <FileVersion>1.4.3.4</FileVersion>
 	<PackageReleaseNotes>
     *   2022-08-24:
 
@@ -139,10 +139,14 @@
     *   2024-10-30:
 
     -   Added FourthParent properties on the ConfirmationModel.
+
+    *   2024-11-07:
+
+    -   Fixed the MicrosoftSqliteDatabaseCore to close the connection on every call and release the handle to the database.
   </PackageReleaseNotes>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>.NET Toolkit</PackageTags>
-    <Version>1.4.3.3</Version>
+    <Version>1.4.3.4</Version>
     <NoWarn>NU1603</NoWarn>
   </PropertyGroup>
 
