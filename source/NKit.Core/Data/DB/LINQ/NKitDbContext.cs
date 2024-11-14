@@ -1308,6 +1308,10 @@
         {
             Type entityType = typeof(E);
             PropertyInfo field = entityType.GetProperty(fieldName);
+            if (field == null)
+            {
+                throw new NullReferenceException($"Could not find property {fieldName} on entity {entityType.Name}.");
+            }
             object keyValueConverted = EntityReader.ConvertValueTypeTo(fieldValue, field.PropertyType);
             ParameterExpression e = Expression.Parameter(entityType, "e");
             MemberExpression memberExpression = Expression.MakeMemberAccess(e, field); //Name of surrogate key : left hand side of the expression.

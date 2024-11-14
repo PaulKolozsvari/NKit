@@ -123,3 +123,7 @@
 *   2024-11-07:
 
     -   Fixed the MicrosoftSqliteDatabaseCore to close the connection on every call and release the handle to the database.
+
+*   2024-11-14:
+
+    -   Fixed the NKitDbContext.GetEntitiesByField method to throw an appropriate exception when a field by which you're searching for doesn't exist.
