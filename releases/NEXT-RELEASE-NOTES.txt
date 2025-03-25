@@ -127,3 +127,8 @@
 *   2024-11-14:
 
     -   Fixed the NKitDbContext.GetEntitiesByField method to throw an appropriate exception when a field by which you're searching for doesn't exist.
+
+*   2024-03-25:
+
+    -   Added GetSelectedDataGridRowIndex method to the NKitMvcController.
+    -   Added GetByRowIndex method to the FilterModelCore.

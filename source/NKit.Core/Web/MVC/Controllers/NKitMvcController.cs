@@ -311,6 +311,23 @@
             return result;
         }
 
+        public async Task<string> GetRawBodyAsync(
+            Encoding encoding = null)
+        {
+            if (!Request.Body.CanSeek)
+            {
+                // We only do this if the stream isn't *already* seekable,
+                // as EnableBuffering will create a new stream instance
+                // each time it's called
+                Request.EnableBuffering();
+            }
+            Request.Body.Position = 0;
+            var reader = new StreamReader(Request.Body, encoding ?? Encoding.UTF8);
+            var body = await reader.ReadToEndAsync().ConfigureAwait(false);
+            Request.Body.Position = 0;
+            return body;
+        }
+
         protected string GetRequestBody()
         {
             string result = string.Empty;
@@ -1020,6 +1037,37 @@
                     secondParentId = secondParentIdGuid;
                 }
             }
+        }
+
+        /// <summary>
+        /// Parses the selected row index from the current web request URI.
+        /// e.g. http://localhost:5005/SalesOrders?selectedRow=6&selectedChildRow=2
+        /// </summary>
+        public Nullable<int> GetSelectedDataGridRowIndex(string selectedRowIndicator)
+        {
+            selectedRowIndicator = selectedRowIndicator.ToLower();
+            if (!selectedRowIndicator.EndsWith("="))
+            {
+                selectedRowIndicator = selectedRowIndicator + "=";
+            }
+            string uri = GetCurrentWebRequestUri().ToLower();
+            if (!uri.Contains(selectedRowIndicator))
+            {
+                return null; //URI does not contain the selectedRow parameter.
+            }
+            int selectedRowIndexStart = uri.IndexOf(selectedRowIndicator);
+            selectedRowIndexStart += selectedRowIndicator.Length;
+
+            string indexString = uri.Substring(selectedRowIndexStart);
+            if (indexString.Contains("&")) //The remaining string may contain other parameters like the sort direction etc. We need to strip that away.
+            {
+                indexString = indexString.Substring(0, indexString.IndexOf("&"));
+            }
+            if (int.TryParse(indexString, out int result))
+            {
+                return result - 1; //The row index is 1 based, not zero based, hence we need to adjust it to be zero based.
+            }
+            return null;
         }
 
         #endregion //Header Methods

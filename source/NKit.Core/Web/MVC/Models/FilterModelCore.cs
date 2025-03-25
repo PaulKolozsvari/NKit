@@ -24,6 +24,8 @@
             this.PageSize = 10;
         }
 
+        #endregion //Constructors
+
         #region Properties
 
         public SortDirectionTypeCore SortDirectionType
@@ -43,6 +45,27 @@
 
         #endregion //Properties
 
-        #endregion //Constructors
+        #region Methods
+
+        /// <summary>
+        /// Gets an entity based on the row index in the list. 
+        /// </summary>
+        /// <param name="rowIndex">The row index</param>
+        /// <param name="isOneBasedRowIndex">Whether or not this is a 1 based row index i.e. where the first record index is 1 instead of a zero based index where the first row is 0.</param>
+        /// <returns></returns>
+        public T GetByRowIndex(Nullable<int> rowIndex, bool isOneBasedRowIndex)
+        {
+            if (!rowIndex.HasValue)
+            {
+                return null;
+            }
+            if (isOneBasedRowIndex) //If this is a one based row index, we need to convert it to a zero based index.
+            {
+                rowIndex--;
+            }
+            return rowIndex.HasValue && rowIndex.Value < this.DataModel.Count ? this.DataModel[rowIndex.Value] : null;
+        }
+
+        #endregion //Methods
     }
 }
