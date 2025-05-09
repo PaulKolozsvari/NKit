@@ -435,9 +435,17 @@
                     object valueSource = pSource.GetValue(sourceObject);
                     if (pSource.PropertyType.IsEnum)
                     {
-                        int valueSourceInt = (int)valueSource;
-                        object valueSourceEnum = Enum.ToObject(pDestination.PropertyType, valueSourceInt);
-                        pDestination.SetValue(destinationObject, valueSourceEnum);
+                        if (pDestination.PropertyType.IsEnum) //Both the source and destination types are enums.
+                        {
+                            int valueSourceInt = (int)valueSource;
+                            object valueSourceEnum = Enum.ToObject(pDestination.PropertyType, valueSourceInt);
+                            pDestination.SetValue(destinationObject, valueSourceEnum);
+                        }
+                        else if (pDestination.PropertyType.Equals(typeof(Int32))) //The source property is an enum but the destination is an int.
+                        {
+                            int valueSourceInt = (int)valueSource;
+                            pDestination.SetValue(destinationObject, valueSourceInt);
+                        }
                     }
                     else
                     {

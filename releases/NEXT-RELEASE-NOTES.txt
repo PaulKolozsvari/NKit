@@ -132,3 +132,8 @@
 
     -   Added GetSelectedDataGridRowIndex method to the NKitMvcController.
     -   Added GetByRowIndex method to the FilterModelCore.
+
+*   2025-05-09:
+
+    -   Fixed the entity reader CopyProperties method to compare source and destination property types when the source property is an enum.
+        The conversion from a source enum to an int must be performed if the destination property is an int.
