@@ -161,7 +161,7 @@
   </PackageReleaseNotes>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>.NET Toolkit</PackageTags>
-    <Version>1.4.3.4</Version>
+    <Version>1.4.3.5</Version>
     <NoWarn>NU1603</NoWarn>
     <Configurations>Debug;Release;Deployment</Configurations>
   </PropertyGroup>
