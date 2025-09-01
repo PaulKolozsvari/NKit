@@ -15,8 +15,8 @@
 		NKit.Windows is the .NET Framework compatbile version of NKit.
 		NKit.Core is the latest .NET Core compatible version of NKit.
 	</Description>
-    <AssemblyVersion>1.4.3.4</AssemblyVersion>
-    <FileVersion>1.4.3.4</FileVersion>
+    <AssemblyVersion>1.4.3.5</AssemblyVersion>
+    <FileVersion>1.4.3.5</FileVersion>
 	<PackageReleaseNotes>
     *   2022-08-24:
 
@@ -143,6 +143,21 @@
     *   2024-11-07:
 
     -   Fixed the MicrosoftSqliteDatabaseCore to close the connection on every call and release the handle to the database.
+
+    *   2024-11-14:
+
+    -   Fixed the NKitDbContext.GetEntitiesByField method to throw an appropriate exception when a field by which you're searching for doesn't exist.
+
+    *   2024-03-25:
+
+    -   Added GetSelectedDataGridRowIndex method to the NKitMvcController.
+    -   Added GetByRowIndex method to the FilterModelCore.
+
+    *   2025-05-09:
+
+    -   Fixed the entity reader CopyProperties method to compare source and destination property types when the source property is an enum.
+    The conversion from a source enum to an int must be performed if the destination property is an int.
+    
   </PackageReleaseNotes>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>.NET Toolkit</PackageTags>

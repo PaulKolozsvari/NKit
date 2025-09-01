@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.4.3.3</version>
+    <version>1.4.3.5</version>
     <title>$title$</title>
     <authors>BC</authors>
     <!--<authors>Paul Kolozsvari</authors>-->
@@ -137,6 +137,24 @@
       *   2024-10-30:
 
       -   Added FourthParent properties on the ConfirmationModel.
+
+      *   2024-11-07:
+
+      -   Fixed the MicrosoftSqliteDatabaseCore to close the connection on every call and release the handle to the database.
+
+      *   2024-11-14:
+
+      -   Fixed the NKitDbContext.GetEntitiesByField method to throw an appropriate exception when a field by which you're searching for doesn't exist.
+
+      *   2024-03-25:
+
+      -   Added GetSelectedDataGridRowIndex method to the NKitMvcController.
+      -   Added GetByRowIndex method to the FilterModelCore.
+
+      *   2025-05-09:
+
+      -   Fixed the entity reader CopyProperties method to compare source and destination property types when the source property is an enum.
+      The conversion from a source enum to an int must be performed if the destination property is an int.
     </releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>.NET Framework Toolkit</tags>
