@@ -797,6 +797,32 @@
             string searchParametersString,
             out string[] searchParameters,
             out string searchText,
+            out Nullable<Guid> parentId,
+            out string parentName)
+        {
+            searchText = string.Empty;
+            searchParameters = searchParametersString.Split('|');
+            parentId = null;
+            parentName = null;
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 2)
+            {
+                searchText = searchParameters[0];
+                Guid entityIdGuid;
+                if (Guid.TryParse(searchParameters[1], out entityIdGuid))
+                {
+                    parentId = entityIdGuid;
+                }
+            }
+            if(!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >=3)
+            {
+                parentName = searchParameters[2];
+            }
+        }
+
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
             out Nullable<DateTime> startDate,
             out Nullable<DateTime> endDate, 
             out bool filterByDateRange,
