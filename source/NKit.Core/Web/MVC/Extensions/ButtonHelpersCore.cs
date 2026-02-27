@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Text.Encodings.Web;
     using System.Web;
     using Microsoft.AspNetCore.Html;
     using Microsoft.AspNetCore.Http;
@@ -27,7 +28,28 @@
             }
             return result;
         }
+        public static HtmlString LinkButtonForSubmit(
+            string buttonText,
+            string javaScriptFunction,
+            string controlId,
+            string cssClass,
+            string svgPathData)
+        {
+            var svg = new TagBuilder("svg");
+            svg.Attributes.Add("viewBox", "0 -960 960 960");
+            svg.Attributes.Add("style", "height:14px; width:14px; vertical-align:middle; fill:#000000; display:inline-block;");
+            svg.Attributes.Add("xmlns", "http://www.w3.org/2000/svg");
 
+            var path = new TagBuilder("path");
+            path.Attributes.Add("d", svgPathData);
+            svg.InnerHtml.AppendHtml(path);
+
+            using var writer = new StringWriter();
+            svg.WriteTo(writer, HtmlEncoder.Default);
+
+            var content = writer.ToString() + (string.IsNullOrEmpty(buttonText) ? "" : $" <span>{buttonText}</span>");
+            return new HtmlString(FormSubmitAnchorTag(content, javaScriptFunction, controlId, cssClass));
+        }
         public static HtmlString LinkButtonForSubmit(
             this IHtmlHelper helper,
             string buttonText,
@@ -131,6 +153,21 @@
         {
             var routeData = helper.ViewContext.RouteData;
             return routeData.Values["controller"].ToString();
+        }
+        private static string FormSubmitAnchorTag(string innerHtml, string onClick, string controlId, string cssClass)
+        {
+            var anchor = new TagBuilder("a");
+            if (!string.IsNullOrEmpty(controlId)) anchor.MergeAttribute("id", controlId);
+
+            anchor.MergeAttribute(string.IsNullOrEmpty(onClick) ? "href" : "onclick",
+                string.IsNullOrEmpty(onClick) ? "#" : $"{onClick}; return false;");
+
+            anchor.AddCssClass(cssClass ?? "button positive");
+            anchor.InnerHtml.AppendHtml(innerHtml);
+
+            using var writer = new StringWriter();
+            anchor.WriteTo(writer, HtmlEncoder.Default);
+            return writer.ToString();
         }
 
         private static string FormSubmitAnchorTag(TagBuilder imageTag, string anchorText, string onClickJavaScriptFunction, string controlId, string cssClass)
