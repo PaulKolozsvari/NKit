@@ -50,6 +50,32 @@
             var content = writer.ToString() + (string.IsNullOrEmpty(buttonText) ? "" : $" <span>{buttonText}</span>");
             return new HtmlString(FormSubmitAnchorTag(content, javaScriptFunction, controlId, cssClass));
         }
+
+        public static HtmlString LinkButtonForSubmit(
+            this IHtmlHelper helper,
+            string buttonText,
+            string javaScriptFunction,
+            string controlId,
+            string cssClass,
+            string svgPathData,
+            HttpRequest request)
+        {
+            var svg = new TagBuilder("svg");
+            svg.Attributes.Add("viewBox", "0 -960 960 960");
+            svg.Attributes.Add("style", "height:14px; width:14px; vertical-align:middle; fill:#000000; display:inline-block;");
+            svg.Attributes.Add("xmlns", "http://www.w3.org/2000/svg");
+
+            var path = new TagBuilder("path");
+            path.Attributes.Add("d", svgPathData);
+            svg.InnerHtml.AppendHtml(path);
+
+            using var writer = new StringWriter();
+            svg.WriteTo(writer, HtmlEncoder.Default);
+
+            var content = writer.ToString() + (string.IsNullOrEmpty(buttonText) ? "" : $" <span>{buttonText}</span>");
+            return new HtmlString(FormSubmitAnchorTag(content, javaScriptFunction, controlId, cssClass));
+        }
+
         public static HtmlString LinkButtonForSubmit(
             this IHtmlHelper helper,
             string buttonText,
