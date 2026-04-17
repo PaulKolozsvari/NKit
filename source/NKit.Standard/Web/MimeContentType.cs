@@ -26,6 +26,14 @@
         public const string BINARY = "application/octet-stream";
         public const string FORM_DATA = "application/x-www-form-urlencoded";
         public const string ANY = "*/*";
+        public const string PNG = "image/png";
+        public const string PDF = "application/pdf";
+        public const string IPL = "application/ipl";
+        public const string EPL = "application/epl";
+        public const string DPL = "application/DPL";
+        public const string PCL5 = "application/pcl5";
+        public const string pcl6 = "application/pcl6";
+
 
         #region Custom Types
 
