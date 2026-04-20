@@ -144,6 +144,16 @@
         /// </summary>
         public string SecondOther { get; set; }
 
+        /// <summary>
+        /// Oher Guid Id use by the filter
+        /// </summary>
+        public Nullable<Guid> OtherIdentifier { get; set; }
+
+        /// <summary>
+        /// Enum Status (int) value used by the filter
+        /// </summary>
+        public Nullable<int> EnumValue { get; set; }
+
         #endregion //Properties
     }
 }

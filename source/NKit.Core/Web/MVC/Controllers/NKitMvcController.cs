@@ -774,6 +774,49 @@
         }
 
         protected virtual void GetConfirmationModelFromSearchParametersString(
+        string searchParametersString,
+        out string[] searchParameters,
+        out string searchText,
+        out Nullable<DateTime> startDate,
+        out Nullable<DateTime> endDate,
+        out Nullable<Guid> parentId,
+        out Nullable<int> enumValue,
+        out Nullable<Guid> otherIdentifier)
+        {
+            searchText = string.Empty;
+            parentId = null;
+            startDate = null;
+            endDate = null;
+            enumValue = null;
+            otherIdentifier = null;
+            searchParameters = searchParametersString.Split('|');
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 3)
+            {
+                searchText = searchParameters[0];
+                if (DateTime.TryParse(searchParameters[1], out DateTime startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+                if (DateTime.TryParse(searchParameters[2], out DateTime endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+                if (Guid.TryParse(searchParameters[3], out Guid entityIdGuid))
+                {
+                    parentId = entityIdGuid;
+                }
+                if (int.TryParse(searchParameters[4], out int enumValueParsed))
+                {
+                    enumValue = enumValueParsed;
+                }
+                if (Guid.TryParse(searchParameters[5], out Guid otherIdentifierParsed))
+                {
+                    otherIdentifier = otherIdentifierParsed;
+                }
+            }
+        }
+
+        protected virtual void GetConfirmationModelFromSearchParametersString(
             string searchParametersString,
             out string[] searchParameters,
             out string searchText,
