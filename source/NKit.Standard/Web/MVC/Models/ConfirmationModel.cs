@@ -154,10 +154,6 @@
         /// </summary>
         public Nullable<int> EnumValue { get; set; }
 
-        /// <summary>
-        /// Quantity to Print used to display quantity to be printed if provided
-        /// </summary>
-        public int? QuantityToPrint { get; set; }
 
         #endregion //Properties
     }
