@@ -154,7 +154,6 @@
         /// </summary>
         public Nullable<int> EnumValue { get; set; }
 
-
         #endregion //Properties
     }
 }
