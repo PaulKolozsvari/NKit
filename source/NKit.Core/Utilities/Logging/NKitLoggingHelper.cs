@@ -1,4 +1,6 @@
-﻿namespace NKit.Utilities.Logging
+﻿using System.Runtime.InteropServices;
+
+namespace NKit.Utilities.Logging
 {
     #region Using Directives
 
@@ -35,11 +37,14 @@
                 }
                 if (loggingSettings.LogToWindowsEventLog)
                 {
-                    loggingBuilder.AddEventLog(new EventLogSettings()
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) //We only create the Windows event logger if we're running on Windows.
                     {
-                        LogName = loggingSettings.EventLogName,
-                        SourceName = loggingSettings.EventSourceName,
-                    });
+                        loggingBuilder.AddEventLog(new EventLogSettings()
+                        {
+                            LogName = loggingSettings.EventLogName,
+                            SourceName = loggingSettings.EventSourceName,
+                        });
+                    }
                 }
             });
             ILogger result = loggerFactory.CreateLogger(categoryName);
