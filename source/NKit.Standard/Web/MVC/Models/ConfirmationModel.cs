@@ -78,6 +78,11 @@
         /// The confirmation message in the confirmation dialog to be presented to the user i.e. the question being asked.
         /// </summary>
         public string ConfirmationMessage { get; set; }
+        
+        /// <summary>
+        /// Error message that is presented to the user if the action cannot be completed.
+        /// </summary>
+        public string ErrorMessage { get; set; }
 
         /// <summary>
         /// The ID of the parent i.e. to be used when a group of entities belonging to a parent is loaded and needs to be identified/deleted.
