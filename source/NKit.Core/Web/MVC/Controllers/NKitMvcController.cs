@@ -812,30 +812,30 @@
             }
             if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 3)
             {
-                if (bool.TryParse(searchParameters[3], out bool completedParsed))
-                {
-                    completed = completedParsed;
-                }
-            }
-            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 4)
-            {
-                if (Guid.TryParse(searchParameters[4], out Guid entityIdGuid))
+                if (Guid.TryParse(searchParameters[3], out Guid entityIdGuid))
                 {
                     parentId = entityIdGuid;
                 }
             }
-            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 5)
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 4)
             {
-                if (int.TryParse(searchParameters[5], out int enumValueParsed))
+                if (int.TryParse(searchParameters[4], out int enumValueParsed))
                 {
                     enumValue = enumValueParsed;
                 }
             }
-            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 6)
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 5)
             {
-                if (Guid.TryParse(searchParameters[6], out Guid otherIdentifierParsed))
+                if (Guid.TryParse(searchParameters[5], out Guid otherIdentifierParsed))
                 {
                     otherIdentifier = otherIdentifierParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 6)
+            {
+                if (bool.TryParse(searchParameters[6], out bool completedParsed))
+                {
+                    completed = completedParsed;
                 }
             }
         }

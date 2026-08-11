@@ -160,9 +160,9 @@
         public Nullable<int> EnumValue { get; set; }
 
         /// <summary>
-        /// Quantity to Print used to display quantity to be printed if provided
+        /// Boolean value
         /// </summary>
-        public int? QuantityToPrint { get; set; }
+        public Nullable<bool> BooleanValue { get; set; }
 
         #endregion //Properties
     }
