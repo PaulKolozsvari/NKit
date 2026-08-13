@@ -36,7 +36,7 @@
                 D context = serviceScope.ServiceProvider.GetService<D>();
                 if (context != null)
                 {
-                    using (context)
+                    using (context) 
                     {
                         context.Database.Migrate();
                     }
