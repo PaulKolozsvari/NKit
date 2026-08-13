@@ -4,6 +4,9 @@
 
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
     using System.Reflection;
     using System.Text;
 
@@ -70,6 +73,20 @@
                 throw new Exception(string.Format("Could not convert string {0} to type {1}.", value, typeof(E).FullName));
             }
             return result;
+        }
+
+        public static Dictionary<string, string> ToDictionary<TEnum>() where TEnum : struct, Enum
+        {
+            return Enum.GetValues(typeof(TEnum))
+                .Cast<TEnum>()
+                .ToDictionary(
+                    e => e.ToString(),
+                    e => e.GetType()
+                          .GetMember(e.ToString())
+                          .FirstOrDefault()?
+                          .GetCustomAttribute<DescriptionAttribute>()? // Switch to DescriptionAttribute
+                          .Description ?? e.ToString()                // Use .Description property
+                );
         }
 
         #endregion //Methods

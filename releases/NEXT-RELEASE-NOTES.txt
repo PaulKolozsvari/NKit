@@ -137,3 +137,7 @@
 
     -   Fixed the entity reader CopyProperties method to compare source and destination property types when the source property is an enum.
         The conversion from a source enum to an int must be performed if the destination property is an int.
+
+*   2026-08-13:
+
+    -   Implemented GeofenceService for calculating whether a location is inside a target geolocation's radius and calculate distances between geo locations.
