@@ -164,6 +164,11 @@
         /// </summary>
         public Nullable<bool> BooleanValue { get; set; }
 
+        /// <summary>
+        /// Secondary boolean value (used e.g. for an additional filter flag such as 'Loaded')
+        /// </summary>
+        public Nullable<bool> BooleanValue2 { get; set; }
+
         #endregion //Properties
     }
 }

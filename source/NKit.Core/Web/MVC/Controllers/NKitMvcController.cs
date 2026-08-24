@@ -898,6 +898,59 @@
             }
         }
 
+        /// <summary>
+        /// Parses search parameters string and extracts search text, date range, completed and loaded boolean flags.
+        /// Format expected: "searchText|startDate|endDate|completed|loaded"
+        /// </summary>
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
+            out Nullable<DateTime> startDate,
+            out Nullable<DateTime> endDate,
+            out Nullable<bool> completed,
+            out Nullable<bool> loaded)
+        {
+            searchText = string.Empty;
+            startDate = null;
+            endDate = null;
+            completed = null;
+            loaded = null;
+            searchParameters = searchParametersString.Split('|');
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 1)
+            {
+                searchText = searchParameters[0];
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 1)
+            {
+                if (DateTime.TryParse(searchParameters[1], out DateTime startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 2)
+            {
+                if (DateTime.TryParse(searchParameters[2], out DateTime endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 3)
+            {
+                if (bool.TryParse(searchParameters[3], out bool completedParsed))
+                {
+                    completed = completedParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 4)
+            {
+                if (bool.TryParse(searchParameters[4], out bool loadedParsed))
+                {
+                    loaded = loadedParsed;
+                }
+            }
+        }
+
         protected virtual void GetConfirmationModelFromSearchParametersString(
             string searchParametersString,
             out string[] searchParameters,
