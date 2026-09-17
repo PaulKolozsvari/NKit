@@ -773,6 +773,87 @@
             }
         }
 
+        /// <summary>
+        /// Parses search parameters string for patterns that include parentId, enumValue, otherIdentifier,
+        /// booleanValue and otherBooleanValue flags. Expected order produced by the UI:
+        /// searchText|startDate|endDate|parentId|enumValue|otherIdentifier|booleanValue|otherBooleanValue
+        /// </summary>
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
+            out Nullable<DateTime> startDate,
+            out Nullable<DateTime> endDate,
+            out Nullable<bool> booleanValue,
+            out Nullable<Guid> parentId,
+            out Nullable<int> enumValue,
+            out Nullable<Guid> otherIdentifier,
+            out Nullable<bool> otherBooleanValue)
+        {
+            searchText = string.Empty;
+            startDate = null;
+            endDate = null;
+            booleanValue = null;
+            parentId = null;
+            enumValue = null;
+            otherIdentifier = null;
+            otherBooleanValue = null;
+            searchParameters = string.IsNullOrEmpty(searchParametersString) ? new string[0] : searchParametersString.Split('|');
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 0)
+            {
+                searchText = searchParameters[0];
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 1)
+            {
+                if (DateTime.TryParse(searchParameters[1], out DateTime startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 2)
+            {
+                if (DateTime.TryParse(searchParameters[2], out DateTime endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 3)
+            {
+                if (Guid.TryParse(searchParameters[3], out Guid salesOrderIdParsed))
+                {
+                    parentId = salesOrderIdParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 4)
+            {
+                if (int.TryParse(searchParameters[4], out int enumValueParsed))
+                {
+                    enumValue = enumValueParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 5)
+            {
+                if (Guid.TryParse(searchParameters[5], out Guid otherIdentifierParsed))
+                {
+                    otherIdentifier = otherIdentifierParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 6)
+            {
+                if (bool.TryParse(searchParameters[6], out bool completedParsed))
+                {
+                    booleanValue = completedParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 7)
+            {
+                if (bool.TryParse(searchParameters[7], out bool assignedParsed))
+                {
+                    otherBooleanValue = assignedParsed;
+                }
+            }
+        }
+
         protected virtual void GetConfirmationModelFromSearchParametersString(
         string searchParametersString,
         out string[] searchParameters,
