@@ -978,6 +978,242 @@
                 }
             }
         }
+        /// <summary>
+        /// Parses search parameters string for patterns that include parentId, booleanValue, otherIdentifier and otherBooleanValue flags. Expected order produced by the UI:
+        /// </summary>
+        /// <param name="searchParametersString"></param>
+        /// <param name="searchParameters"></param>
+        /// <param name="searchText"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="booleanValue"></param>
+        /// <param name="parentId"></param>
+        /// <param name="otherIdentifier"></param>
+        /// <param name="otherBooleanValue"></param>
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+        string searchParametersString,
+        out string[] searchParameters,
+        out string searchText,
+        out Nullable<DateTime> startDate,
+        out Nullable<DateTime> endDate,
+        out Nullable<bool> booleanValue,
+        out Nullable<Guid> parentId,
+        out Nullable<Guid> otherIdentifier,
+        out Nullable<bool> otherBooleanValue)
+        {
+            searchText = string.Empty;
+            parentId = null;
+            startDate = null;
+            endDate = null;
+            otherIdentifier = null;
+            booleanValue = null;
+            otherBooleanValue = null;
+            searchParameters = searchParametersString.Split('|');
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 1)
+            {
+                searchText = searchParameters[0];
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 1)
+            {
+                if (DateTime.TryParse(searchParameters[1], out DateTime startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 2)
+            {
+                if (DateTime.TryParse(searchParameters[2], out DateTime endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 3)
+            {
+                if (Guid.TryParse(searchParameters[3], out Guid entityIdGuid))
+                {
+                    parentId = entityIdGuid;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 4)
+            {
+                if (Guid.TryParse(searchParameters[4], out Guid otherIdentifierParsed))
+                {
+                    otherIdentifier = otherIdentifierParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 5)
+            {
+                if (bool.TryParse(searchParameters[5], out bool booleanValueParsed))
+                {
+                    booleanValue = booleanValueParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 6)
+            {
+                if (bool.TryParse(searchParameters[6], out bool otherBooleanParsed))
+                {
+                    otherBooleanValue = otherBooleanParsed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parses search parameters string for patterns that include parentId, booleanValue, otherIdentifier and flags. Expected order produced by the UI:
+        /// </summary>
+        /// <param name="searchParametersString"></param>
+        /// <param name="searchParameters"></param>
+        /// <param name="searchText"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="booleanValue"></param>
+        /// <param name="parentId"></param>
+        /// <param name="otherBooleanValue"></param>
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+        string searchParametersString,
+        out string[] searchParameters,
+        out string searchText,
+        out Nullable<DateTime> startDate,
+        out Nullable<DateTime> endDate,
+        out Nullable<bool> booleanValue,
+        out Nullable<Guid> parentId,
+        out Nullable<bool> otherBooleanValue)
+        {
+            searchText = string.Empty;
+            parentId = null;
+            startDate = null;
+            endDate = null;
+            booleanValue = null;
+            otherBooleanValue = null;
+            searchParameters = searchParametersString.Split('|');
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 1)
+            {
+                searchText = searchParameters[0];
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 1)
+            {
+                if (DateTime.TryParse(searchParameters[1], out DateTime startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 2)
+            {
+                if (DateTime.TryParse(searchParameters[2], out DateTime endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 3)
+            {
+                if (Guid.TryParse(searchParameters[3], out Guid entityIdGuid))
+                {
+                    parentId = entityIdGuid;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 4)
+            {
+                if (bool.TryParse(searchParameters[4], out bool booleanValueParsed))
+                {
+                    booleanValue = booleanValueParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 5)
+            {
+                if (bool.TryParse(searchParameters[5], out bool otherBooleanParsed))
+                {
+                    otherBooleanValue = otherBooleanParsed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Parses search parameters string for patterns that include parentId, booleanValue, otherIdentifier and otherBooleanValue flags. Expected order produced by the UI:
+        /// </summary>
+        /// <param name="searchParametersString"></param>
+        /// <param name="searchParameters"></param>
+        /// <param name="searchText"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="booleanValue"></param>
+        /// <param name="parentId"></param>
+        /// <param name="otherIdentifier"></param>
+        /// <param name="otherBooleanValue"></param>
+        /// <param name="anotherBooleanValue"></param>
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+        string searchParametersString,
+        out string[] searchParameters,
+        out string searchText,
+        out Nullable<DateTime> startDate,
+        out Nullable<DateTime> endDate,
+        out Nullable<bool> booleanValue,
+        out Nullable<Guid> parentId,
+        out Nullable<Guid> otherIdentifier,
+        out Nullable<bool> otherBooleanValue,
+        out Nullable<bool> anotherBooleanValue)
+        {
+            searchText = string.Empty;
+            parentId = null;
+            startDate = null;
+            endDate = null;
+            otherIdentifier = null;
+            booleanValue = null;
+            otherBooleanValue = null;
+            anotherBooleanValue = null;
+            searchParameters = searchParametersString.Split('|');
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 1)
+            {
+                searchText = searchParameters[0];
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 1)
+            {
+                if (DateTime.TryParse(searchParameters[1], out DateTime startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 2)
+            {
+                if (DateTime.TryParse(searchParameters[2], out DateTime endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 3)
+            {
+                if (Guid.TryParse(searchParameters[3], out Guid entityIdGuid))
+                {
+                    parentId = entityIdGuid;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 4)
+            {
+                if (Guid.TryParse(searchParameters[4], out Guid otherIdentifierParsed))
+                {
+                    otherIdentifier = otherIdentifierParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 5)
+            {
+                if (bool.TryParse(searchParameters[5], out bool booleanValueParsed))
+                {
+                    booleanValue = booleanValueParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 6)
+            {
+                if (bool.TryParse(searchParameters[6], out bool otherBooleanParsed))
+                {
+                    otherBooleanValue = otherBooleanParsed;
+                }
+            }
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length > 7)
+            {
+                if (bool.TryParse(searchParameters[7], out bool anotherBooleanParsed))
+                {
+                    anotherBooleanValue = anotherBooleanParsed;
+                }
+            }
+        }
 
         /// <summary>
         /// Parses search parameters string and extracts search text, date range, completed and loaded boolean flags.
