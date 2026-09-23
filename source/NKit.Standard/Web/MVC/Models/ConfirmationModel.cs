@@ -169,6 +169,11 @@
         /// </summary>
         public Nullable<bool> BooleanValue2 { get; set; }
 
+        /// <summary>
+        /// Tertiary boolean value (used e.g. for an additional filter flag such as 'Assigned')
+        /// </summary>
+        public Nullable<bool> BooleanValue3 { get; set; }
+
         #endregion //Properties
     }
 }
