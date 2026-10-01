@@ -159,6 +159,21 @@
         /// </summary>
         public Nullable<int> EnumValue { get; set; }
 
+        /// <summary>
+        /// Boolean value
+        /// </summary>
+        public Nullable<bool> BooleanValue { get; set; }
+
+        /// <summary>
+        /// Secondary boolean value (used e.g. for an additional filter flag such as 'Loaded')
+        /// </summary>
+        public Nullable<bool> BooleanValue2 { get; set; }
+
+        /// <summary>
+        /// Tertiary boolean value (used e.g. for an additional filter flag such as 'Assigned')
+        /// </summary>
+        public Nullable<bool> BooleanValue3 { get; set; }
+
         #endregion //Properties
     }
 }
