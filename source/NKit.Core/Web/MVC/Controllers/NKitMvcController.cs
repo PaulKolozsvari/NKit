@@ -773,6 +773,39 @@
             }
         }
 
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
+            out Nullable<DateTime> startDate,
+            out Nullable<DateTime> endDate,
+            out Nullable<int> enumValue)
+        {
+            searchText = string.Empty;
+            startDate = null;
+            endDate = null;
+            enumValue = null;
+            searchParameters = searchParametersString.Split('|');
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 3)
+            {
+                searchText = searchParameters[0];
+                DateTime startDateParsed;
+                DateTime endDateParsed;
+                if (DateTime.TryParse(searchParameters[1], out startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+                if (DateTime.TryParse(searchParameters[2], out endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+                if (int.TryParse(searchParameters[3], out int enumValueParsed))
+                {
+                    enumValue = enumValueParsed;
+                }
+            }
+        }
+
         /// <summary>
         /// Parses search parameters string for patterns that include parentId, enumValue, otherIdentifier,
         /// booleanValue and otherBooleanValue flags. Expected order produced by the UI:
@@ -1649,6 +1682,65 @@
             }
         }
 
+        /// <summary>
+        /// Parses search parameters string for patterns that include parentId, secondParentId and enumValue flags. Expected order produced by the UI:
+        /// </summary>
+        /// <param name="searchParametersString"></param>
+        /// <param name="searchParameters"></param>
+        /// <param name="searchText"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="parentId"></param>
+        /// <param name="secondParentId"></param>
+        /// <param name="enumValue"></param>
+
+        protected virtual void GetConfirmationModelFromSearchParametersString(
+            string searchParametersString,
+            out string[] searchParameters,
+            out string searchText,
+            out Nullable<DateTime> startDate,
+            out Nullable<DateTime> endDate,
+            out Nullable<Guid> parentId,
+            out Nullable<Guid> secondParentId,
+            out Nullable<int> enumValue)
+        {
+            searchText = string.Empty;
+            startDate = null;
+            endDate = null;
+            searchParameters = searchParametersString.Split('|');
+            parentId = null;
+            secondParentId = null;
+            enumValue = null;
+            if (!string.IsNullOrEmpty(searchParametersString) && searchParameters.Length >= 6)
+            {
+                searchText = searchParameters[0];
+                DateTime startDateParsed;
+                DateTime endDateParsed;
+                if (DateTime.TryParse(searchParameters[1], out startDateParsed))
+                {
+                    startDate = startDateParsed;
+                }
+                if (DateTime.TryParse(searchParameters[2], out endDateParsed))
+                {
+                    endDate = endDateParsed;
+                }
+                Guid parentIdGuid;
+                if (Guid.TryParse(searchParameters[3], out parentIdGuid))
+                {
+                    parentId = parentIdGuid;
+                }
+                Guid secondParentIdGuid;
+                if (Guid.TryParse(searchParameters[4], out secondParentIdGuid))
+                {
+                    secondParentId = secondParentIdGuid;
+                }
+                int salesOrderStatusParsed;
+                if (int.TryParse(searchParameters[5], out salesOrderStatusParsed))
+                {
+                    enumValue = salesOrderStatusParsed;
+                }
+            }
+        }
         /// <summary>
         /// Parses the selected row index from the current web request URI.
         /// e.g. http://localhost:5005/SalesOrders?selectedRow=6&selectedChildRow=2
